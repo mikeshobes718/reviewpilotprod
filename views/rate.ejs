@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Your Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-primary: #5A67D8; /* A modern indigo */
+            --brand-secondary: #805AD5; /* A complementary purple */
+            --star-color: #FBBF24; /* A warm, vibrant yellow */
+            --text-primary: #1A202C;
+            --text-secondary: #4A5568;
+            --background-light: #F7FAFC;
+            --container-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: grid;
+            place-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+            color: var(--text-primary);
+        }
+        .container {
+            background: var(--container-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid #E2E8F0;
+            transition: all 0.3s ease-in-out;
+        }
+        .hidden { display: none; }
+        .stars {
+            font-size: 3.5rem;
+            color: #CBD5E0;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .star {
+             transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .star:hover {
+            transform: scale(1.2);
+        }
+        .star.selected { color: var(--star-color); }
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+        }
+        input, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.85rem 1rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.3);
+        }
+        button {
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--brand-primary);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        button:hover {
+            background: #4C51BF;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .branding {
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #A0AEC0;
+        }
+        .branding a {
+            color: var(--brand-secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Initial Rating Section -->
+        <div id="rating-section">
+            <h1>How was your experience at<br><strong><%= business.businessName %></strong>?</h1>
+            <p>Your feedback helps them improve.</p>
+            <div class="stars">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+        </div>
+
+        <!-- 1-3 Star Feedback Form -->
+        <div id="feedback-section" class="hidden">
+            <h2>We're sorry to hear that.</h2>
+            <p>Please let us know how we can improve. Your detailed feedback is valuable.</p>
+            <form id="feedback-form">
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="email" id="email" placeholder="Your Email" required>
+                <textarea id="feedback-text" placeholder="How could we have made it a 5-star experience?" rows="4" required></textarea>
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </div>
+
+        <!-- 4 Star Contact Form -->
+        <div id="four-star-section" class="hidden">
+            <h2>Thanks for the 4-star rating!</h2>
+            <p>We're always striving for 5 stars. Could we get your contact info to follow up personally?</p>
+            <form id="four-star-form">
+                <input type="text" id="four-star-name" placeholder="Your Name" required>
+                <input type="email" id="four-star-email" placeholder="Your Email" required>
+                <input type="tel" id="four-star-phone" placeholder="Your Phone (Optional)">
+                <button type="submit">Send Contact Info</button>
+            </form>
+        </div>
+
+        <!-- Thank You Message -->
+        <div id="thank-you-section" class="hidden">
+            <h2>Thank you!</h2>
+            <p>We appreciate you taking the time to help us improve.</p>
+        </div>
+    </div>
+    
+    <div class="branding">
+        Powered by <a href="https://your-saas-website.com" target="_blank">ReviewFunnel</a>
+    </div>
+
+    <script>
+        // The JavaScript logic remains the same as it's already perfect.
+        document.addEventListener('DOMContentLoaded', () => {
+            const ratingSection = document.getElementById('rating-section');
+            const feedbackSection = document.getElementById('feedback-section');
+            const fourStarSection = document.getElementById('four-star-section');
+            const thankYouSection = document.getElementById('thank-you-section');
+            const feedbackForm = document.getElementById('feedback-form');
+            const fourStarForm = document.getElementById('four-star-form');
+            const stars = document.querySelectorAll('.star');
+            
+            let userRating = 0;
+
+            stars.forEach(star => {
+                star.addEventListener('mouseover', e => {
+                    const hoverValue = parseInt(e.target.dataset.value);
+                    stars.forEach(s => s.style.color = parseInt(s.dataset.value) <= hoverValue ? 'var(--star-color)' : '#CBD5E0');
+                });
+
+                star.addEventListener('mouseout', () => {
+                    stars.forEach(s => {
+                        if (!s.classList.contains('selected')) {
+                            s.style.color = '#CBD5E0';
+                        }
+                    });
+                });
+                
+                star.addEventListener('click', e => {
+                    userRating = parseInt(e.target.dataset.value);
+                    stars.forEach(s => {
+                        s.classList.toggle('selected', parseInt(s.dataset.value) <= userRating);
+                        if (s.classList.contains('selected')) {
+                            s.style.color = 'var(--star-color)';
+                        }
+                    });
+                    handleRating(userRating);
+                });
+            });
+
+            function handleRating(rating) {
+                setTimeout(() => { // Add a small delay for a smoother transition
+                    ratingSection.classList.add('hidden');
+                    if (rating === 5) {
+                        const googleReviewUrl = `https://search.google.com/local/writereview?placeid=<%= business.googlePlaceId %>`;
+                        window.location.href = googleReviewUrl;
+                    } else if (rating === 4) {
+                        fourStarSection.classList.remove('hidden');
+                    } else {
+                        feedbackSection.classList.remove('hidden');
+                    }
+                }, 300);
+            }
+
+            feedbackForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const feedbackData = {
+                    rating: userRating,
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    feedback: document.getElementById('feedback-text').value,
+                    type: 'feedback'
+                };
+                submitData(`/submit-feedback/<%= business.uid %>`, feedbackData, feedbackSection);
+            });
+
+            fourStarForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const contactData = {
+                    rating: userRating,
+                    name: document.getElementById('four-star-name').value,
+                    email: document.getElementById('four-star-email').value,
+                    phone: document.getElementById('four-star-phone').value,
+                    type: 'contact'
+                };
+                submitData(`/submit-feedback/<%= business.uid %>`, contactData, fourStarSection);
+            });
+
+            async function submitData(url, data, formToHide) {
+                 try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (response.ok) {
+                        formToHide.classList.add('hidden');
+                        thankYouSection.classList.remove('hidden');
+                    } else {
+                        alert('There was an error submitting your feedback.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
