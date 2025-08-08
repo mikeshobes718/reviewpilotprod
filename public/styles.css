@@ -37,6 +37,8 @@
   --theme-colors-shadow-image: var(--shadowImageColor);
   --theme-colors-border-image: var(--borderImage);
   --theme-colors-background-section: var(--section);
+  --theme-colors-border-table: #EAEAEA;
+  --theme-colors-background-rowHover: #F9F9F9;
   --theme-colors-icon-primary: var(--iconPrimary);
   --theme-effects-borderRadius-button: 8px;
   --theme-effects-borderRadius-card: 16px;
