@@ -190,15 +190,15 @@
 
     // AUTH ROUTES
     app.get('/healthz', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
-    app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken(), title: 'ReviewPilot • Turn happy customers into 5‑star reviews' }));
-    app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • ReviewPilot' }));
-    app.get('/pricing', csrfProtection, (req, res) => res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot' }));
+    app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken(), title: 'ReviewPilot • Turn happy customers into 5‑star reviews', user: req.session.user || null }));
+    app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • ReviewPilot', user: req.session.user || null }));
+    app.get('/pricing', csrfProtection, (req, res) => res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot', user: req.session.user || null }));
     app.get('/signup', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('signup', { csrfToken: token, error: null });
+        res.render('signup', { csrfToken: token, error: null, user: req.session.user || null });
     });
     app.post('/signup', async (req, res) => {
         try {
@@ -229,7 +229,7 @@
         const error = req.query.e ? decodeURIComponent(req.query.e) : (req.session.__flashError || null);
         req.session.__flashError = null;
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('login', { csrfToken: token, error, firebaseApiKey: process.env.FIREBASE_API_KEY || '' });
+        res.render('login', { csrfToken: token, error, firebaseApiKey: process.env.FIREBASE_API_KEY || '', user: req.session.user || null });
     });
     app.post('/login', async (req, res) => {
         try {
@@ -287,7 +287,7 @@
 
     // Password reset
     app.get('/reset-password', csrfProtection, (req, res) => {
-        res.render('reset', { csrfToken: req.csrfToken(), sent: false, error: null });
+        res.render('reset', { csrfToken: req.csrfToken(), sent: false, error: null, user: req.session.user || null });
     });
     app.post('/reset-password', csrfProtection, async (req, res) => {
         try {

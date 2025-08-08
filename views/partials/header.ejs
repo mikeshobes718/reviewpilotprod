@@ -3,8 +3,14 @@
   <div>
     <a href="/features" class="btn">Features</a>
     <a href="/pricing" class="btn">Pricing</a>
-    <a href="/login" class="btn">Log in</a>
-    <a href="/signup" class="btn primary">Get started</a>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <a href="/dashboard" class="btn">Dashboard</a>
+      <span class="btn" style="cursor:default;border-color:rgba(255,255,255,.24);opacity:.85;">Signed in: <%= user.email %></span>
+      <a href="/logout" class="btn">Log out</a>
+    <% } else { %>
+      <a href="/login" class="btn">Log in</a>
+      <a href="/signup" class="btn primary">Get started</a>
+    <% } %>
   </div>
 </nav>
 

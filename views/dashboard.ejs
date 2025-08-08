@@ -143,7 +143,10 @@
 <body>
     <header class="header">
         <h1><%= business.businessName %></h1>
-        <a href="/logout">Log Out</a>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <span style="color:#4A5568">Signed in as <strong><%= user.email %></strong></span>
+          <a href="/logout">Log Out</a>
+        </div>
     </header>
 
     <main class="main-content">
