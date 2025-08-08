@@ -6,7 +6,7 @@
     <title>Your Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --brand-primary: #5A67D8;
@@ -18,21 +18,9 @@
             --border-color: #E2E8F0;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--background-light);
-            margin: 0;
-            color: var(--text-primary);
-        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin:0; color: var(--text-primary); background: radial-gradient(1200px 600px at 10% -10%, rgba(90,103,216,.12), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(128,90,213,.12), transparent), #f7f9ff; }
 
-        .header {
-            background-color: var(--container-bg);
-            padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .header { background: var(--container-bg); padding: 1rem 2rem; border-bottom: 1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; position: sticky; top:0; z-index:10; backdrop-filter: blur(6px); }
 
         .header h1 {
             font-size: 1.25rem;
@@ -50,13 +38,7 @@
         .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
         @media (min-width: 900px) { .grid { grid-template-columns: 1.2fr 1fr; } }
 
-        .card {
-            background: var(--container-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 2rem;
-        }
+        .card { background: var(--container-bg); padding: 2rem; border-radius: 16px; border:1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,.06); margin-bottom: 2rem; }
 
         .card h2 {
             font-size: 1.5rem;

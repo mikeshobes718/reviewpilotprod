@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="<%= csrfToken %>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --brand-primary: #5A67D8; /* A modern indigo */
@@ -19,15 +19,7 @@
             --container-bg: #FFFFFF;
         }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: grid;
-            place-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
-            color: var(--text-primary);
-        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display:grid; place-content:center; min-height:100vh; margin:0; background: radial-gradient(1000px 600px at 10% -10%, rgba(90,103,216,.25), transparent), radial-gradient(1000px 800px at 110% -30%, rgba(128,90,213,.25), transparent), linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%); color: var(--text-primary); }
         .container {
             background: var(--container-bg);
             padding: 2.5rem;

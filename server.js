@@ -39,6 +39,8 @@
     app.set('trust proxy', 1); // Trust first proxy for secure cookies in production
     app.set('view engine', 'ejs');
     app.set('view cache', false);
+    // Serve static assets (global CSS, images, etc.)
+    app.use(express.static('public'));
     // In development, disable HTTPS-forcing headers so Safari/Chrome don't upgrade to https://localhost
     if (isProduction) {
         app.use(helmet());
