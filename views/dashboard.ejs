@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <% include partials/header %>
     <style>
         :root {
             --brand-primary: #5A67D8;
@@ -246,6 +244,7 @@
       </div>
     </main>
     <div class="toast" id="toast">Link copied</div>
+    <% include partials/footer %>
     <script>
       (function(){
         const btn = document.getElementById('copyBtn');

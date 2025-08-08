@@ -6,7 +6,7 @@
   <title>Password reset • ReviewPilot</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <% include partials/header %>
   <style>
     :root { --brand: #5A67D8; --brand2:#805AD5; --border:#E2E8F0; --text:#1A202C; --muted:#4A5568; }
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; display: grid; place-content: center; min-height: 100vh; margin: 0; background: radial-gradient(1000px 600px at 10% -10%, rgba(90,103,216,.25), transparent), radial-gradient(1000px 800px at 110% -30%, rgba(128,90,213,.25), transparent), linear-gradient(135deg, var(--brand) 0%, var(--brand2) 100%); }
@@ -46,5 +46,6 @@
     </form>
     <p style="margin-top:12px;"><a href="/login">Back to login</a></p>
   </div>
+  <% include partials/footer %>
 </body>
 </html>

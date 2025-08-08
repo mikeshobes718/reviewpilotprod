@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ReviewPilot • Turn happy customers into 5‑star reviews</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <% include partials/header %>
   <style>
     :root { --brand:#5A67D8; --brand2:#805AD5; --bg:#0f172a; --card:#0b1221; --text:#e2e8f0; --muted:#94a3b8; --border:#1f2a44; }
     * { box-sizing: border-box; }
@@ -35,13 +33,7 @@
   <script>document.documentElement.classList.remove('no-js');</script>
 </head>
 <body>
-  <nav class="nav">
-    <div class="logo"><div class="logo-badge">RP</div> ReviewPilot</div>
-    <div>
-      <a href="/login">Log in</a>
-      <a class="btn" href="/signup">Get started</a>
-    </div>
-  </nav>
+  <!-- header included above -->
 
   <section class="hero">
     <div>
@@ -56,32 +48,14 @@
       </div>
     </div>
     <div class="card panel">
-      <div style="text-align:center;">
-        <div style="font-weight:800; font-size:14px; color:#a5b4fc;">Clean dashboard</div>
-        <div style="margin-top:10px; font-size:13px; color:#cbd5e1;">Track feedback, ratings and conversions at a glance.</div>
+      <div style="width:100%;height:100%;display:grid;place-items:center;">
+        <div style="aspect-ratio:16/9;width:100%;max-width:560px;">
+          <iframe width="100%" height="100%" src="https://www.youtube.com/embed/3BturV25BsE" title="ReviewPilot Explainer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="footer">© <script>document.write(new Date().getFullYear())</script> ReviewPilot</div>
-
-  <div id="cookie" class="cookie" style="display:none;">
-    <p>This site uses cookies for basic functionality and analytics. See our <a href="#" style="color:#a5b4fc;">Privacy Policy</a>.</p>
-    <div class="spacer"></div>
-    <button id="accept">Accept</button>
-  </div>
-  <script>
-    (function(){
-      try {
-        if (!localStorage.getItem('rp_cookie_ok')) {
-          document.getElementById('cookie').style.display='flex';
-        }
-        document.getElementById('accept').addEventListener('click', function(){
-          localStorage.setItem('rp_cookie_ok','1');
-          document.getElementById('cookie').style.display='none';
-        });
-      } catch(_){}
-    })();
-  </script>
+  <% include partials/footer %>
 </body>
 </html>
