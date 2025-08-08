@@ -79,3 +79,14 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .hero-figure .cardlet{position:absolute;right:12%;top:22%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--text);box-shadow:var(--shadow)}
 .btn.outline{background:#fff;border:1px solid var(--border)}
 
+/* Features page visuals */
+.display{font-size:clamp(36px,6vw,64px);line-height:1.15;font-weight:800;color:var(--text);margin:0}
+.feature-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.feature-illus{height:220px;border:1px dashed var(--border);border-radius:16px;background:#fff;display:grid;place-items:center;color:var(--muted)}
+.feature-bullets{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.feature-bullets ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.7}
+.role-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.icon-circle{width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);display:grid;place-items:center;color:var(--text);background:#fff}
+@media (max-width: 1020px){.feature-hero{grid-template-columns:1fr}.role-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width: 560px){.feature-bullets{grid-template-columns:1fr}.role-grid{grid-template-columns:1fr}}
+

@@ -8,25 +8,66 @@
 </head>
 <body>
   <%- include('partials/header') %>
-  <main class="container section text-center">
-    <div class="badge">Features</div>
-    <h1 class="hero-title">Everything you need</h1>
-    <p class="subtle">A focused toolkit to collect more 5‑star reviews with less effort.</p>
-    <div class="grid grid-2 grid-center grid-items-center section mx-auto" style="width:100%;max-width:980px;">
-      <div class="card accent">
-        <h2>Smart requests</h2>
-        <p>High‑converting SMS and email templates with your branding. Auto‑reminders included.</p>
-        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
-        <h2>Feedback filter</h2>
-        <p>1‑4★ ratings flow to a private form first; 5★ go straight to your public Google review link.</p>
-        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
-        <h2>Analytics that matter</h2>
-        <p>Track response rates, average rating, and 5★ conversions at a glance.</p>
+  <main class="container section" style="max-width:1100px;margin:0 auto;">
+    <div class="feature-hero section">
+      <div>
+        <div class="eyebrow">For modern local businesses</div>
+        <h1 class="display">The best way to turn happy customers into public reviews</h1>
+        <p class="body-text" style="color:var(--muted);margin-top:10px">The tools you need to request reviews, filter negative feedback, and see clear analytics — all in one place.</p>
+        <div class="mt-3">
+          <a href="/signup" class="btn btn-primary">Start free</a>
+          <a href="/contact" class="btn" style="margin-left:8px">Contact us</a>
+        </div>
       </div>
-      <div class="card" style="min-height:320px;display:grid;place-items:center;">
-        <div style="width:100%;max-width:560px;aspect-ratio:16/9;background:linear-gradient(135deg, rgba(14,165,233,.15), rgba(56,189,248,.15));border:1px dashed var(--border);border-radius:12px;color:#b6e3ff;display:grid;place-items:center;">Product preview</div>
-      </div>
+      <div class="feature-illus">Illustration</div>
     </div>
+
+    <section class="section">
+      <h2 class="hero-title" style="font-size:36px">Software designed for today’s reviews</h2>
+      <div class="feature-bullets" style="margin-top:10px">
+        <ul>
+          <li>Scheduling</li>
+          <li>Invoicing and payments</li>
+          <li>In‑app messaging</li>
+        </ul>
+        <ul>
+          <li>Client management and onboarding</li>
+          <li>Client portal</li>
+          <li>Policy setting and enforcement</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" style="text-align:center">
+      <h3 class="hero-title" style="font-size:28px">Play your part with clear tools</h3>
+      <div class="role-grid" style="margin-top:12px">
+        <div class="card">
+          <div class="icon-circle">🐾</div>
+          <div class="card-title" style="margin-top:8px">Walking & check‑ins</div>
+          <p class="body-text" style="font-size:14px;color:var(--muted)">Share a QR or link after each visit to collect feedback quickly.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">⭐</div>
+          <div class="card-title" style="margin-top:8px">Pet sitting</div>
+          <p class="body-text" style="font-size:14px;color:var(--muted)">Automatic reminders turn happy clients into public 5‑star reviews.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">📈</div>
+          <div class="card-title" style="margin-top:8px">Home‑base tracking</div>
+          <p class="body-text" style="font-size:14px;color:var(--muted)">See response rates and average rating at a glance.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">🧰</div>
+          <div class="card-title" style="margin-top:8px">Training</div>
+          <p class="body-text" style="font-size:14px;color:var(--muted)">Templates and flows your team can follow consistently.</p>
+        </div>
+        <div class="card">
+          <div class="icon-circle">✂️</div>
+          <div class="card-title" style="margin-top:8px">Grooming</div>
+          <p class="body-text" style="font-size:14px;color:var(--muted)">Capture feedback before clients leave the shop.</p>
+        </div>
+      </div>
+    </section>
   </main>
   <%- include('partials/footer') %>
 </body>
