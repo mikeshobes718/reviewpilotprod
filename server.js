@@ -163,6 +163,7 @@
         || (isProduction ? `http://localhost:${PORT}` : `http://lvh.me:${PORT}`);
 
     // AUTH ROUTES
+    app.get('/healthz', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
     app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken() }));
     app.get('/signup', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
