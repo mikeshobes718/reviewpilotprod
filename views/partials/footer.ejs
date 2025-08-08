@@ -1,20 +1,9 @@
 <div class="footer">© <script>document.write(new Date().getFullYear())</script> ReviewPilot • <a href="/privacy" style="color:#a5d8ff">Privacy</a>
 </div>
 <div id="cookie" class="cookie">
-  <div>This site uses cookies for basic functionality and analytics. See our <a href="#" style="color:#a5b4fc;">Privacy Policy</a>.</div>
+  <div>This site uses cookies for basic functionality and analytics. See our <a href="/privacy" style="color:#a5b4fc;">Privacy Policy</a>.</div>
   <div style="flex:1"></div>
   <button id="accept">Accept</button>
 </div>
-<script>
-  (function(){
-    try{
-      var ok = localStorage.getItem('rp_cookie_ok');
-      if(!ok){document.getElementById('cookie').style.display='flex';}
-      document.getElementById('accept').addEventListener('click',function(){
-        localStorage.setItem('rp_cookie_ok','1');
-        document.getElementById('cookie').style.display='none';
-      });
-    }catch(_){ }
-  })();
-</script>
+<script src="/app.js"></script>
 
