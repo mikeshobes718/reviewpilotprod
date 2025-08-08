@@ -51,6 +51,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 /* Pricing cards */
 .plan-card{min-width:320px}
 .price{font-size:42px;font-weight:900}
+.pricing-wrap{display:grid;place-items:center}
 
 .hero-title{font-size:clamp(40px,9vw,100px);line-height:1.1;letter-spacing:-.5px;margin:0 0 12px;color:var(--text)}
 .subtle{color:var(--muted)}
