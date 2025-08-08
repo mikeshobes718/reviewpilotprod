@@ -498,6 +498,24 @@
             res.status(500).send("Error creating checkout session.");
         }
     });
+    // Downgrade (cancel at period end)
+    app.post('/subscription/cancel', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+            const businessData = doc.data() || {};
+            if (!businessData.stripeCustomerId) return res.redirect('/dashboard');
+            const subs = await stripe.subscriptions.list({ customer: businessData.stripeCustomerId, status: 'active', limit: 1 });
+            if (subs.data && subs.data.length) {
+                const sub = subs.data[0];
+                await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true });
+                await db.collection('businesses').doc(req.session.user.uid).update({ subscriptionStatus: 'canceled' });
+            }
+            return res.redirect('/dashboard');
+        } catch (error) {
+            console.error('❌ Error canceling subscription:', error);
+            return res.redirect('/dashboard');
+        }
+    });
     app.get('/payment-success', requireLogin, async (req, res) => {
         try {
             // Status will be updated by Stripe webhook

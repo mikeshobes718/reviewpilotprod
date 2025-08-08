@@ -68,7 +68,13 @@
               </div>
               
               <% if (business.subscriptionStatus === 'active') { %>
-                <a href="/billing-portal" class="btn btn-secondary">Manage Billing</a>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <a href="/billing-portal" class="btn btn-secondary">Upgrade/Downgrade</a>
+                  <form action="/subscription/cancel" method="POST" onsubmit="return confirm('Cancel at period end?');">
+                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                    <button type="submit" class="btn btn-secondary">Cancel at period end</button>
+                  </form>
+                </div>
               <% } %>
             </div>
             <% if (business.subscriptionStatus !== 'active') { %>
