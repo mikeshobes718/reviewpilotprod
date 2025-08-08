@@ -183,6 +183,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 
 /* Contained light section */
 .section-contained{background:var(--section);padding:80px 0}
+.containedSection{background:var(--section);padding:24px;border-radius:16px}
 
 /* Product screenshot styling */
 .product-shot{border-radius:12px;border:1px solid var(--borderImage);box-shadow:0 8px 30px var(--shadowImageColor);overflow:hidden;background:#fff}
