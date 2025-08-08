@@ -59,7 +59,12 @@
                     styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
                     fontSrc: ["'self'", 'https:', 'data:'],
                     frameSrc: ["'self'", 'https://www.youtube.com', 'https://www.youtube-nocookie.com'],
-                    connectSrc: ["'self'", 'https://plausible.io', 'https://www.google-analytics.com'],
+                    connectSrc: [
+                        "'self'",
+                        'https://plausible.io',
+                        'https://www.google-analytics.com',
+                        'https://identitytoolkit.googleapis.com'
+                    ],
                     objectSrc: ["'none'"],
                     upgradeInsecureRequests: []
                 }
@@ -239,7 +244,10 @@
             const { email, password } = req.body;
             // Verify credentials using Firebase Identity Toolkit
             const apiKey = process.env.FIREBASE_API_KEY;
-            if (!apiKey) return res.status(500).send('Auth not configured');
+            if (!apiKey) {
+                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(200).render('login', { csrfToken: token, error: 'Login temporarily unavailable (missing API key).', firebaseApiKey: '' });
+            }
             const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
