@@ -9,64 +9,41 @@
 <body>
   <%- include('partials/header') %>
   <main class="container section" style="max-width:1100px;margin:0 auto;">
-    <div class="feature-hero section">
-      <div>
-        <div class="eyebrow">For modern local businesses</div>
-        <h1 class="display">The best way to turn happy customers into public reviews</h1>
-        <p class="body-text" style="color:var(--muted);margin-top:10px">The tools you need to request reviews, filter negative feedback, and see clear analytics — all in one place.</p>
-        <div class="mt-3">
-          <a href="/signup" class="btn btn-primary">Start free</a>
-          <a href="/contact" class="btn" style="margin-left:8px">Contact us</a>
-        </div>
-      </div>
-      <div class="feature-illus">Illustration</div>
-    </div>
+    <!-- Hero -->
+    <section class="section" style="text-align:center">
+      <h1 class="hero-title" style="font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:clamp(42px,7vw,64px)">Powerful Features to Grow Your Reputation.</h1>
+      <p class="body-text" style="color:var(--muted);max-width:760px;margin:8px auto 0">Everything you need to request reviews, filter feedback, and see clear analytics—all in one place.</p>
+      <div class="mt-3"><a href="/signup" class="btn primary">Get started</a></div>
+    </section>
 
+    <!-- Feature Spotlight 1 -->
     <section class="section">
-      <h2 class="hero-title" style="font-size:36px">Software designed for today’s reviews</h2>
-      <div class="feature-bullets" style="margin-top:10px">
-        <ul>
-          <li>Scheduling</li>
-          <li>Invoicing and payments</li>
-          <li>In‑app messaging</li>
-        </ul>
-        <ul>
-          <li>Client management and onboarding</li>
-          <li>Client portal</li>
-          <li>Policy setting and enforcement</li>
-        </ul>
+      <div class="grid grid-2 grid-center grid-items-center">
+        <img alt="Automated requests" class="product-shot" src="https://via.placeholder.com/1000x600.png?text=Automated+Requests" style="width:100%;height:auto" />
+        <div>
+          <div class="eyebrow">Automated requests</div>
+          <h2 class="hero-title" style="font-size:34px">Never Miss an Opportunity to Get a 5‑Star Review</h2>
+          <p class="body-text" style="color:var(--muted)">Send high‑converting SMS and email requests after every visit. Schedule reminders automatically and keep your brand consistent.</p>
+        </div>
       </div>
     </section>
 
-    <section class="section" style="text-align:center">
-      <h3 class="hero-title" style="font-size:28px">Play your part with clear tools</h3>
-      <div class="role-grid" style="margin-top:12px">
-        <div class="card">
-          <div class="icon-circle">🐾</div>
-          <div class="card-title" style="margin-top:8px">Walking & check‑ins</div>
-          <p class="body-text" style="font-size:14px;color:var(--muted)">Share a QR or link after each visit to collect feedback quickly.</p>
+    <!-- Feature Spotlight 2 (alternate) -->
+    <section class="section">
+      <div class="grid grid-2 grid-center grid-items-center">
+        <div>
+          <div class="eyebrow">Private feedback</div>
+          <h2 class="hero-title" style="font-size:34px">Catch Issues Before They Go Public</h2>
+          <p class="body-text" style="color:var(--muted)">Route 1‑4★ experiences to a private form first so your team can respond quickly, resolve problems, and protect your reputation.</p>
         </div>
-        <div class="card">
-          <div class="icon-circle">⭐</div>
-          <div class="card-title" style="margin-top:8px">Pet sitting</div>
-          <p class="body-text" style="font-size:14px;color:var(--muted)">Automatic reminders turn happy clients into public 5‑star reviews.</p>
-        </div>
-        <div class="card">
-          <div class="icon-circle">📈</div>
-          <div class="card-title" style="margin-top:8px">Home‑base tracking</div>
-          <p class="body-text" style="font-size:14px;color:var(--muted)">See response rates and average rating at a glance.</p>
-        </div>
-        <div class="card">
-          <div class="icon-circle">🧰</div>
-          <div class="card-title" style="margin-top:8px">Training</div>
-          <p class="body-text" style="font-size:14px;color:var(--muted)">Templates and flows your team can follow consistently.</p>
-        </div>
-        <div class="card">
-          <div class="icon-circle">✂️</div>
-          <div class="card-title" style="margin-top:8px">Grooming</div>
-          <p class="body-text" style="font-size:14px;color:var(--muted)">Capture feedback before clients leave the shop.</p>
-        </div>
+        <img alt="Private feedback" class="product-shot" src="https://via.placeholder.com/1000x600.png?text=Private+Feedback" style="width:100%;height:auto" />
       </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section-contained" style="text-align:center">
+      <h2 class="hero-title" style="font-size:36px">Ready to turn customers into reviews?</h2>
+      <a href="/signup" class="btn primary" style="margin-top:8px">Get started</a>
     </section>
   </main>
   <%- include('partials/footer') %>
