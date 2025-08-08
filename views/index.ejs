@@ -58,20 +58,20 @@
           <img src="/images/dashboard-screenshot.png" alt="ReviewPilot dashboard" class="product-shot" />
         </div>
         <div class="proof-right">
-          <div class="stat-grid">
-            <div class="base-card">
-              <div class="stat-value">4.8</div>
-              <div class="stat-label">Average rating</div>
+            <div class="stat-grid">
+              <div class="base-card">
+                <div class="stat-value"><%= (homepageStats && homepageStats.avg) ? homepageStats.avg : '4.8' %></div>
+                <div class="stat-label">Average rating (90d)</div>
+              </div>
+              <div class="base-card">
+                <div class="stat-value"><%= (homepageStats && homepageStats.convPercent) ? homepageStats.convPercent : '62' %>%</div>
+                <div class="stat-label">5★ conversions (90d)</div>
+              </div>
+              <div class="base-card">
+                <div class="stat-value">90d</div>
+                <div class="stat-label">Lookback window</div>
+              </div>
             </div>
-            <div class="base-card">
-              <div class="stat-value">62%</div>
-              <div class="stat-label">5★ conversions</div>
-            </div>
-            <div class="base-card">
-              <div class="stat-value">90d</div>
-              <div class="stat-label">Lookback window</div>
-            </div>
-          </div>
           <div class="testimonial-card large">
             <div class="quote">“We 3×’d our Google reviews in 60 days.”</div>
             <div class="author">— Sarah, Dental Practice Owner</div>

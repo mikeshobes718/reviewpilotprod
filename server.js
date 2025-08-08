@@ -197,7 +197,35 @@
 
     // AUTH ROUTES
     app.get('/healthz', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
-    app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken(), title: 'ReviewPilot • Turn happy customers into 5‑star reviews', user: req.session.user || null }));
+    // Simple in-memory cache for homepage stats (15 minutes)
+    let __homepageStatsCache = { at: 0, data: { avg: '4.8', convPercent: '62' } };
+    app.get('/', csrfProtection, async (req, res) => {
+        try {
+            const now = Date.now();
+            if (now - __homepageStatsCache.at > 15 * 60 * 1000) {
+                const ninetyAgoIso = new Date(now - 90 * 24 * 60 * 60 * 1000).toISOString();
+                const cg = await db.collectionGroup('feedback').where('createdAt', '>=', ninetyAgoIso).get();
+                let total = 0; let sum = 0; let five = 0;
+                cg.forEach(doc => {
+                    const d = doc.data();
+                    const r = Number(d.rating) || 0;
+                    if (r >= 1 && r <= 5) { total++; sum += r; if (r === 5) five++; }
+                });
+                const avg = total ? (sum / total).toFixed(2) : '0.00';
+                const convPercent = total ? Math.round((five / total) * 100).toString() : '0';
+                __homepageStatsCache = { at: now, data: { avg, convPercent } };
+            }
+            return res.render('index', {
+                csrfToken: req.csrfToken(),
+                title: 'ReviewPilot • Turn happy customers into 5‑star reviews',
+                user: req.session.user || null,
+                homepageStats: __homepageStatsCache.data,
+            });
+        } catch (e) {
+            console.error('home stats error', e);
+            return res.render('index', { csrfToken: req.csrfToken(), title: 'ReviewPilot • Turn happy customers into 5‑star reviews', user: req.session.user || null, homepageStats: { avg: '4.8', convPercent: '62' } });
+        }
+    });
     app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • ReviewPilot', user: req.session.user || null }));
     app.get('/pricing', csrfProtection, (req, res) => res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot', user: req.session.user || null }));
     app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • ReviewPilot', user: req.session.user || null }));
