@@ -18,32 +18,44 @@
 </head>
 <body>
     <%- include('partials/header') %>
-    <div class="base-card">
-        <div class="badge">ReviewPilot</div>
-        <h1>Create your account</h1>
-        <p class="sub">Start collecting more 5‑star reviews</p>
-        <% if (typeof error !== 'undefined' && error) { %>
-            <div class="error"><%= error %></div>
-        <% } %>
-        <form action="/signup" method="POST">
-            <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-            <div>
-                <label>Business name</label>
-                <input class="input" type="text" name="businessName" placeholder="Acme Dental" required>
-            </div>
-            <div>
-                <label>Email</label>
-                <input class="input" type="email" name="email" placeholder="owner@acme.com" required>
-            </div>
-            <div>
-                <label>Password</label>
-                <input class="input" type="password" name="password" placeholder="Create a password" required>
-            </div>
-            <button class="btn-primary" type="submit">Create account</button>
-        </form>
-        <div class="row" style="margin-top:10px;">
-          <span>Already have an account?</span> <a class="link-accent" href="/login">Log in</a>
+    <div class="auth-grid">
+      <div class="auth-left">
+        <div>
+          <h1>Create your account</h1>
+          <p>Join hundreds of businesses turning feedback into 5-star reviews.</p>
         </div>
+      </div>
+      <div class="auth-right">
+        <div class="base-card">
+          <div class="brand">
+            <div class="badge">ReviewPilot</div>
+          </div>
+          <h1>Create your account</h1>
+          <p class="sub">Start collecting more 5‑star reviews</p>
+          <% if (typeof error !== 'undefined' && error) { %>
+              <div class="error"><%= error %></div>
+          <% } %>
+          <form action="/signup" method="POST">
+              <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+              <div>
+                  <label>Business name</label>
+                  <input class="input" type="text" name="businessName" placeholder="Acme Dental" required>
+              </div>
+              <div>
+                  <label>Email</label>
+                  <input class="input" type="email" name="email" placeholder="owner@acme.com" required>
+              </div>
+              <div>
+                  <label>Password</label>
+                  <input class="input" type="password" name="password" placeholder="Create a password" required>
+              </div>
+              <button class="btn-primary" type="submit">Create account</button>
+          </form>
+          <div class="row" style="margin-top:10px;">
+            <span>Already have an account?</span> <a class="link-accent" href="/login">Log in</a>
+          </div>
+        </div>
+      </div>
     </div>
      <%- include('partials/footer') %>
 </body>
