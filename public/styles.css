@@ -49,7 +49,7 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .card.accent{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset, var(--shadow)}
 
 /* Pricing cards */
-.plan-card{min-width:300px}
+.plan-card{min-width:320px}
 .price{font-size:42px;font-weight:900}
 
 .hero-title{font-size:clamp(40px,9vw,100px);line-height:1.1;letter-spacing:-.5px;margin:0 0 12px;color:var(--text)}
