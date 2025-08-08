@@ -4,6 +4,8 @@
   --card:#FFFFFF;
   --text:#1B1B1B;
   --muted:#5E5E5E;
+  --statValue:#1B1B1B;
+  --statLabel:#5E5E5E;
   --accent:#10B981;
   --accentHover:#0F996B;
   --border:#F0F0F0; /* card border */
@@ -20,6 +22,8 @@
   --theme-colors-background-iconContainer: var(--iconBg);
   --theme-colors-text-primary: var(--text);
   --theme-colors-text-secondary: var(--muted);
+  --theme-colors-text-statValue: var(--statValue);
+  --theme-colors-text-statLabel: var(--statLabel);
   --theme-colors-text-onAccent: #FFFFFF;
   --theme-colors-accent-primary: var(--accent);
   --theme-colors-accent-primaryHover: var(--accentHover);
@@ -136,4 +140,10 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .testimonial-card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px}
 .testimonial-card .quote{font-style:italic;color:var(--text)}
 .testimonial-card .author{color:var(--muted)}
+
+/* Proof section and base card */
+.proof-section{background:var(--section);padding:80px 20px}
+.base-card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:24px}
+.stat-value{font-family:Inter,Manrope,sans-serif;font-weight:700;font-size:48px;color:var(--statValue)}
+.stat-label{font-family:Inter,Manrope,sans-serif;font-weight:500;font-size:16px;color:var(--statLabel)}
 
