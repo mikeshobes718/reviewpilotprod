@@ -162,13 +162,33 @@
         const btn = document.getElementById('copyBtn');
         if (!btn) return;
         const toast = document.getElementById('toast');
+        async function copyText(str){
+          // Try modern async clipboard API first
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(str);
+              return true;
+            }
+          } catch(_){}
+          // Fallback for Safari/iOS and older browsers
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = str; ta.setAttribute('readonly','');
+            ta.style.position='absolute'; ta.style.left='-9999px';
+            document.body.appendChild(ta);
+            ta.select(); ta.setSelectionRange(0, str.length);
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            return ok;
+          } catch(_) { return false; }
+        }
         btn.addEventListener('click', async () => {
           const link = document.getElementById('publicLink').innerText.trim();
-          try {
-            await navigator.clipboard.writeText(link);
+          const ok = await copyText(link);
+          if (ok) {
             toast.classList.add('show');
             setTimeout(()=>toast.classList.remove('show'), 1600);
-          } catch (_) {
+          } else {
             alert('Copy failed');
           }
         });
