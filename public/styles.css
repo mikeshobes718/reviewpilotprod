@@ -8,7 +8,9 @@
   --accentHover:#0F996B;
   --border:#F0F0F0; /* card border */
   --borderHover:#DCDCDC; /* card hover + button border */
-  --shadow: 0px 4px 20px rgba(30,30,30,0.06);
+  --shadowCardColor: rgba(30,30,30,0.06);
+  --shadowImageColor: rgba(30,30,30,0.08);
+  --shadow: 0px 4px 20px var(--shadowCardColor);
   --iconPrimary:#10B981;
   --iconBg:#EBF9F3;
 
@@ -24,7 +26,10 @@
   --theme-colors-border-card: var(--border);
   --theme-colors-border-cardHover: var(--borderHover);
   --theme-colors-border-button: var(--borderHover);
-  --theme-colors-shadow-color: rgba(30,30,30,0.06);
+  --theme-colors-shadow-card: var(--shadowCardColor);
+  --theme-colors-shadow-image: var(--shadowImageColor);
+  --theme-colors-border-image: var(--borderImage);
+  --theme-colors-background-section: var(--section);
   --theme-colors-icon-primary: var(--iconPrimary);
   --theme-effects-borderRadius-button: 8px;
   --theme-effects-borderRadius-card: 16px;
@@ -119,4 +124,15 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .icon-circle{width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);display:grid;place-items:center;color:var(--text);background:#fff}
 @media (max-width: 1020px){.feature-hero{grid-template-columns:1fr}.role-grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width: 560px){.feature-bullets{grid-template-columns:1fr}.role-grid{grid-template-columns:1fr}}
+
+/* Contained light section */
+.section-contained{background:var(--section);padding:80px 0}
+
+/* Product screenshot styling */
+.product-shot{border-radius:12px;border:1px solid var(--borderImage);box-shadow:0 8px 30px var(--shadowImageColor);overflow:hidden;background:#fff}
+
+/* Testimonial card */
+.testimonial-card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:16px}
+.testimonial-card .quote{font-style:italic;color:var(--text)}
+.testimonial-card .author{color:var(--muted)}
 
