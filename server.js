@@ -513,15 +513,21 @@
     app.post('/billing-portal', requireLogin, csrfProtection, async (req, res) => {
         try {
             const doc = await db.collection('businesses').doc(req.session.user.uid).get();
-            const businessData = doc.data();
+            const businessData = doc.data() || {};
+            let customerId = businessData.stripeCustomerId;
+            if (!customerId) {
+                const customer = await stripe.customers.create({ email: businessData.email || req.session.user.email, name: businessData.businessName || req.session.user.displayName || undefined });
+                customerId = customer.id;
+                await db.collection('businesses').doc(req.session.user.uid).update({ stripeCustomerId: customerId });
+            }
             const portalSession = await stripe.billingPortal.sessions.create({
-                customer: businessData.stripeCustomerId,
+                customer: customerId,
                 return_url: `${appUrl}/dashboard`
             });
             res.redirect(303, portalSession.url);
         } catch (error) {
             console.error('❌ Error creating billing portal session:', error);
-            res.status(500).send('Error opening billing portal.');
+            res.status(500).send('Error opening billing portal. Please try again later.');
         }
     });
 
@@ -529,15 +535,21 @@
     app.get('/billing-portal', requireLogin, async (req, res) => {
         try {
             const doc = await db.collection('businesses').doc(req.session.user.uid).get();
-            const businessData = doc.data();
+            const businessData = doc.data() || {};
+            let customerId = businessData.stripeCustomerId;
+            if (!customerId) {
+                const customer = await stripe.customers.create({ email: businessData.email || req.session.user.email, name: businessData.businessName || req.session.user.displayName || undefined });
+                customerId = customer.id;
+                await db.collection('businesses').doc(req.session.user.uid).update({ stripeCustomerId: customerId });
+            }
             const portalSession = await stripe.billingPortal.sessions.create({
-                customer: businessData.stripeCustomerId,
+                customer: customerId,
                 return_url: `${appUrl}/dashboard`
             });
             res.redirect(303, portalSession.url);
         } catch (error) {
             console.error('❌ Error creating billing portal session (GET):', error);
-            res.status(500).send('Error opening billing portal.');
+            res.status(500).send('Error opening billing portal. Please try again later.');
         }
     });
 
