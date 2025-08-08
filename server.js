@@ -367,13 +367,35 @@
                 if (r === 5 && (f.type === 'positive' || f.type === 'contact')) conversions++;
             });
             const avg = total ? (sum / total).toFixed(2) : '0.00';
+
+            // Billing details (renewal / cancel info)
+            const businessData = businessDoc.data();
+            let billing = null;
+            if (businessData.stripeCustomerId) {
+                try {
+                    const subs = await stripe.subscriptions.list({ customer: businessData.stripeCustomerId, status: 'all', limit: 1 });
+                    if (subs.data && subs.data.length) {
+                        const sub = subs.data[0];
+                        const end = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null;
+                        billing = {
+                            status: sub.status,
+                            cancelAtPeriodEnd: !!sub.cancel_at_period_end,
+                            currentPeriodEnd: end,
+                            planName: (sub.items && sub.items.data[0] && (sub.items.data[0].price.nickname || sub.items.data[0].price.id)) || 'Pro',
+                        };
+                    }
+                } catch (e) {
+                    console.warn('Stripe subscription lookup failed:', e.message);
+                }
+            }
             res.render('dashboard', {
                 business: businessDoc.data(),
                 user: req.session.user,
                 feedback: feedback,
                 appUrl: appUrl, // Pass the appUrl to the dashboard
                 csrfToken: req.csrfToken(),
-                analytics: { total, avg, counts, conversions }
+                analytics: { total, avg, counts, conversions },
+                billing
             });
         } catch (error) {
             console.error("❌ Error fetching dashboard data:", error);

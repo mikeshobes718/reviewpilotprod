@@ -65,6 +65,14 @@
                 <% } else { %>
                   <span style="margin-left:8px;color:var(--muted);">Plan: Starter</span>
                 <% } %>
+                <% if (typeof billing !== 'undefined' && billing) { %>
+                  <div style="margin-top:6px;color:var(--muted);font-size:13px">
+                    <span>Renews: <strong><%= billing.currentPeriodEnd ? new Date(billing.currentPeriodEnd).toLocaleString() : '—' %></strong></span>
+                    <% if (billing.cancelAtPeriodEnd) { %>
+                      <span style="margin-left:10px;color:#B45309">(Cancels at period end)</span>
+                    <% } %>
+                  </div>
+                <% } %>
               </div>
               
               <% if (business.subscriptionStatus === 'active') { %>
