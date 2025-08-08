@@ -347,9 +347,12 @@
     app.get('/admin', async (req, res) => {
         try {
             if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
-            const snap = await db.collection('businesses').limit(100).get();
+            const snap = await db.collection('businesses').limit(200).get();
             const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            res.send(`<html><head><title>Admin</title><style>body{font-family:Inter,system-ui} table{border-collapse:collapse} td,th{border:1px solid #ddd;padding:8px}</style></head><body><h1>Admin</h1><table><tr><th>UID</th><th>Business</th><th>Email</th><th>Stripe Customer</th><th>Status</th><th>Created</th></tr>${items.map(x=>`<tr><td>${x.id}</td><td>${x.businessName||''}</td><td>${x.email||''}</td><td>${x.stripeCustomerId||''}</td><td>${x.subscriptionStatus||''}</td><td>${x.createdAt||''}</td></tr>`).join('')}</table></body></html>`);
+            res.send(`<html><head><title>Admin</title><style>body{font-family:Inter,system-ui;margin:20px} table{border-collapse:collapse;width:100%} td,th{border:1px solid #ddd;padding:8px} .small{font-size:12px;color:#555}</style></head><body><h1>Admin</h1>
+              <form method="POST" action="/admin/refund" style="margin-bottom:14px;display:flex;gap:8px"><input name="chargeId" placeholder="Stripe charge_..." style="flex:1;padding:8px;border:1px solid #ddd"><button type="submit">Refund charge</button></form>
+              <table><tr><th>UID</th><th>Business</th><th>Email</th><th>Stripe Customer</th><th>Status</th><th>Place ID</th><th>Created</th></tr>
+              ${items.map(x=>`<tr><td class="small">${x.id}</td><td>${x.businessName||''}</td><td>${x.email||''}</td><td class="small">${x.stripeCustomerId||''}</td><td>${x.subscriptionStatus||''}</td><td class="small">${x.googlePlaceId||''}</td><td class="small">${x.createdAt||''}</td></tr>`).join('')}</table></body></html>`);
         } catch (e) {
             console.error('Admin error', e); res.status(500).send('Admin error');
         }
