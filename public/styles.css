@@ -152,10 +152,15 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(16,185,129,.2)}
 /* Two-column auth layout */
 .auth-grid{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
-.auth-left{background:var(--section);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
-.auth-left h1{font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:42px;margin:0 0 8px;color:var(--text)}
-.auth-left p{color:var(--muted);margin:0}
+.auth-left{position:relative;background:var(--section);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;overflow:hidden}
+.auth-left::before{content:"";position:absolute;inset:-20%;background:
+  radial-gradient(380px 380px at 20% 25%, rgba(16,185,129,.08), transparent 60%),
+  radial-gradient(480px 480px at 80% 70%, rgba(16,185,129,.06), transparent 60%);
+  pointer-events:none}
+.auth-left h1{font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:clamp(44px,6vw,64px);margin:0 0 10px;color:var(--text)}
+.auth-left p{color:var(--muted);margin:0;font-size:16px}
 .auth-right{display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-right .base-card{margin:0}
 
 /* Features page visuals */
 .display{font-size:clamp(36px,6vw,64px);line-height:1.15;font-weight:800;color:var(--text);margin:0}
