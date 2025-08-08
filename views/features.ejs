@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= title %></title>
+  <%- include('partials/head') %>
+</head>
+<body style="background: radial-gradient(1200px 600px at 10% -10%, rgba(90,103,216,.12), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(128,90,213,.12), transparent), #0b1020; color:#e2e8f0;">
+  <%- include('partials/header') %>
+  <main style="max-width:1100px;margin:32px auto;padding:0 22px;">
+    <h1 style="margin:0 0 12px;">Features</h1>
+    <p style="color:#94a3b8">Everything you need to turn happy customers into 5‑star reviews.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px;">
+      <div class="card"><h3>Smart requests</h3><p>Send review requests via SMS/email with high-converting templates.</p></div>
+      <div class="card"><h3>Feedback filter</h3><p>Route 1‑4 star experiences to private feedback; send 5‑star to Google.</p></div>
+      <div class="card"><h3>Analytics</h3><p>Track ratings, response rates, and conversions in one clean dashboard.</p></div>
+      <div class="card"><h3>Integrations</h3><p>Stripe for billing, Firebase auth, and optional hCaptcha.</p></div>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
+

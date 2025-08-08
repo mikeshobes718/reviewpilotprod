@@ -74,6 +74,12 @@
     });
     app.use(globalLimiter);
 
+    // Analytics config exposed to views
+    app.locals.analytics = {
+        provider: process.env.ANALYTICS_PROVIDER || null, // 'plausible' | 'ga'
+        domain: process.env.ANALYTICS_DOMAIN || process.env.APP_BASE_URL || ''
+    };
+
     // Stripe webhook must read raw body; mount BEFORE JSON parser
     app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
         try {
@@ -164,7 +170,9 @@
 
     // AUTH ROUTES
     app.get('/healthz', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
-    app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken() }));
+    app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken(), title: 'ReviewPilot • Turn happy customers into 5‑star reviews' }));
+    app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • ReviewPilot' }));
+    app.get('/pricing', csrfProtection, (req, res) => res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot' }));
     app.get('/signup', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');

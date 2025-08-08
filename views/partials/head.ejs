@@ -2,4 +2,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="/favicon.ico">
+<% if (analytics && analytics.provider === 'plausible') { %>
+  <script defer data-domain="<%= analytics.domain.replace('https://','').replace('http://','') %>" src="https://plausible.io/js/script.js"></script>
+<% } %>
+<% if (analytics && analytics.provider === 'ga' && process.env.GA_MEASUREMENT_ID) { %>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= process.env.GA_MEASUREMENT_ID %>"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','<%= process.env.GA_MEASUREMENT_ID %>');</script>
+<% } %>
 
