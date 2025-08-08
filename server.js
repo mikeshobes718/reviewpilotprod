@@ -366,6 +366,55 @@
         }
     });
 
+    // Admin: metrics for a business
+    app.get('/admin/metrics/:id', async (req, res) => {
+        try {
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).json({ error: 'forbidden' });
+            const businessId = req.params.id;
+            const snap = await db.collection('businesses').doc(businessId).collection('feedback').get();
+            const feedback = snap.docs.map(d => d.data());
+            const total = feedback.length;
+            let sum = 0; let conversions = 0;
+            feedback.forEach(f => {
+                const r = Number(f.rating) || 0;
+                if (r >= 1 && r <= 5) sum += r;
+                if (r === 5 && (f.type === 'positive' || f.type === 'contact')) conversions++;
+            });
+            const avg = total ? (sum / total).toFixed(2) : '0.00';
+            res.json({ total, avg, conversions });
+        } catch (e) { console.error('metrics error', e); res.status(500).json({ error: 'server' }); }
+    });
+
+    // Admin: impersonate a business to view dashboard
+    app.post('/admin/impersonate/:id', express.urlencoded({ extended: true }), async (req, res) => {
+        try {
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            const id = req.params.id;
+            const doc = await db.collection('businesses').doc(id).get();
+            if (!doc.exists) return res.status(404).send('Not found');
+            const data = doc.data();
+            req.session.user = { uid: id, email: data.email || '', displayName: data.businessName || '' };
+            res.redirect('/dashboard');
+        } catch (e) { console.error('impersonate error', e); res.status(500).send('Server error'); }
+    });
+
+    // Admin: open Stripe billing portal for a business
+    app.get('/admin/manage-subscription/:id', async (req, res) => {
+        try {
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            const id = req.params.id;
+            const doc = await db.collection('businesses').doc(id).get();
+            if (!doc.exists) return res.status(404).send('Not found');
+            const customerId = doc.data().stripeCustomerId;
+            if (!customerId) return res.status(400).send('Missing Stripe customer');
+            const portalSession = await stripe.billingPortal.sessions.create({
+                customer: customerId,
+                return_url: `${appUrl}/admin`
+            });
+            res.redirect(303, portalSession.url);
+        } catch (e) { console.error('admin portal', e); res.status(500).send('Server error'); }
+    });
+
     app.post('/admin/refund', express.urlencoded({extended:true}), async (req, res) => {
         try {
             if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');

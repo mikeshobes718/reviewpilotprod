@@ -10,9 +10,9 @@
   <%- include('partials/header') %>
   <main class="main-content">
     <div class="container">
-      <div class="base-card">
+      <div class="base-card" style="overflow:auto">
         <h1 class="page-heading" style="font-size:28px;margin:0 0 12px">Admin</h1>
-        <div class="table-wrap">
+        <div class="table-wrap" style="min-width:960px">
           <table class="admin-table" id="admin-table">
             <thead>
               <tr>
@@ -55,13 +55,24 @@
         <button class="drawer-close" id="drawer-close">Close</button>
       </div>
       <div class="drawer-body">
-        <div class="eyebrow" style="margin-bottom:8px">Review history</div>
+        <div id="drawer-biz" style="margin-bottom:12px">
+          <div id="drawer-biz-name" style="font-size:20px;font-weight:800;color:var(--text)">Business</div>
+          <div id="drawer-biz-email" style="color:var(--muted);font-size:14px">email@example.com</div>
+        </div>
+        <div class="eyebrow" style="margin-bottom:8px">Key metrics</div>
+        <div class="kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+          <div class="kpi"><div class="label">Total feedback</div><div class="value" id="m-total">—</div></div>
+          <div class="kpi"><div class="label">Average rating</div><div class="value" id="m-avg">—</div></div>
+          <div class="kpi"><div class="label">5★ conversions</div><div class="value" id="m-conv">—</div></div>
+        </div>
+        <div class="eyebrow" style="margin-bottom:8px">Review activity over time</div>
         <div style="height:140px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center;color:var(--muted);margin-bottom:12px">Bar chart placeholder</div>
-        <div class="eyebrow" style="margin-bottom:8px">Recent feedback</div>
-        <div style="border:1px dashed var(--border);border-radius:12px;padding:12px;color:var(--muted)">
-          <div>- “Great service” — 5★</div>
-          <div>- “Quick response” — 5★</div>
-          <div>- “Resolved issue fast” — 4★</div>
+        <div class="eyebrow" style="margin-bottom:8px">Admin Actions</div>
+        <div style="display:flex;gap:8px">
+          <form id="impersonateForm" method="POST">
+            <button type="submit" class="btn-primary" style="padding:10px 12px;border-radius:8px">View Dashboard</button>
+          </form>
+          <a id="manageSubLink" class="btn btn-secondary" style="padding:10px 12px;border-radius:8px" href="#">Manage Subscription</a>
         </div>
       </div>
     </div>
@@ -94,12 +105,31 @@
       const drawer = document.getElementById('drawer');
       const title = document.getElementById('drawer-title');
       const closeBtn = document.getElementById('drawer-close');
-      function openDrawer(name){ overlay.classList.add('open'); drawer.classList.add('open'); title.textContent = name || 'Details'; }
+      function openDrawer(name, email, id){
+        overlay.classList.add('open'); drawer.classList.add('open'); title.textContent = 'Details';
+        document.getElementById('drawer-biz-name').textContent = name || 'Business';
+        document.getElementById('drawer-biz-email').textContent = email || '';
+        fetch(`/admin/metrics/${id}`).then(r=>r.json()).then(m=>{
+          if (m && !m.error){
+            document.getElementById('m-total').textContent = m.total;
+            document.getElementById('m-avg').textContent = m.avg;
+            document.getElementById('m-conv').textContent = m.conversions;
+          }
+        }).catch(()=>{});
+        const form = document.getElementById('impersonateForm');
+        form.action = `/admin/impersonate/${id}`;
+        const manage = document.getElementById('manageSubLink');
+        manage.href = `/admin/manage-subscription/${id}`;
+      }
       function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remove('open'); }
       closeBtn.addEventListener('click', closeDrawer);
       overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeDrawer(); });
       table.tBodies[0].querySelectorAll('tr').forEach(tr=>{
-        tr.addEventListener('click', ()=> openDrawer(tr.children[1]?.textContent.trim()));
+        tr.addEventListener('click', ()=> openDrawer(
+          tr.children[1]?.textContent.trim(),
+          tr.children[2]?.textContent.trim(),
+          tr.dataset.id
+        ));
       });
     })();
   </script>
