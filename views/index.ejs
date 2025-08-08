@@ -14,8 +14,9 @@
     .logo-badge { width:28px; height:28px; border-radius:6px; background: linear-gradient(135deg, var(--brand), var(--brand2)); display:grid; place-items:center; color:white; font-weight:800; }
     .nav a { color: var(--text); text-decoration:none; margin-left:14px; font-weight:600; }
     .btn { display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background: linear-gradient(135deg, rgba(90,103,216,.18), rgba(128,90,213,.18)); color:white; font-weight:700; backdrop-filter: blur(6px); }
-    .hero { max-width:1100px; margin:36px auto; padding:0 22px; display:grid; grid-template-columns:1.1fr .9fr; gap:26px; align-items:center; }
-    .hero h1 { font-size: clamp(28px, 5vw, 46px); margin:0 0 10px; line-height:1.08; }
+    .banner { background: rgba(255,255,255,.06); color:#cbd5e1; padding:8px 12px; border:1px solid rgba(255,255,255,.12); border-radius:999px; width:fit-content; margin: 14px auto 0; font-size:13px }
+    .hero { max-width:1100px; margin:24px auto; padding:0 22px; display:grid; grid-template-columns:1.1fr .9fr; gap:26px; align-items:center; }
+    .hero h1 { font-size: clamp(34px, 6vw, 56px); margin:0 0 12px; line-height:1.05; letter-spacing:-.5px }
     .hero p { color: var(--muted); font-size: clamp(16px, 2.2vw, 18px); }
     .cta { display:flex; gap:12px; margin-top:18px; }
     .cta .primary { background: linear-gradient(135deg, var(--brand), var(--brand2)); border:none; }
@@ -35,15 +36,15 @@
 <body>
   <%- include('partials/header') %>
 
+  <div class="banner">New • Get more 5‑star reviews with smart filtering</div>
   <section class="hero">
     <div>
-      <h1>Turn happy customers into 5‑star reviews</h1>
+      <h1>Say goodbye to empty review pages</h1>
       <p>Send beautiful review requests, filter negative feedback, and grow your rating on autopilot. Built for local businesses.</p>
       <div class="cta">
         <a class="btn primary" href="/signup">Start free</a>
         <a class="btn" href="/login">I already have an account</a>
       </div>
-      <!-- tech badges removed -->
     </div>
     <div class="card panel">
       <div style="width:100%;height:100%;display:grid;place-items:center;">
@@ -54,9 +55,27 @@
     </div>
   </section>
 
+  <!-- Benefits row -->
+  <section style="max-width:1100px;margin:6px auto 0;padding:0 22px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+      <div class="card" style="background:#0f1730;border-color:#1f2a44;">
+        <div style="font-weight:800;font-size:18px;margin-bottom:6px;">Collect more reviews</div>
+        <div style="color:#cbd5e1">High‑converting SMS/email requests send your happiest customers to Google.</div>
+      </div>
+      <div class="card" style="background:#0f1730;border-color:#1f2a44;">
+        <div style="font-weight:800;font-size:18px;margin-bottom:6px;">Save time</div>
+        <div style="color:#cbd5e1">Automated flows, clear analytics, and a link you can share anywhere.</div>
+      </div>
+      <div class="card" style="background:#0f1730;border-color:#1f2a44;">
+        <div style="font-weight:800;font-size:18px;margin-bottom:6px;">Reduce risk</div>
+        <div style="color:#cbd5e1">Route 1‑4★ experiences to private feedback first — fix issues before they go public.</div>
+      </div>
+    </div>
+  </section>
+
   <!-- Customer logos strip -->
   <section style="max-width:1100px;margin:10px auto 0;padding:0 22px;">
-    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;opacity:.9;color:#cbd5e1;">
+    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;opacity:.9;color:#cbd5e1;justify-content:center;">
       <span>Trusted by:</span>
       <span class="btn" style="border:1px dashed rgba(255,255,255,.18);">Acme Dental</span>
       <span class="btn" style="border:1px dashed rgba(255,255,255,.18);">Northside Auto</span>
