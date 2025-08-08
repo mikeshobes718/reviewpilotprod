@@ -50,7 +50,7 @@
     </style>
 </head>
 <body>
-    <div class="base-card modal-card">
+    <div class="base-card modal-card" id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId %>">
         <!-- Initial Rating Section -->
         <div id="rating-section">
             <div class="modal-title">How was your experience at<br><strong><%= business.businessName %></strong>?</div>
@@ -97,116 +97,7 @@
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <% } %>
 
-    <script>
-        // The JavaScript logic remains the same as it's already perfect.
-        document.addEventListener('DOMContentLoaded', () => {
-            const ratingSection = document.getElementById('rating-section');
-            const contactSection = document.getElementById('contact-section');
-            const contactTitle = document.getElementById('contact-title');
-            const contactSubtitle = document.getElementById('contact-subtitle');
-            const contactForm = document.getElementById('contact-form');
-            const feedbackWrapper = document.getElementById('feedback-wrapper');
-            const feedbackTextarea = document.getElementById('feedback-text');
-            const thankYouSection = document.getElementById('thank-you-section');
-            const stars = document.querySelectorAll('.star');
-            
-            let userRating = 0;
-
-            stars.forEach(star => {
-                star.addEventListener('mouseover', e => {
-                    const hoverValue = parseInt(e.target.dataset.value);
-                    stars.forEach(s => s.style.color = parseInt(s.dataset.value) <= hoverValue ? 'var(--accent)' : '#CBD5E0');
-                });
-
-                star.addEventListener('mouseout', () => {
-                    stars.forEach(s => {
-                        if (!s.classList.contains('selected')) {
-                            s.style.color = '#CBD5E0';
-                        }
-                    });
-                });
-                
-                star.addEventListener('click', e => {
-                    userRating = parseInt(e.target.dataset.value);
-                    stars.forEach(s => {
-                        s.classList.toggle('selected', parseInt(s.dataset.value) <= userRating);
-                        if (s.classList.contains('selected')) { s.style.color = 'var(--accent)'; }
-                    });
-                    handleRating(userRating);
-                });
-            });
-
-            function handleRating(rating) {
-                setTimeout(() => {
-                    ratingSection.classList.add('hidden');
-                    // Always collect contact info. For 4 and under, also require feedback.
-                    if (rating <= 4) {
-                        contactTitle.textContent = 'Thanks for your rating';
-                        contactSubtitle.textContent = 'Please share your contact info and tell us how we can improve.';
-                        feedbackWrapper.classList.remove('hidden');
-                        feedbackTextarea.setAttribute('required', 'required');
-                    } else {
-                        contactTitle.textContent = 'Almost there!';
-                        contactSubtitle.textContent = 'Please share your contact info before leaving a public Google review.';
-                        feedbackWrapper.classList.add('hidden');
-                        feedbackTextarea.removeAttribute('required');
-                        feedbackTextarea.value = '';
-                    }
-                    contactSection.classList.remove('hidden');
-                }, 300);
-            }
-
-            contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const payload = {
-                    rating: userRating,
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    feedback: feedbackWrapper.classList.contains('hidden') ? undefined : feedbackTextarea.value,
-                    type: userRating === 5 ? 'positive' : 'feedback'
-                };
-                await submitData(`/submit-feedback/<%= business.uid %>`, payload, contactSection);
-                if (userRating === 5) {
-                    const googleReviewUrl = `https://search.google.com/local/writereview?placeid=<%= business.googlePlaceId %>`;
-                    window.location.href = googleReviewUrl;
-                }
-            });
-
-            async function submitData(url, data, formToHide) {
-                 try {
-                    // CSRF token
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                    // hCaptcha (optional)
-                    if (typeof hcaptcha !== 'undefined') {
-                        try {
-                            const token = await hcaptcha.execute('<%= hcaptchaSiteKey || '' %>', { action: 'submit' });
-                            if (token) { data.hcaptchaToken = token; }
-                        } catch (_) {}
-                    }
-
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
-                        body: JSON.stringify(data),
-                    });
-
-                    if (response.ok) {
-                        formToHide.classList.add('hidden');
-                        if (userRating <= 4) {
-                            thankYouSection.classList.remove('hidden');
-                        }
-                    } else {
-                        alert('There was an error submitting your feedback.');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An unexpected error occurred.');
-                }
-            }
-        });
-    </script>
+    <script src="/rate.js" defer></script>
     <%- include('partials/footer') %>
 </body>
 </html>
