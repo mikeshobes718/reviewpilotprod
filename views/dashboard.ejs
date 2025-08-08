@@ -56,42 +56,65 @@
         <div class="grid">
           <div class="card base-card">
             <h2>Subscription</h2>
-            <div class="sub-row">
-              <div>
-                <span>Your current status is:</span>
-                <span class="status <%= business.subscriptionStatus %>"><%= business.subscriptionStatus %></span>
-                <% if (business.subscriptionStatus === 'active') { %>
-                  <span style="margin-left:8px;color:var(--muted);">Plan: Pro</span>
+            <div class="pricing-grid">
+              <div class="pricing-card">
+                <div class="card-title" style="font-size:18px">Starter</div>
+                <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+                  <div class="price-figure">Free</div>
+                  <div class="price-label">30‑day trial</div>
+                </div>
+                <% if (business.subscriptionStatus !== 'active') { %>
+                  <button class="btn btn-secondary" disabled>Current Plan</button>
                 <% } else { %>
-                  <span style="margin-left:8px;color:var(--muted);">Plan: Starter</span>
+                  <a href="/billing-portal" class="btn btn-secondary">Downgrade</a>
                 <% } %>
-                <% if (typeof billing !== 'undefined' && billing) { %>
-                  <div style="margin-top:6px;color:var(--muted);font-size:13px">
-                    <span>Renews: <strong><%= billing.currentPeriodEnd ? new Date(billing.currentPeriodEnd).toLocaleString() : '—' %></strong></span>
-                    <% if (billing.cancelAtPeriodEnd) { %>
-                      <span style="margin-left:10px;color:#B45309">(Cancels at period end)</span>
-                    <% } %>
-                  </div>
+                <ul style="list-style:none;padding:0;margin:8px 0 0;color:var(--muted);line-height:1.9">
+                  <li><span class="check">✓</span>Up to 5 requests each month</li>
+                  <li><span class="check">✓</span>Basic analytics</li>
+                  <li><span class="check">✓</span>Email support</li>
+                </ul>
+              </div>
+              <div class="pricing-card highlight">
+                <div class="card-title" style="font-size:18px">Pro</div>
+                <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+                  <div class="price-figure">$49</div>
+                  <div class="price-label">/mo</div>
+                </div>
+                <% if (business.subscriptionStatus === 'active') { %>
+                  <a href="/billing-portal" class="btn btn-secondary" style="margin:8px 0 12px">Manage Subscription</a>
+                <% } else { %>
+                  <form action="/create-checkout-session" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                    <button type="submit" class="btn-primary" style="margin:8px 0 12px">Upgrade to Pro</button>
+                  </form>
+                <% } %>
+                <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+                  <li><span class="check">✓</span>Unlimited requests</li>
+                  <li><span class="check">✓</span>Full analytics & exports</li>
+                  <li><span class="check">✓</span>Priority support</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="section" style="margin-top:16px">
+              <h3 style="margin:0 0 8px">Billing Details</h3>
+              <div style="color:var(--muted);margin-bottom:8px">
+                <% if (billing && billing.card) { %>
+                  Card on file: <strong><%= billing.card.brand %></strong> ending in <strong><%= billing.card.last4 %></strong> (exp <%= billing.card.exp %>)
+                <% } else { %>
+                  No payment method on file yet.
                 <% } %>
               </div>
-              
-              <% if (business.subscriptionStatus === 'active') { %>
-                <div style="display:flex;gap:8px;flex-wrap:wrap">
-                  <a href="/billing-portal" class="btn btn-secondary">Upgrade/Downgrade</a>
-                  <form action="/subscription/cancel" method="POST" onsubmit="return confirm('Cancel at period end?');">
-                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-                    <button type="submit" class="btn btn-secondary">Cancel at period end</button>
-                  </form>
+              <a href="/billing-portal" class="btn btn-secondary">Update Payment Method</a>
+              <% if (typeof billing !== 'undefined' && billing) { %>
+                <div style="margin-top:6px;color:var(--muted);font-size:13px">
+                  <span>Renews: <strong><%= billing.currentPeriodEnd ? new Date(billing.currentPeriodEnd).toLocaleString() : '—' %></strong></span>
+                  <% if (billing.cancelAtPeriodEnd) { %>
+                    <span style="margin-left:10px;color:#B45309">(Cancels at period end)</span>
+                  <% } %>
                 </div>
               <% } %>
             </div>
-            <% if (business.subscriptionStatus !== 'active') { %>
-                <p>To unlock all features, please subscribe for $49.99/month.</p>
-                <form action="/create-checkout-session" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-                    <button type="submit" class="btn-primary">Subscribe Now</button>
-                </form>
-            <% } %>
           </div>
 
           <% if (business.subscriptionStatus === 'active') { %>

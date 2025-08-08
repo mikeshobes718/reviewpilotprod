@@ -384,6 +384,23 @@
                             planName: (sub.items && sub.items.data[0] && (sub.items.data[0].price.nickname || sub.items.data[0].price.id)) || 'Pro',
                         };
                     }
+                    // payment method on file
+                    const cust = await stripe.customers.retrieve(businessData.stripeCustomerId);
+                    let pmId = cust.invoice_settings && cust.invoice_settings.default_payment_method;
+                    let cardInfo = null;
+                    if (pmId) {
+                        const pm = await stripe.paymentMethods.retrieve(pmId);
+                        if (pm && pm.card) {
+                            cardInfo = { brand: pm.card.brand, last4: pm.card.last4, exp: `${pm.card.exp_month}/${pm.card.exp_year}` };
+                        }
+                    } else {
+                        const pms = await stripe.paymentMethods.list({ customer: businessData.stripeCustomerId, type: 'card', limit: 1 });
+                        if (pms.data && pms.data.length && pms.data[0].card) {
+                            const c = pms.data[0].card;
+                            cardInfo = { brand: c.brand, last4: c.last4, exp: `${c.exp_month}/${c.exp_year}` };
+                        }
+                    }
+                    if (billing) billing.card = cardInfo;
                 } catch (e) {
                     console.warn('Stripe subscription lookup failed:', e.message);
                 }
