@@ -61,3 +61,13 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
   .btn{padding:10px 12px}
 }
 
+/* Twilio-like hero */
+.hero-curve{position:relative;background:radial-gradient(1200px 600px at 10% -10%, rgba(14,165,233,.20), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(56,189,248,.18), transparent), #0b1020; border-radius:24px; margin:24px auto; padding:48px 0; overflow:hidden}
+.hero-curve::after{content:"";position:absolute;left:-20%;right:-20%;bottom:-40%;height:70%;background:radial-gradient(60% 100% at 50% 0%, rgba(255,255,255,.06), rgba(255,255,255,0));filter:blur(20px)}
+.hero-figure{position:relative;min-height:320px;display:grid;place-items:center}
+.hero-figure .bubble{position:absolute;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.05)}
+.hero-figure .b1{width:220px;height:220px;top:10%;left:18%}
+.hero-figure .b2{width:140px;height:140px;bottom:10%;right:14%}
+.hero-figure .cardlet{position:absolute;right:12%;top:22%;background:#0f1730;border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:#cbd5e1;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.btn.outline{background:transparent;border:1px solid rgba(255,255,255,.35)}
+
