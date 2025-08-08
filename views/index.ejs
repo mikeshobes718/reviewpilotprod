@@ -40,8 +40,8 @@
     </div>
   </section>
 
-  <!-- New contained section: social proof + product shot + testimonials -->
-  <section class="section-contained">
+  <!-- Proof section: stats + product image + testimonials -->
+  <section class="proof-section">
     <div class="container">
       <!-- Social proof -->
       <div style="max-width:1100px;margin:0 auto;padding:0 16px;">
@@ -54,33 +54,33 @@
         </div>
       </div>
 
-      <!-- Product shot -->
-      <div class="container section" style="max-width:1100px;margin:16px auto 0;">
-        <div class="product-shot">
-          <div style="background:#fff;padding:10px 14px;border-bottom:1px solid var(--borderImage);color:var(--muted);font-weight:600;">ReviewPilot dashboard</div>
-          <div style="padding:16px">
-            <div class="grid grid-2 grid-center grid-items-center" style="padding:0;max-width:900px;margin:0 auto;">
-              <div class="card" style="border:1px solid var(--border);box-shadow:none;background:#fff;">
-                <div style="color:var(--muted);font-size:13px">Average rating</div>
-                <div style="font-size:32px;font-weight:800;color:var(--text)">4.8</div>
-                <div style="color:var(--muted);font-size:12px;margin-top:6px;">Last 90 days</div>
-              </div>
-              <div class="card" style="border:1px solid var(--border);box-shadow:none;background:#fff;">
-                <div style="color:var(--muted);font-size:13px">5★ conversions</div>
-                <div style="font-size:32px;font-weight:800;color:var(--text)">62%</div>
-                <div style="color:var(--muted);font-size:12px;margin-top:6px;">Of requests</div>
-              </div>
-            </div>
+      <!-- Stat cards -->
+      <div class="container" style="max-width:1100px;margin:16px auto 0;">
+        <div class="grid grid-center grid-items-center" style="grid-template-columns:repeat(3,1fr);gap:16px;">
+          <div class="base-card">
+            <div class="stat-value">4.8</div>
+            <div class="stat-label">Average rating</div>
+          </div>
+          <div class="base-card">
+            <div class="stat-value">62%</div>
+            <div class="stat-label">5★ conversions</div>
+          </div>
+          <div class="base-card">
+            <div class="stat-value">90d</div>
+            <div class="stat-label">Lookback window</div>
           </div>
         </div>
       </div>
 
+      <!-- Product screenshot image -->
+      <img src="https://via.placeholder.com/1200x700.png?text=ReviewPilot+Dashboard" alt="ReviewPilot dashboard" class="product-shot" style="display:block;max-width:1000px;margin:24px auto;width:100%;height:auto" />
+
       <!-- Testimonials -->
       <div class="container section" style="max-width:1100px;margin:0 auto;">
         <div class="grid grid-3 grid-center grid-items-center">
-          <div class="testimonial-card"><div class="quote">“We 3×’d our Google reviews in 60 days.”</div><div class="author">— Sarah, Dental Practice Owner</div></div>
-          <div class="testimonial-card"><div class="quote">“Love the filtering — unhappy customers now send feedback privately.”</div><div class="author">— Marco, HVAC</div></div>
-          <div class="testimonial-card"><div class="quote">“Set it and forget it. The dashboard is super clear.”</div><div class="author">— Jenna, Spa</div></div>
+          <div class="base-card"><div class="quote" style="font-style:italic;color:var(--text)">“We 3×’d our Google reviews in 60 days.”</div><div class="author" style="color:var(--muted)">— Sarah, Dental Practice Owner</div></div>
+          <div class="base-card"><div class="quote" style="font-style:italic;color:var(--text)">“Love the filtering — unhappy customers now send feedback privately.”</div><div class="author" style="color:var(--muted)">— Marco, HVAC</div></div>
+          <div class="base-card"><div class="quote" style="font-style:italic;color:var(--text)">“Set it and forget it. The dashboard is super clear.”</div><div class="author" style="color:var(--muted)">— Jenna, Spa</div></div>
         </div>
       </div>
     </div>
