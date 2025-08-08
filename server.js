@@ -43,7 +43,27 @@
     app.use(express.static('public'));
     // In development, disable HTTPS-forcing headers so Safari/Chrome don't upgrade to https://localhost
     if (isProduction) {
-        app.use(helmet());
+        app.use(helmet({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: [
+                        "'self'",
+                        'https://www.googletagmanager.com',
+                        'https://www.google-analytics.com',
+                        'https://plausible.io'
+                    ],
+                    imgSrc: ["'self'", 'data:', 'https:'],
+                    styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
+                    fontSrc: ["'self'", 'https:', 'data:'],
+                    frameSrc: ["'self'", 'https://www.youtube.com', 'https://www.youtube-nocookie.com'],
+                    connectSrc: ["'self'", 'https://plausible.io', 'https://www.google-analytics.com'],
+                    objectSrc: ["'none'"],
+                    upgradeInsecureRequests: []
+                }
+            },
+            crossOriginEmbedderPolicy: false
+        }));
     } else {
         app.use(helmet({
             contentSecurityPolicy: false, // removes upgrade-insecure-requests
