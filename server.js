@@ -342,6 +342,29 @@
         }
     });
 
+    // Simple admin dashboard (owner-only) to view customers and issue refunds
+    const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
+    app.get('/admin', async (req, res) => {
+        try {
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            const snap = await db.collection('businesses').limit(100).get();
+            const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            res.send(`<html><head><title>Admin</title><style>body{font-family:Inter,system-ui} table{border-collapse:collapse} td,th{border:1px solid #ddd;padding:8px}</style></head><body><h1>Admin</h1><table><tr><th>UID</th><th>Business</th><th>Email</th><th>Stripe Customer</th><th>Status</th><th>Created</th></tr>${items.map(x=>`<tr><td>${x.id}</td><td>${x.businessName||''}</td><td>${x.email||''}</td><td>${x.stripeCustomerId||''}</td><td>${x.subscriptionStatus||''}</td><td>${x.createdAt||''}</td></tr>`).join('')}</table></body></html>`);
+        } catch (e) {
+            console.error('Admin error', e); res.status(500).send('Admin error');
+        }
+    });
+
+    app.post('/admin/refund', express.urlencoded({extended:true}), async (req, res) => {
+        try {
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            const { chargeId } = req.body || {};
+            if (!chargeId) return res.status(400).send('Missing chargeId');
+            const refund = await stripe.refunds.create({ charge: chargeId });
+            res.json({ ok: true, refund });
+        } catch (e) { console.error('Refund error', e); res.status(500).json({ ok:false }); }
+    });
+
     app.post('/update-settings', requireLogin, csrfProtection, async (req, res) => {
         try {
             const { googlePlaceId } = req.body;

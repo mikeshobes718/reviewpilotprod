@@ -156,6 +156,11 @@
                 <span class="status <%= business.subscriptionStatus %>">
                     <%= business.subscriptionStatus %>
                 </span>
+                <% if (business.subscriptionStatus === 'active') { %>
+                  <span style="margin-left:8px;color:#4A5568;">Plan: Pro</span>
+                <% } else { %>
+                  <span style="margin-left:8px;color:#4A5568;">Plan: Starter</span>
+                <% } %>
             </p>
             <% if (business.subscriptionStatus !== 'active') { %>
                 <p>To unlock all features, please subscribe for $49.99/month.</p>
