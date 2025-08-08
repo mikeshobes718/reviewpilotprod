@@ -45,9 +45,10 @@
             font-weight: 500;
         }
 
-        .main-content {
-            padding: 2rem;
-        }
+        .main-content { padding: 2rem; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 900px) { .grid { grid-template-columns: 1.2fr 1fr; } }
 
         .card {
             background: var(--container-bg);
@@ -94,6 +95,7 @@
             box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.3);
         }
 
+        .btn { display:inline-flex; align-items:center; gap:.5rem; }
         button {
             align-self: flex-start;
             padding: 0.75rem 1.5rem;
@@ -108,6 +110,8 @@
         }
         button:hover { background: #4C51BF; }
         button:active { transform: scale(0.98); }
+        .btn-secondary { background:#EDF2F7; color:#2D3748; font-weight:600; }
+        .btn-secondary:hover { background:#E2E8F0; }
 
         .link-box {
             background-color: var(--background-light);
@@ -117,6 +121,11 @@
             word-wrap: break-word;
             border: 1px solid var(--border-color);
         }
+
+        .kpis { display:grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+        .kpi { background:#F8FAFF; border:1px solid var(--border-color); border-radius:12px; padding:1rem; text-align:center; }
+        .kpi .label { color: var(--text-secondary); font-size: .85rem; }
+        .kpi .value { font-size: 1.4rem; font-weight: 800; margin-top: .25rem; }
 
         table {
             width: 100%;
@@ -128,6 +137,12 @@
             padding: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
+        tbody tr:nth-child(odd){ background:#FAFBFF; }
+        thead th { position: sticky; top: 0; z-index:1; }
+        .table-wrap { overflow:auto; border:1px solid var(--border-color); border-radius:12px; }
+
+        .toast { position: fixed; right: 16px; bottom: 16px; background:#1A202C; color:#fff; padding:.75rem 1rem; border-radius:10px; opacity:0; transform: translateY(6px); transition: all .2s ease; }
+        .toast.show { opacity:1; transform: translateY(0); }
         th {
             background-color: #F7FAFC;
             font-weight: 600;
@@ -152,7 +167,9 @@
     </header>
 
     <main class="main-content">
-        <div class="card">
+      <div class="container">
+        <div class="grid">
+          <div class="card">
             <h2>Subscription</h2>
             <p>
                 Your current status is:
@@ -163,27 +180,55 @@
             <% if (business.subscriptionStatus !== 'active') { %>
                 <p>To unlock all features, please subscribe for $49.99/month.</p>
                 <form action="/create-checkout-session" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                     <button type="submit">Subscribe Now</button>
                 </form>
+            <% } else { %>
+                <form action="/billing-portal" method="POST" style="margin-top: 1rem;">
+                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                    <button type="submit">Manage Billing</button>
+                </form>
             <% } %>
-        </div>
+          </div>
 
-        <% if (business.subscriptionStatus === 'active') { %>
-            <div class="card">
+          <% if (business.subscriptionStatus === 'active') { %>
+          <div class="card">
                 <h2>Settings & Rating Link</h2>
                 <form action="/update-settings" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                     <label for="googlePlaceId">Your Google Place ID:</label>
                     <input type="text" id="googlePlaceId" name="googlePlaceId" value="<%= business.googlePlaceId || '' %>" placeholder="Enter your Google Place ID here" required>
                     <button type="submit">Save Settings</button>
                 </form>
                 <br>
                 <label>Your Unique Rating Link:</label>
-                <div class="link-box">http://localhost:3000/rate/<%= user.uid %></div>
-            </div>
+                <div class="link-box" id="publicLink"><%= appUrl %>/rate/<%= user.uid %></div>
+                <div class="btns" style="display:flex; gap:.5rem; margin-top:.5rem;">
+                  <button class="btn btn-secondary" id="copyBtn" type="button">Copy link</button>
+                  <a class="btn btn-secondary" id="openLink" href="<%= appUrl %>/rate/<%= user.uid %>" target="_blank" rel="noopener">Open link</a>
+                </div>
+                <div style="margin-top:1rem;">
+                  <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">QR Code</div>
+                  <div id="qrcode" aria-label="QR code for your rating link"></div>
+                </div>
+          </div>
 
-            <div class="card">
+          <% if (typeof analytics !== 'undefined') { %>
+          <div class="card">
+            <h2>Insights</h2>
+            <div class="kpis">
+              <div class="kpi"><div class="label">Total feedback</div><div class="value"><%= analytics.total %></div></div>
+              <div class="kpi"><div class="label">Average rating</div><div class="value"><%= analytics.avg %></div></div>
+              <div class="kpi"><div class="label">5★ conversions</div><div class="value"><%= analytics.conversions %></div></div>
+            </div>
+            <p style="margin-top:1rem; color: var(--text-secondary);">Distribution: 1★ <%= analytics.counts[1] %> • 2★ <%= analytics.counts[2] %> • 3★ <%= analytics.counts[3] %> • 4★ <%= analytics.counts[4] %> • 5★ <%= analytics.counts[5] %></p>
+          </div>
+          <% } %>
+
+          <div class="card" style="grid-column: 1 / -1;">
                 <h2>Customer Feedback</h2>
                 <% if (feedback.length > 0) { %>
+                    <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
@@ -203,18 +248,49 @@
                                         <%= item.email %>
                                         <% if (item.phone) { %><br><%= item.phone %><% } %>
                                     </td>
-                                    <td><%= item.feedback || 'N/A (4-star contact)' %></td>
+                                    <td><%= item.feedback || '-' %></td>
                                     <td><%= new Date(item.createdAt).toLocaleDateString() %></td>
                                 </tr>
                             <% }); %>
                         </tbody>
                     </table>
+                    </div>
                 <% } else { %>
                     <p>You haven't received any feedback yet.</p>
                 <% } %>
-            </div>
-        <% } %>
+          </div>
+          <% } %>
+        </div>
+      </div>
     </main>
+    <div class="toast" id="toast">Link copied</div>
+    <script>
+      (function(){
+        const btn = document.getElementById('copyBtn');
+        if (!btn) return;
+        const toast = document.getElementById('toast');
+        btn.addEventListener('click', async () => {
+          const link = document.getElementById('publicLink').innerText.trim();
+          try {
+            await navigator.clipboard.writeText(link);
+            toast.classList.add('show');
+            setTimeout(()=>toast.classList.remove('show'), 1600);
+          } catch (_) {
+            alert('Copy failed');
+          }
+        });
+      })();
+    </script>
+    <!-- Lightweight QR code generator; allowed in dev where CSP is disabled -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+      (function(){
+        var box = document.getElementById('qrcode');
+        if (!box) return;
+        var link = document.getElementById('publicLink').innerText.trim();
+        try { new QRCode(box, { text: link, width: 160, height: 160 }); } catch(e) {}
+      })();
+    </script>
 </body>
 </html>
 

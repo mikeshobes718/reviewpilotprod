@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rate Your Experience</title>
+    <title>Rate Your Experience • ReviewPilot</title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -134,26 +135,17 @@
         </div>
 
         <!-- 1-3 Star Feedback Form -->
-        <div id="feedback-section" class="hidden">
-            <h2>We're sorry to hear that.</h2>
-            <p>Please let us know how we can improve. Your detailed feedback is valuable.</p>
-            <form id="feedback-form">
+        <div id="contact-section" class="hidden">
+            <h2 id="contact-title">Tell us a bit about you</h2>
+            <p id="contact-subtitle">Please share your contact info. If your rating is 4 or below, also tell us how we can improve.</p>
+            <form id="contact-form">
                 <input type="text" id="name" placeholder="Your Name" required>
                 <input type="email" id="email" placeholder="Your Email" required>
-                <textarea id="feedback-text" placeholder="How could we have made it a 5-star experience?" rows="4" required></textarea>
-                <button type="submit">Submit Feedback</button>
-            </form>
-        </div>
-
-        <!-- 4 Star Contact Form -->
-        <div id="four-star-section" class="hidden">
-            <h2>Thanks for the 4-star rating!</h2>
-            <p>We're always striving for 5 stars. Could we get your contact info to follow up personally?</p>
-            <form id="four-star-form">
-                <input type="text" id="four-star-name" placeholder="Your Name" required>
-                <input type="email" id="four-star-email" placeholder="Your Email" required>
-                <input type="tel" id="four-star-phone" placeholder="Your Phone (Optional)">
-                <button type="submit">Send Contact Info</button>
+                <input type="tel" id="phone" placeholder="Your Phone (Optional)">
+                <div id="feedback-wrapper" class="hidden">
+                    <textarea id="feedback-text" placeholder="How could we have made it a 5-star experience?" rows="4"></textarea>
+                </div>
+                <button type="submit">Submit</button>
             </form>
         </div>
 
@@ -165,18 +157,27 @@
     </div>
     
     <div class="branding">
-        Powered by <a href="https://your-saas-website.com" target="_blank">ReviewFunnel</a>
+        Powered by <a href="#" target="_blank">ReviewPilot</a>
     </div>
+
+    <% if (hcaptchaSiteKey) { %>
+    <div class="hidden">
+        <div class="h-captcha" data-sitekey="<%= hcaptchaSiteKey %>"></div>
+    </div>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <% } %>
 
     <script>
         // The JavaScript logic remains the same as it's already perfect.
         document.addEventListener('DOMContentLoaded', () => {
             const ratingSection = document.getElementById('rating-section');
-            const feedbackSection = document.getElementById('feedback-section');
-            const fourStarSection = document.getElementById('four-star-section');
+            const contactSection = document.getElementById('contact-section');
+            const contactTitle = document.getElementById('contact-title');
+            const contactSubtitle = document.getElementById('contact-subtitle');
+            const contactForm = document.getElementById('contact-form');
+            const feedbackWrapper = document.getElementById('feedback-wrapper');
+            const feedbackTextarea = document.getElementById('feedback-text');
             const thankYouSection = document.getElementById('thank-you-section');
-            const feedbackForm = document.getElementById('feedback-form');
-            const fourStarForm = document.getElementById('four-star-form');
             const stars = document.querySelectorAll('.star');
             
             let userRating = 0;
@@ -208,54 +209,66 @@
             });
 
             function handleRating(rating) {
-                setTimeout(() => { // Add a small delay for a smoother transition
+                setTimeout(() => {
                     ratingSection.classList.add('hidden');
-                    if (rating === 5) {
-                        const googleReviewUrl = `https://search.google.com/local/writereview?placeid=<%= business.googlePlaceId %>`;
-                        window.location.href = googleReviewUrl;
-                    } else if (rating === 4) {
-                        fourStarSection.classList.remove('hidden');
+                    // Always collect contact info. For 4 and under, also require feedback.
+                    if (rating <= 4) {
+                        contactTitle.textContent = 'Thanks for your rating';
+                        contactSubtitle.textContent = 'Please share your contact info and tell us how we can improve.';
+                        feedbackWrapper.classList.remove('hidden');
+                        feedbackTextarea.setAttribute('required', 'required');
                     } else {
-                        feedbackSection.classList.remove('hidden');
+                        contactTitle.textContent = 'Almost there!';
+                        contactSubtitle.textContent = 'Please share your contact info before leaving a public Google review.';
+                        feedbackWrapper.classList.add('hidden');
+                        feedbackTextarea.removeAttribute('required');
+                        feedbackTextarea.value = '';
                     }
+                    contactSection.classList.remove('hidden');
                 }, 300);
             }
 
-            feedbackForm.addEventListener('submit', async (e) => {
+            contactForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const feedbackData = {
+                const payload = {
                     rating: userRating,
                     name: document.getElementById('name').value,
                     email: document.getElementById('email').value,
-                    feedback: document.getElementById('feedback-text').value,
-                    type: 'feedback'
+                    phone: document.getElementById('phone').value,
+                    feedback: feedbackWrapper.classList.contains('hidden') ? undefined : feedbackTextarea.value,
+                    type: userRating === 5 ? 'positive' : 'feedback'
                 };
-                submitData(`/submit-feedback/<%= business.uid %>`, feedbackData, feedbackSection);
-            });
-
-            fourStarForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const contactData = {
-                    rating: userRating,
-                    name: document.getElementById('four-star-name').value,
-                    email: document.getElementById('four-star-email').value,
-                    phone: document.getElementById('four-star-phone').value,
-                    type: 'contact'
-                };
-                submitData(`/submit-feedback/<%= business.uid %>`, contactData, fourStarSection);
+                await submitData(`/submit-feedback/<%= business.uid %>`, payload, contactSection);
+                if (userRating === 5) {
+                    const googleReviewUrl = `https://search.google.com/local/writereview?placeid=<%= business.googlePlaceId %>`;
+                    window.location.href = googleReviewUrl;
+                }
             });
 
             async function submitData(url, data, formToHide) {
                  try {
+                    // CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                    // hCaptcha (optional)
+                    if (typeof hcaptcha !== 'undefined') {
+                        try {
+                            const token = await hcaptcha.execute('<%= hcaptchaSiteKey || '' %>', { action: 'submit' });
+                            if (token) { data.hcaptchaToken = token; }
+                        } catch (_) {}
+                    }
+
                     const response = await fetch(url, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken },
                         body: JSON.stringify(data),
                     });
 
                     if (response.ok) {
                         formToHide.classList.add('hidden');
-                        thankYouSection.classList.remove('hidden');
+                        if (userRating <= 4) {
+                            thankYouSection.classList.remove('hidden');
+                        }
                     } else {
                         alert('There was an error submitting your feedback.');
                     }

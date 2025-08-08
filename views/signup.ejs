@@ -4,21 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Create account • ReviewPilot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; display: grid; place-content: center; height: 100vh; margin: 0; background-color: #f4f4f9; }
-        form { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 1rem; width: 300px; }
-        input { padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 0.75rem; border: none; border-radius: 4px; background-color: #28a745; color: white; font-weight: bold; cursor: pointer; }
+        :root { --brand: #5A67D8; --brand2:#805AD5; --border:#E2E8F0; --text:#1A202C; --muted:#4A5568; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; display: grid; place-content: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, var(--brand) 0%, var(--brand2) 100%); }
+        .card { width: 360px; background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04); padding: 24px; }
+        .badge { background: rgba(90,103,216,.12); color: var(--brand); padding: 6px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; display:inline-block; }
+        h1 { margin: 6px 0 2px; font-size: 20px; }
+        p.sub { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+        form { display:flex; flex-direction:column; gap: 12px; }
+        label { font-size: 13px; color: var(--muted); font-weight: 600; }
+        input { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; }
+        input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(90,103,216,.25); }
+        .error { background:#FEF2F2; color:#991B1B; border:1px solid #FECACA; padding:10px 12px; border-radius: 10px; font-size: 14px; }
+        button { padding: 12px 14px; background: var(--brand); color: #fff; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        button:hover { background: #4C51BF; }
+        .row { display:flex; justify-content: space-between; align-items:center; font-size: 14px; }
+        a { color: var(--brand); text-decoration: none; }
+        .foot { text-align:center; margin-top:12px; color:#f8fafc; font-size: 14px; }
     </style>
 </head>
 <body>
-    <form action="/signup" method="POST">
-        <h2>Create Your Account</h2>
-        <input type="text" name="businessName" placeholder="Your Business Name" required>
-        <input type="email" name="email" placeholder="Your Email Address" required>
-        <input type="password" name="password" placeholder="Create a Password" required>
-        <button type="submit">Sign Up</button>
-    </form>
+    <div class="card">
+        <div class="badge">ReviewPilot</div>
+        <h1>Create your account</h1>
+        <p class="sub">Start collecting more 5‑star reviews</p>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+        <form action="/signup" method="POST">
+            <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+            <div>
+                <label>Business name</label>
+                <input type="text" name="businessName" placeholder="Acme Dental" required>
+            </div>
+            <div>
+                <label>Email</label>
+                <input type="email" name="email" placeholder="owner@acme.com" required>
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create a password" required>
+            </div>
+            <button type="submit">Create account</button>
+        </form>
+        <div class="row" style="margin-top:10px;">
+          <span>Already have an account?</span> <a href="/login">Log in</a>
+        </div>
+    </div>
+    <div class="foot">© <script>document.write(new Date().getFullYear())</script> ReviewPilot</div>
 </body>
 </html>

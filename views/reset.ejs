@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password reset • ReviewPilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --brand: #5A67D8; --brand2:#805AD5; --border:#E2E8F0; --text:#1A202C; --muted:#4A5568; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; display: grid; place-content: center; min-height: 100vh; margin: 0; background: linear-gradient(135deg, var(--brand) 0%, var(--brand2) 100%); }
+    .card { width: 360px; background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04); padding:24px; }
+    .badge { background: rgba(90,103,216,.12); color: var(--brand); padding: 6px 10px; border-radius: 999px; font-weight: 600; font-size: 12px; display:inline-block; }
+    h1 { margin: 6px 0 2px; font-size: 20px; }
+    p.sub { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+    form { display:flex; flex-direction:column; gap: 12px; }
+    label { font-size: 13px; color: var(--muted); font-weight: 600; }
+    input { padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; }
+    input:focus { outline:none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(90,103,216,.25); }
+    .error { background:#FEF2F2; color:#991B1B; border:1px solid #FECACA; padding:10px 12px; border-radius: 10px; font-size: 14px; }
+    .ok { background:#ECFDF5; color:#065F46; border:1px solid #A7F3D0; padding:10px 12px; border-radius: 10px; font-size:14px; }
+    button { padding: 12px 14px; background: var(--brand); color:#fff; border:none; border-radius: 10px; font-weight:700; cursor:pointer; }
+    button:hover { background:#4C51BF; }
+    a { color: var(--brand); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">ReviewPilot</div>
+    <h1>Reset your password</h1>
+    <p class="sub">Enter your account email and we’ll send a reset link</p>
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+    <% if (sent) { %>
+      <div class="ok">Check your email for a reset link.</div>
+    <% } %>
+    <form action="/reset-password" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@business.com" required>
+      </div>
+      <button type="submit">Send reset link</button>
+    </form>
+    <p style="margin-top:12px;"><a href="/login">Back to login</a></p>
+  </div>
+</body>
+</html>

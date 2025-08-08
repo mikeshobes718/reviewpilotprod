@@ -9,11 +9,18 @@
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
     const session = require('express-session');
     const cookieParser = require('cookie-parser');
+    const helmet = require('helmet');
+    const compression = require('compression');
+    const rateLimit = require('express-rate-limit');
+    const csurf = require('csurf');
+    const morgan = require('morgan');
+    const { z } = require('zod');
 
     // --- 2. INITIALIZE THE APP ---
     const app = express();
     const PORT = process.env.PORT || 3000;
     const HOST = '0.0.0.0'; // Necessary for some hosting platforms
+    const isProduction = process.env.NODE_ENV === 'production';
 
     // --- 3. FIREBASE SETUP ---
     // Heroku uses an environment variable for the service account, while local uses a file.
@@ -30,16 +37,113 @@
 
     // --- 4. CONFIGURE THE SERVER (MIDDLEWARE) ---
     app.set('trust proxy', 1); // Trust first proxy for secure cookies in production
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
     app.set('view engine', 'ejs');
+    app.set('view cache', false);
+    // In development, disable HTTPS-forcing headers so Safari/Chrome don't upgrade to https://localhost
+    if (isProduction) {
+        app.use(helmet());
+    } else {
+        app.use(helmet({
+            contentSecurityPolicy: false, // removes upgrade-insecure-requests
+            hsts: false,
+            crossOriginEmbedderPolicy: false
+        }));
+    }
+    app.use(compression());
+    app.use(morgan('dev'));
     app.use(cookieParser());
     app.use(session({
         secret: process.env.SESSION_SECRET || 'a-super-secret-key-that-you-should-change',
         resave: false,
-        saveUninitialized: true,
-        cookie: { secure: process.env.NODE_ENV === 'production' } // Use secure cookies in production
+        saveUninitialized: false,
+        cookie: {
+            secure: process.env.NODE_ENV === 'production',
+            httpOnly: true,
+            sameSite: 'lax',
+        }
     }));
+
+    // Rate limiters
+    const globalLimiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 200,
+        standardHeaders: true,
+        legacyHeaders: false,
+    });
+    app.use(globalLimiter);
+
+    // Stripe webhook must read raw body; mount BEFORE JSON parser
+    app.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+        try {
+            const signature = req.headers['stripe-signature'];
+            const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+            if (!webhookSecret) return res.status(400).send('Webhook secret not configured');
+            let event;
+            try {
+                event = stripe.webhooks.constructEvent(req.body, signature, webhookSecret);
+            } catch (err) {
+                console.error('❌ Webhook signature verification failed:', err.message);
+                return res.status(400).send(`Webhook Error: ${err.message}`);
+            }
+
+            switch (event.type) {
+                case 'checkout.session.completed': {
+                    const sessionObj = event.data.object;
+                    const customerId = sessionObj.customer;
+                    // Find business by stripeCustomerId
+                    const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
+                    if (!snap.empty) {
+                        const docRef = snap.docs[0].ref;
+                        await docRef.update({ subscriptionStatus: 'active' });
+                        console.log('✅ Subscription activated via webhook for customer:', customerId);
+                    }
+                    break;
+                }
+                case 'customer.subscription.deleted':
+                case 'customer.subscription.updated': {
+                    const subscription = event.data.object;
+                    // Ensure business is marked inactive if canceled
+                    const customerId = subscription.customer;
+                    const status = subscription.status === 'active' ? 'active' : 'canceled';
+                    const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
+                    if (!snap.empty) {
+                        const docRef = snap.docs[0].ref;
+                        await docRef.update({ subscriptionStatus: status });
+                        console.log('ℹ️ Subscription status updated via webhook:', status);
+                    }
+                    break;
+                }
+                default:
+                    // no-op
+                    break;
+            }
+            res.json({ received: true });
+        } catch (error) {
+            console.error('❌ Error handling Stripe webhook:', error);
+            res.status(500).send('Server error');
+        }
+    });
+
+    // Now enable parsers for the rest of the app
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    // CSRF protection (opt-in per route)
+    const csrfProtection = csurf();
+    // Friendly CSRF error handler
+    app.use((err, req, res, next) => {
+        if (err && err.code === 'EBADCSRFTOKEN') {
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            if (req.path.startsWith('/login')) {
+                return res.status(403).render('login', { csrfToken: token, error: 'Security check failed. Please try again.' });
+            }
+            if (req.path.startsWith('/signup')) {
+                return res.status(403).render('signup', { csrfToken: token, error: 'Security check failed. Please try again.' });
+            }
+            return res.status(403).send('Form expired. Refresh and try again.');
+        }
+        next(err);
+    });
 
     const requireLogin = (req, res, next) => {
         if (req.session.user) {
@@ -50,11 +154,19 @@
     };
 
     // --- 5. DEFINE THE ROUTES (THE "URLS") ---
-    const appUrl = process.env.HEROKU_APP_NAME ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` : `http://localhost:${PORT}`;
+    const appUrl = process.env.HEROKU_APP_NAME
+        ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
+        : (isProduction ? `http://localhost:${PORT}` : `http://lvh.me:${PORT}`);
 
     // AUTH ROUTES
-    app.get('/', (req, res) => res.render('index'));
-    app.get('/signup', (req, res) => res.render('signup'));
+    app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken() }));
+    app.get('/signup', (req, res) => {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        res.render('signup', { csrfToken: token, error: null });
+    });
     app.post('/signup', async (req, res) => {
         try {
             const { businessName, email, password } = req.body;
@@ -69,38 +181,127 @@
             res.redirect('/login');
         } catch (error) {
             console.error("❌ Error during signup:", error);
-            res.status(500).send("Something went wrong during signup.");
+            let msg = 'Something went wrong during signup.';
+            if (error?.errorInfo?.code === 'auth/email-already-exists') {
+                msg = 'That email is already in use. Try logging in or use a different email.';
+            }
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            res.status(400).render('signup', { csrfToken: token, error: msg });
         }
     });
-    app.get('/login', (req, res) => res.render('login'));
+    app.get('/login', (req, res) => {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
+        const error = req.query.e ? decodeURIComponent(req.query.e) : (req.session.__flashError || null);
+        req.session.__flashError = null;
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        res.render('login', { csrfToken: token, error, firebaseApiKey: process.env.FIREBASE_API_KEY || '' });
+    });
     app.post('/login', async (req, res) => {
         try {
-            const { email } = req.body;
-            const userRecord = await auth.getUserByEmail(email);
-            req.session.user = { uid: userRecord.uid, email: userRecord.email, displayName: userRecord.displayName };
+            const { email, password } = req.body;
+            // Verify credentials using Firebase Identity Toolkit
+            const apiKey = process.env.FIREBASE_API_KEY;
+            if (!apiKey) return res.status(500).send('Auth not configured');
+            const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, returnSecureToken: true })
+            });
+            if (!resp.ok) {
+                let msg = 'Invalid credentials';
+                try {
+                    const body = await resp.json();
+                    const code = body?.error?.message || '';
+                    if (code.includes('EMAIL_NOT_FOUND')) msg = 'No account found for that email.';
+                    if (code.includes('INVALID_PASSWORD')) msg = 'Incorrect password.';
+                    if (code.includes('USER_DISABLED')) msg = 'This account is disabled.';
+                    console.error('Login error from Firebase:', code);
+                } catch (_) {}
+                res.set('Cache-Control', 'no-store');
+                return res.status(200).render('login', { csrfToken: (typeof req.csrfToken === 'function' ? req.csrfToken() : ''), error: msg });
+            }
+            const data = await resp.json();
+            // Trust Identity Toolkit response; avoid cross-project mismatch with Admin getUser
+            req.session.user = { uid: data.localId, email: data.email || email, displayName: data.displayName || null };
             console.log(`✅ User logged in and session created for: ${email}`);
-            res.redirect('/dashboard');
+            return res.redirect('/dashboard');
         } catch (error) {
             console.error("❌ Error during login:", error);
-            res.status(401).send("Login failed.");
+            res.set('Cache-Control', 'no-store');
+            return res.status(200).render('login', { csrfToken: (typeof req.csrfToken === 'function' ? req.csrfToken() : ''), error: 'Login failed.' });
+        }
+    });
+
+    // Client-driven session login: accept Firebase ID token, create server session
+    app.post('/session-login', async (req, res) => {
+        try {
+            const { idToken } = req.body || {};
+            if (!idToken) return res.status(400).json({ error: 'Missing token' });
+            const decoded = await auth.verifyIdToken(idToken);
+            const userRecord = await auth.getUser(decoded.uid);
+            req.session.user = { uid: userRecord.uid, email: userRecord.email, displayName: userRecord.displayName };
+            return res.json({ ok: true });
+        } catch (e) {
+            console.error('❌ Session login failed:', e);
+            return res.status(401).json({ error: 'Invalid token' });
         }
     });
     app.get('/logout', (req, res) => {
         req.session.destroy(() => res.redirect('/login'));
     });
 
+    // Password reset
+    app.get('/reset-password', csrfProtection, (req, res) => {
+        res.render('reset', { csrfToken: req.csrfToken(), sent: false, error: null });
+    });
+    app.post('/reset-password', csrfProtection, async (req, res) => {
+        try {
+            const apiKey = process.env.FIREBASE_API_KEY;
+            const { email } = req.body;
+            const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestType: 'PASSWORD_RESET', email })
+            });
+            if (!resp.ok) {
+                const body = await resp.json().catch(() => ({}));
+                console.error('Reset error:', body);
+                return res.status(400).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Could not send reset email. Check the address.' });
+            }
+            return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null });
+        } catch (e) {
+            console.error('Reset exception:', e);
+            return res.status(500).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Unexpected error. Try again.' });
+        }
+    });
+
     // DASHBOARD & SETTINGS ROUTES
-    app.get('/dashboard', requireLogin, async (req, res) => {
+    app.get('/dashboard', requireLogin, csrfProtection, async (req, res) => {
         try {
             const businessDoc = await db.collection('businesses').doc(req.session.user.uid).get();
             if (!businessDoc.exists) throw new Error('No business data found.');
-            const feedbackSnapshot = await db.collection('businesses').doc(req.session.user.uid).collection('feedback').get();
+            const feedbackSnapshot = await db.collection('businesses').doc(req.session.user.uid).collection('feedback').orderBy('createdAt', 'desc').get();
             const feedback = feedbackSnapshot.docs.map(doc => doc.data());
+
+            // Basic analytics
+            const total = feedback.length;
+            const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            let sum = 0; let conversions = 0;
+            feedback.forEach(f => {
+                const r = Number(f.rating) || 0;
+                if (r >= 1 && r <= 5) { counts[r]++; sum += r; }
+                if (r === 5 && (f.type === 'positive' || f.type === 'contact')) conversions++;
+            });
+            const avg = total ? (sum / total).toFixed(2) : '0.00';
             res.render('dashboard', {
                 business: businessDoc.data(),
                 user: req.session.user,
                 feedback: feedback,
-                appUrl: appUrl // Pass the appUrl to the dashboard
+                appUrl: appUrl, // Pass the appUrl to the dashboard
+                csrfToken: req.csrfToken(),
+                analytics: { total, avg, counts, conversions }
             });
         } catch (error) {
             console.error("❌ Error fetching dashboard data:", error);
@@ -108,7 +309,7 @@
         }
     });
 
-    app.post('/update-settings', requireLogin, async (req, res) => {
+    app.post('/update-settings', requireLogin, csrfProtection, async (req, res) => {
         try {
             const { googlePlaceId } = req.body;
             await db.collection('businesses').doc(req.session.user.uid).update({
@@ -123,7 +324,7 @@
     });
 
     // PAYMENT ROUTES
-    app.post('/create-checkout-session', requireLogin, async (req, res) => {
+    app.post('/create-checkout-session', requireLogin, csrfProtection, async (req, res) => {
         try {
             const doc = await db.collection('businesses').doc(req.session.user.uid).get();
             const businessData = doc.data();
@@ -143,10 +344,8 @@
     });
     app.get('/payment-success', requireLogin, async (req, res) => {
         try {
-            await db.collection('businesses').doc(req.session.user.uid).update({
-                subscriptionStatus: 'active'
-            });
-            console.log(`✅ Subscription activated for user: ${req.session.user.uid}`);
+            // Status will be updated by Stripe webhook
+            console.log(`ℹ️ Checkout completed. Awaiting webhook to activate subscription for user: ${req.session.user.uid}`);
             res.redirect('/dashboard');
         } catch (error) {
             console.error("❌ Error updating subscription status:", error);
@@ -154,8 +353,24 @@
         }
     });
 
+    // Stripe Billing Portal
+    app.post('/billing-portal', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+            const businessData = doc.data();
+            const portalSession = await stripe.billingPortal.sessions.create({
+                customer: businessData.stripeCustomerId,
+                return_url: `${appUrl}/dashboard`
+            });
+            res.redirect(303, portalSession.url);
+        } catch (error) {
+            console.error('❌ Error creating billing portal session:', error);
+            res.status(500).send('Error opening billing portal.');
+        }
+    });
+
     // PUBLIC RATING AND FEEDBACK ROUTES
-    app.get('/rate/:businessId', async (req, res) => {
+    app.get('/rate/:businessId', csrfProtection, async (req, res) => {
         try {
             const businessId = req.params.businessId;
             const doc = await db.collection('businesses').doc(businessId).get();
@@ -163,25 +378,68 @@
                 return res.status(404).send("This business is not currently active.");
             }
             const businessData = { ...doc.data(), uid: doc.id };
-            res.render('rate', { business: businessData });
+            res.render('rate', { business: businessData, csrfToken: req.csrfToken(), hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || null });
         } catch (error) {
             console.error("❌ Error fetching rating page:", error);
             res.status(500).send("Could not load rating page.");
         }
     });
 
-    app.post('/submit-feedback/:businessId', async (req, res) => {
+    // Dedicated limiter for feedback submissions
+    const feedbackLimiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
+
+    app.post('/submit-feedback/:businessId', feedbackLimiter, csrfProtection, async (req, res) => {
         try {
             const businessId = req.params.businessId;
             const feedbackData = req.body;
+
+            // Optional: hCaptcha verification
+            if (process.env.HCAPTCHA_SECRET && (req.body.hcaptchaToken || req.body['h-captcha-response'])) {
+                try {
+                    const verifyResp = await fetch('https://hcaptcha.com/siteverify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({
+                            secret: process.env.HCAPTCHA_SECRET,
+                            response: req.body.hcaptchaToken || req.body['h-captcha-response'],
+                            remoteip: req.ip
+                        })
+                    });
+                    const verifyJson = await verifyResp.json();
+                    if (!verifyJson.success) return res.status(400).json({ message: 'Captcha failed' });
+                } catch (e) {
+                    console.error('Captcha verification error:', e);
+                    return res.status(400).json({ message: 'Captcha verification error' });
+                }
+            }
+
+            // Validate payload
+            const schema = z.object({
+                rating: z.coerce.number().min(1).max(5),
+                name: z.string().min(1).max(120),
+                email: z.string().email(),
+                phone: z.string().max(40).optional().or(z.literal('')),
+                feedback: z.string().max(2000).optional(),
+                type: z.enum(['positive', 'feedback', 'contact']).optional()
+            }).refine((data) => {
+                if (data.rating <= 4) {
+                    return typeof data.feedback === 'string' && data.feedback.trim().length > 0;
+                }
+                return true;
+            }, { message: 'Feedback required for ratings 4 and below', path: ['feedback'] });
+
+            const parsed = schema.parse(feedbackData);
             await db.collection('businesses').doc(businessId).collection('feedback').add({
-                ...feedbackData,
+                ...parsed,
                 createdAt: new Date().toISOString()
             });
             console.log(`✅ Feedback received for business: ${businessId}`);
             res.status(200).json({ message: 'Feedback submitted successfully.' });
         } catch (error) {
             console.error("❌ Error submitting feedback:", error);
+            if (error?.issues) {
+                return res.status(400).json({ message: 'Invalid input.', details: error.issues });
+            }
             res.status(500).json({ message: 'Failed to submit feedback.' });
         }
     });
