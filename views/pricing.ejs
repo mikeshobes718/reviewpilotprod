@@ -6,28 +6,21 @@
   <title><%= title %></title>
   <%- include('partials/head') %>
 </head>
-<body style="background: radial-gradient(1200px 600px at 10% -10%, rgba(90,103,216,.12), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(128,90,213,.12), transparent), #0b1020; color:#e2e8f0;">
+<body style="background: radial-gradient(1200px 600px at 10% -10%, rgba(14,165,233,.12), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(56,189,248,.12), transparent), #0b1520; color:#e6f6ff;">
   <%- include('partials/header') %>
   <main style="max-width:1100px;margin:32px auto;padding:0 22px;">
     <h1 style="margin:0 0 12px;">Simple pricing</h1>
-    <p style="color:#94a3b8">Start free, upgrade anytime. Cancel anytime.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:18px;">
-      <div class="card">
-        <h3>Starter</h3>
-        <p style="font-size:24px;font-weight:800;">$0<span style="font-size:14px;color:#94a3b8;">/mo</span></p>
-        <ul>
-          <li>Up to 5 requests/mo</li>
-          <li>Basic analytics</li>
-        </ul>
+    <p style="color:#b6e3ff">Start free, upgrade anytime.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px;">
+      <div class="card" style="background:#0f1730;border-color:#163044;">
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px;">Starter</div>
+        <div style="font-size:34px;font-weight:900;">$0<span style="font-size:14px;color:#b6e3ff;">/mo</span></div>
+        <div style="margin-top:8px;color:#b6e3ff">Up to 5 requests each month. Basic analytics.</div>
       </div>
-      <div class="card">
-        <h3>Pro</h3>
-        <p style="font-size:24px;font-weight:800;">$49<span style="font-size:14px;color:#94a3b8;">/mo</span></p>
-        <ul>
-          <li>Unlimited requests</li>
-          <li>Full analytics + exports</li>
-          <li>Priority support</li>
-        </ul>
+      <div class="card" style="background:#0f1730;border-color:#163044;">
+        <div style="font-size:18px;font-weight:800;margin-bottom:6px;">Pro</div>
+        <div style="font-size:34px;font-weight:900;">$49<span style="font-size:14px;color:#b6e3ff;">/mo</span></div>
+        <div style="margin-top:8px;color:#b6e3ff">Unlimited requests. Full analytics & exports. Priority support.</div>
       </div>
     </div>
   </main>
