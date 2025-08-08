@@ -69,9 +69,7 @@
         <div style="height:140px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center;color:var(--muted);margin-bottom:12px">Bar chart placeholder</div>
         <div class="eyebrow" style="margin-bottom:8px">Admin Actions</div>
         <div style="display:flex;gap:8px">
-          <form id="impersonateForm" method="POST">
-            <button type="submit" class="btn-primary" style="padding:10px 12px;border-radius:8px">View Dashboard</button>
-          </form>
+          <a id="viewDashLink" class="btn-primary" style="padding:10px 12px;border-radius:8px;text-decoration:none;display:inline-block" href="#">View Dashboard</a>
           <a id="manageSubLink" class="btn btn-secondary" style="padding:10px 12px;border-radius:8px" href="#">Manage Subscription</a>
         </div>
       </div>
@@ -130,8 +128,8 @@
             document.getElementById('m-conv').textContent = m.conversions;
           }
         }).catch(()=>{});
-        const form = document.getElementById('impersonateForm');
-        form.action = `/admin/impersonate/${id}`;
+        const view = document.getElementById('viewDashLink');
+        view.href = `/admin/impersonate/${id}`;
         const manage = document.getElementById('manageSubLink');
         manage.href = `/admin/manage-subscription/${id}`;
       }

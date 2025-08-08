@@ -398,6 +398,18 @@
         } catch (e) { console.error('impersonate error', e); res.status(500).send('Server error'); }
     });
 
+    app.get('/admin/impersonate/:id', async (req, res) => {
+        try {
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            const id = req.params.id;
+            const doc = await db.collection('businesses').doc(id).get();
+            if (!doc.exists) return res.status(404).send('Not found');
+            const data = doc.data();
+            req.session.user = { uid: id, email: data.email || '', displayName: data.businessName || '' };
+            res.redirect('/dashboard');
+        } catch (e) { console.error('impersonate error', e); res.status(500).send('Server error'); }
+    });
+
     // Admin: open Stripe billing portal for a business
     app.get('/admin/manage-subscription/:id', async (req, res) => {
         try {
