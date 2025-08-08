@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin • ReviewPilot</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main class="main-content">
+    <div class="container">
+      <div class="base-card">
+        <h1 class="page-heading" style="font-size:28px;margin:0 0 12px">Admin</h1>
+        <div class="table-wrap">
+          <table class="admin-table" id="admin-table">
+            <thead>
+              <tr>
+                <th data-key="id"><span class="th-flex">UID <span class="sort-icon">↕</span></span></th>
+                <th data-key="businessName"><span class="th-flex">Business <span class="sort-icon">↕</span></span></th>
+                <th data-key="email"><span class="th-flex">Email <span class="sort-icon">↕</span></span></th>
+                <th data-key="stripeCustomerId"><span class="th-flex">Stripe Customer <span class="sort-icon">↕</span></span></th>
+                <th data-key="subscriptionStatus"><span class="th-flex">Status <span class="sort-icon">↕</span></span></th>
+                <th data-key="googlePlaceId"><span class="th-flex">Place ID <span class="sort-icon">↕</span></span></th>
+                <th data-key="createdAt"><span class="th-flex">Created <span class="sort-icon">↕</span></span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% items.forEach(function(x){ %>
+                <tr class="row-item" data-id="<%= x.id %>">
+                  <td class="small"><%= x.id %></td>
+                  <td><%= x.businessName||'' %></td>
+                  <td><%= x.email||'' %></td>
+                  <td class="small"><%= x.stripeCustomerId||'' %></td>
+                  <td>
+                    <% const st = (x.subscriptionStatus||'').toLowerCase(); %>
+                    <span class="badge-status <%= st==='active' ? 'active' : 'incomplete' %>"><%= x.subscriptionStatus||'' %></span>
+                  </td>
+                  <td class="small"><%= x.googlePlaceId||'' %></td>
+                  <td class="small"><%= x.createdAt||'' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Detail Drawer -->
+  <div class="drawer-overlay" id="drawer-overlay">
+    <div class="drawer" id="drawer">
+      <div class="drawer-header">
+        <div id="drawer-title" style="font-weight:800">Details</div>
+        <button class="drawer-close" id="drawer-close">Close</button>
+      </div>
+      <div class="drawer-body">
+        <div class="eyebrow" style="margin-bottom:8px">Review history</div>
+        <div style="height:140px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center;color:var(--muted);margin-bottom:12px">Bar chart placeholder</div>
+        <div class="eyebrow" style="margin-bottom:8px">Recent feedback</div>
+        <div style="border:1px dashed var(--border);border-radius:12px;padding:12px;color:var(--muted)">
+          <div>- “Great service” — 5★</div>
+          <div>- “Quick response” — 5★</div>
+          <div>- “Resolved issue fast” — 4★</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const table = document.getElementById('admin-table');
+      if (!table) return;
+      let sortKey = null, sortDir = 1;
+      function getCellValue(tr, key){
+        const map = { id:0, businessName:1, email:2, stripeCustomerId:3, subscriptionStatus:4, googlePlaceId:5, createdAt:6 };
+        const idx = map[key];
+        const td = tr.children[idx];
+        return td ? td.textContent.trim().toLowerCase() : '';
+      }
+      function sortBy(key){
+        const tbody = table.tBodies[0];
+        const rows = Array.from(tbody.rows);
+        if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+        rows.sort((a,b)=> (getCellValue(a,key) > getCellValue(b,key) ? 1 : -1) * sortDir);
+        rows.forEach(r=>tbody.appendChild(r));
+      }
+      table.tHead.querySelectorAll('th').forEach(th=>{
+        th.addEventListener('click', ()=> sortBy(th.dataset.key));
+      });
+
+      // Drawer interactions
+      const overlay = document.getElementById('drawer-overlay');
+      const drawer = document.getElementById('drawer');
+      const title = document.getElementById('drawer-title');
+      const closeBtn = document.getElementById('drawer-close');
+      function openDrawer(name){ overlay.classList.add('open'); drawer.classList.add('open'); title.textContent = name || 'Details'; }
+      function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remove('open'); }
+      closeBtn.addEventListener('click', closeDrawer);
+      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeDrawer(); });
+      table.tBodies[0].querySelectorAll('tr').forEach(tr=>{
+        tr.addEventListener('click', ()=> openDrawer(tr.children[1]?.textContent.trim()));
+      });
+    })();
+  </script>
+  <%- include('partials/footer') %>
+</body>
+</html>
+
+
