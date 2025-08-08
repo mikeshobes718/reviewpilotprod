@@ -8,20 +8,23 @@
 </head>
 <body style="background: radial-gradient(1200px 600px at 10% -10%, rgba(14,165,233,.12), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(56,189,248,.12), transparent), #0b1520; color:#e6f6ff;">
   <%- include('partials/header') %>
-  <main style="max-width:1100px;margin:32px auto;padding:0 22px;">
-    <h1 style="margin:0 0 12px;">Everything you need</h1>
-    <p style="color:#b6e3ff">A focused toolkit to collect more 5‑star reviews with less effort.</p>
-    <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:18px;align-items:center;">
-      <div class="card" style="background:#0f1730;border-color:#163044;">
+  <main class="container section">
+    <div class="badge">Features</div>
+    <h1 class="hero-title">Everything you need</h1>
+    <p class="subtle">A focused toolkit to collect more 5‑star reviews with less effort.</p>
+    <div class="grid grid-2 section">
+      <div class="card accent">
         <h2>Smart requests</h2>
         <p>High‑converting SMS and email templates with your branding. Auto‑reminders included.</p>
-        <h2 style="margin-top:16px;">Feedback filter</h2>
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+        <h2>Feedback filter</h2>
         <p>1‑4★ ratings flow to a private form first; 5★ go straight to your public Google review link.</p>
-        <h2 style="margin-top:16px;">Analytics that matter</h2>
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0" />
+        <h2>Analytics that matter</h2>
         <p>Track response rates, average rating, and 5★ conversions at a glance.</p>
       </div>
-      <div class="card" style="background:#0f1730;border-color:#163044;min-height:320px;display:grid;place-items:center;">
-        <div style="width:100%;max-width:560px;aspect-ratio:16/9;background:linear-gradient(135deg, rgba(14,165,233,.15), rgba(56,189,248,.15));border:1px dashed #163044;border-radius:12px;color:#b6e3ff;display:grid;place-items:center;">Product preview</div>
+      <div class="card" style="min-height:320px;display:grid;place-items:center;">
+        <div style="width:100%;max-width:560px;aspect-ratio:16/9;background:linear-gradient(135deg, rgba(14,165,233,.15), rgba(56,189,248,.15));border:1px dashed var(--border);border-radius:12px;color:#b6e3ff;display:grid;place-items:center;">Product preview</div>
       </div>
     </div>
   </main>
