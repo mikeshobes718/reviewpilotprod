@@ -141,6 +141,16 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .icon-wrap{width:40px;height:40px;border-radius:12px;background:var(--iconBg);display:grid;place-items:center}
 .icon-wrap svg{fill:var(--iconPrimary)}
 
+/* Auth pages */
+.auth-page{background:var(--bg);min-height:100vh}
+.auth-card{width:360px;margin:40px auto}
+.base-card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:40px}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 14px;font-weight:700}
+.btn-primary:hover{background:var(--accentHover)}
+.link-accent{color:var(--accent);text-decoration:none}
+.input{padding:12px 14px;border:1px solid var(--borderHover);border-radius:8px;font-size:14px}
+.input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+
 /* Features page visuals */
 .display{font-size:clamp(36px,6vw,64px);line-height:1.15;font-weight:800;color:var(--text);margin:0}
 .feature-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
