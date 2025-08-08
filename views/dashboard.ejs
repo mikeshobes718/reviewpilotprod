@@ -63,10 +63,10 @@
                   <div class="price-figure">Free</div>
                   <div class="price-label">30‑day trial</div>
                 </div>
-                <% if (business.subscriptionStatus !== 'active') { %>
-                  <button class="btn btn-secondary" disabled>Current Plan</button>
-                <% } else { %>
+                <% if (business.subscriptionStatus === 'active') { %>
                   <a href="/billing-portal" class="btn btn-secondary">Downgrade</a>
+                <% } else { %>
+                  <button class="btn-primary" disabled>Start free trial</button>
                 <% } %>
                 <ul style="list-style:none;padding:0;margin:8px 0 0;color:var(--muted);line-height:1.9">
                   <li><span class="check">✓</span>Up to 5 requests each month</li>
@@ -98,21 +98,23 @@
 
             <div class="section" style="margin-top:16px">
               <h3 style="margin:0 0 8px">Billing Details</h3>
-              <div style="color:var(--muted);margin-bottom:8px">
-                <% if (billing && billing.card) { %>
-                  Card on file: <strong><%= billing.card.brand %></strong> ending in <strong><%= billing.card.last4 %></strong> (exp <%= billing.card.exp %>)
-                <% } else { %>
-                  No payment method on file yet.
-                <% } %>
-              </div>
-              <a href="/billing-portal" class="btn btn-secondary">Update Payment Method</a>
-              <% if (typeof billing !== 'undefined' && billing) { %>
+              <% if (billing) { %>
+                <div style="color:var(--muted);margin-bottom:8px">
+                  <% if (billing.card) { %>
+                    Card on file: <strong><%= billing.card.brand %></strong> ending in <strong><%= billing.card.last4 %></strong> (exp <%= billing.card.exp %>)
+                  <% } else { %>
+                    No payment method on file yet.
+                  <% } %>
+                </div>
+                <a href="/billing-portal" class="btn btn-secondary">Update Payment Method</a>
                 <div style="margin-top:6px;color:var(--muted);font-size:13px">
                   <span>Renews: <strong><%= billing.currentPeriodEnd ? new Date(billing.currentPeriodEnd).toLocaleString() : '—' %></strong></span>
                   <% if (billing.cancelAtPeriodEnd) { %>
                     <span style="margin-left:10px;color:#B45309">(Cancels at period end)</span>
                   <% } %>
                 </div>
+              <% } else { %>
+                <div style="color:var(--muted);margin-bottom:8px">Billing details will appear after you upgrade to Pro.</div>
               <% } %>
             </div>
           </div>
