@@ -481,7 +481,7 @@
         }
     });
 
-    // Stripe Billing Portal
+    // Stripe Billing Portal (POST)
     app.post('/billing-portal', requireLogin, csrfProtection, async (req, res) => {
         try {
             const doc = await db.collection('businesses').doc(req.session.user.uid).get();
@@ -493,6 +493,22 @@
             res.redirect(303, portalSession.url);
         } catch (error) {
             console.error('❌ Error creating billing portal session:', error);
+            res.status(500).send('Error opening billing portal.');
+        }
+    });
+
+    // Stripe Billing Portal (GET helper to avoid CSRF issues)
+    app.get('/billing-portal', requireLogin, async (req, res) => {
+        try {
+            const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+            const businessData = doc.data();
+            const portalSession = await stripe.billingPortal.sessions.create({
+                customer: businessData.stripeCustomerId,
+                return_url: `${appUrl}/dashboard`
+            });
+            res.redirect(303, portalSession.url);
+        } catch (error) {
+            console.error('❌ Error creating billing portal session (GET):', error);
             res.status(500).send('Error opening billing portal.');
         }
     });
