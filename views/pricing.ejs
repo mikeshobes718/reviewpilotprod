@@ -8,29 +8,86 @@
 </head>
 <body>
   <%- include('partials/header') %>
-  <main class="container section text-center" style="display:flex;flex-direction:column;align-items:center;">
-    <div class="badge">Pricing</div>
-    <h1 class="hero-title">Simple pricing</h1>
-    <p class="subtle">Start free, upgrade anytime.</p>
-    <div class="grid grid-center grid-items-center section" style="max-width:980px;margin:0 auto;place-items:center;grid-template-columns:repeat(2,max-content);column-gap:24px;row-gap:24px;">
-      <div class="card plan-card">
-        <div style="font-size:18px;font-weight:800;margin-bottom:6px;">Starter</div>
-        <div class="price">$0<span style="font-size:14px;color:#b6e3ff;">/mo</span></div>
-        <ul style="margin-top:8px;color:#b6e3ff;line-height:1.8">
-          <li>Up to 5 requests each month</li>
-          <li>Basic analytics</li>
-        </ul>
+  <main class="container section" style="max-width:1100px;margin:0 auto;">
+    <!-- Hero -->
+    <section class="section" style="text-align:center">
+      <h1 class="page-heading">Simple, transparent pricing</h1>
+      <p class="body-text" style="color:var(--muted);max-width:680px;margin:8px auto 0">Start free, upgrade anytime. No hidden fees.</p>
+    </section>
+
+    <!-- Pricing grid -->
+    <section class="section">
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <div class="card-title" style="font-size:18px">Starter</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+            <div class="price-figure">$0</div>
+            <div class="price-label">/mo</div>
+          </div>
+          <a href="/signup" class="btn primary" style="margin:8px 0 12px">Get started</a>
+          <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+            <li><span class="check">✓</span>Up to 5 requests each month</li>
+            <li><span class="check">✓</span>Basic analytics</li>
+            <li><span class="check">✓</span>Email support</li>
+          </ul>
+        </div>
+        <div class="pricing-card highlight">
+          <div class="card-title" style="font-size:18px">Pro</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+            <div class="price-figure">$49</div>
+            <div class="price-label">/mo</div>
+          </div>
+          <a href="/signup" class="btn primary" style="margin:8px 0 12px">Buy Pro</a>
+          <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+            <li><span class="check">✓</span>Unlimited requests</li>
+            <li><span class="check">✓</span>Full analytics & exports</li>
+            <li><span class="check">✓</span>Priority support</li>
+          </ul>
+        </div>
       </div>
-      <div class="card accent plan-card">
-        <div style="font-size:18px;font-weight:800;margin-bottom:6px;">Pro</div>
-        <div class="price">$49<span style="font-size:14px;color:#b6e3ff;">/mo</span></div>
-        <ul style="margin-top:8px;color:#b6e3ff;line-height:1.8">
-          <li>Unlimited requests</li>
-          <li>Full analytics & exports</li>
-          <li>Priority support</li>
-        </ul>
-      </div>
-    </div>
+    </section>
+
+    <!-- Feature comparison table -->
+    <section class="section">
+      <h2 class="hero-title" style="font-size:32px">Compare all features</h2>
+      <table class="feature-compare">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Starter</th>
+            <th>Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Review requests</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Automated reminders</td><td>✓</td><td>✓</td></tr>
+          <tr><td>Private feedback routing</td><td>—</td><td>✓</td></tr>
+          <tr><td>Analytics & exports</td><td>Basic</td><td>Full</td></tr>
+          <tr><td>Priority support</td><td>—</td><td>✓</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq">
+      <h2 class="hero-title" style="font-size:32px">Frequently Asked Questions</h2>
+      <details>
+        <summary>Can I cancel anytime?</summary>
+        <div class="answer">Yes. You can cancel from your dashboard at any time and your plan will remain active until the end of the billing period.</div>
+      </details>
+      <details>
+        <summary>Do you offer a free plan?</summary>
+        <div class="answer">Yes. The Starter plan is free with up to 5 requests per month.</div>
+      </details>
+      <details>
+        <summary>How do I upgrade to Pro?</summary>
+        <div class="answer">From your dashboard, click “Upgrade” and complete checkout. Your subscription is applied instantly.</div>
+      </details>
+      <details>
+        <summary>Is my data secure?</summary>
+        <div class="answer">We follow best practices and do not share your data. See our Privacy page for details.</div>
+      </details>
+    </section>
   </main>
   <%- include('partials/footer') %>
 </body>

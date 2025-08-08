@@ -10,6 +10,7 @@
   --accentHover:#0F996B;
   --border:#F0F0F0; /* card border */
   --borderHover:#DCDCDC; /* card hover + button border */
+  --borderHighlight:#10B981;
   --shadowCardColor: rgba(30,30,30,0.06);
   --shadowImageColor: rgba(30,30,30,0.08);
   --shadow: 0px 4px 20px var(--shadowCardColor);
@@ -85,6 +86,27 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .plan-card{min-width:320px}
 .price{font-size:42px;font-weight:900}
 .pricing-wrap{display:grid;place-items:center}
+
+/* Pricing page theme */
+.page-heading{font-family:Inter,Manrope,sans-serif;font-weight:700;font-size:56px;color:var(--text)}
+.price-figure{font-family:Inter,Manrope,sans-serif;font-weight:700;font-size:48px;color:var(--text)}
+.price-label{font-family:Inter,Manrope,sans-serif;font-weight:500;font-size:16px;color:var(--muted)}
+.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:32px}
+.pricing-card.highlight{border:2px solid var(--borderHighlight)}
+.check{color:var(--accent);margin-right:8px}
+.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:stretch}
+@media (max-width: 860px){.pricing-grid{grid-template-columns:1fr}}
+
+/* Comparison table */
+.feature-compare{width:100%;border-collapse:collapse;margin-top:20px}
+.feature-compare th,.feature-compare td{border:1px solid var(--border);padding:12px;text-align:center}
+.feature-compare th:first-child,.feature-compare td:first-child{text-align:left}
+.feature-compare thead th{background:#fff;color:var(--text)}
+
+/* FAQ accordion */
+.faq details{border:1px solid var(--border);border-radius:12px;background:#fff;margin-bottom:10px}
+.faq summary{cursor:pointer;padding:12px 14px;font-weight:600}
+.faq .answer{padding:0 14px 12px;color:var(--muted)}
 
 .hero-title{font-size:clamp(40px,9vw,100px);line-height:1.1;letter-spacing:-.5px;margin:0 0 12px;color:var(--text)}
 .subtle{color:var(--muted)}
