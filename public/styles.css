@@ -56,6 +56,9 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .subtle{color:var(--muted)}
 .badge{display:inline-block;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 10px;font-weight:600;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
 
+/* Hero banner chip */
+.banner{display:block;width:max-content;margin:14px auto 0;padding:6px 12px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;font-size:13px}
+
 /* Mobile spacing system */
 :root{--space:16px}
 .section{padding-left:var(--space);padding-right:var(--space)}
