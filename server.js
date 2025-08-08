@@ -51,7 +51,8 @@
                         "'self'",
                         'https://www.googletagmanager.com',
                         'https://www.google-analytics.com',
-                        'https://plausible.io'
+                        'https://plausible.io',
+                        'https://cdnjs.cloudflare.com'
                     ],
                     imgSrc: ["'self'", 'data:', 'https:'],
                     styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
