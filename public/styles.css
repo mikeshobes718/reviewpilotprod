@@ -33,6 +33,8 @@
   --theme-colors-border-card: var(--border);
   --theme-colors-border-cardHover: var(--borderHover);
   --theme-colors-border-button: var(--borderHover);
+  --theme-colors-button-secondaryBorder: var(--borderHover);
+  --theme-colors-button-secondaryText: var(--muted);
   --theme-colors-shadow-card: var(--shadowCardColor);
   --theme-colors-shadow-image: var(--shadowImageColor);
   --theme-colors-border-image: var(--borderImage);

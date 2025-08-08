@@ -27,7 +27,7 @@
         .btn{ display:inline-flex; align-items:center; gap:.5rem }
         .btn-primary{ background: var(--accent); color:#fff; border:none; border-radius:8px; padding:12px 14px; font-weight:700 }
         .btn-primary:hover{ background: var(--accentHover) }
-        .btn-secondary{ background:transparent; border:1px solid var(--border); color: var(--muted); border-radius:8px; padding:10px 12px; font-weight:600 }
+        .btn-secondary{ background:transparent; border:1px solid var(--theme-colors-button-secondaryBorder); color: var(--theme-colors-button-secondaryText); border-radius:8px; padding:10px 12px; font-weight:600 }
 
         .link-box{ background: var(--bg); padding: 12px; border-radius:8px; font-family:monospace; border:1px solid var(--border) }
 
@@ -35,6 +35,9 @@
         .kpi{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center }
         .kpi .label{ color: var(--muted); font-size:13px }
         .kpi .value{ font-size: 22px; font-weight:800; margin-top:4px }
+
+        .sub-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap }
+        .qr-placeholder{ width:128px; height:128px; border:1px solid var(--border); border-radius:8px; display:block }
 
         .table-wrap{ overflow:auto; border:1px solid var(--theme-colors-border-table); border-radius:12px }
         table{ width:100%; border-collapse:collapse }
@@ -53,27 +56,29 @@
         <div class="grid">
           <div class="card base-card">
             <h2>Subscription</h2>
-            <p>
-                Your current status is:
-                <span class="status <%= business.subscriptionStatus %>">
-                    <%= business.subscriptionStatus %>
-                </span>
+            <div class="sub-row">
+              <div>
+                <span>Your current status is:</span>
+                <span class="status <%= business.subscriptionStatus %>"><%= business.subscriptionStatus %></span>
                 <% if (business.subscriptionStatus === 'active') { %>
-                  <span style="margin-left:8px;color:#4A5568;">Plan: Pro</span>
+                  <span style="margin-left:8px;color:var(--muted);">Plan: Pro</span>
                 <% } else { %>
-                  <span style="margin-left:8px;color:#4A5568;">Plan: Starter</span>
+                  <span style="margin-left:8px;color:var(--muted);">Plan: Starter</span>
                 <% } %>
-            </p>
+              </div>
+              
+              <% if (business.subscriptionStatus === 'active') { %>
+                <form action="/billing-portal" method="POST">
+                  <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                  <button type="submit" class="btn btn-secondary">Manage Billing</button>
+                </form>
+              <% } %>
+            </div>
             <% if (business.subscriptionStatus !== 'active') { %>
                 <p>To unlock all features, please subscribe for $49.99/month.</p>
                 <form action="/create-checkout-session" method="POST">
                     <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                     <button type="submit" class="btn-primary">Subscribe Now</button>
-                </form>
-            <% } else { %>
-                <form action="/billing-portal" method="POST" style="margin-top: 1rem;">
-                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-                    <button type="submit" class="btn btn-secondary">Manage Billing</button>
                 </form>
             <% } %>
           </div>
@@ -97,6 +102,7 @@
                 <div style="margin-top:1rem;">
                   <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">QR Code</div>
                   <div id="qrcode" aria-label="QR code for your rating link"></div>
+                  <img class="qr-placeholder" alt="QR placeholder" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='128' height='128'><rect width='100%' height='100%' fill='white' stroke='%23E5E7EB'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%239CA3AF' font-family='Inter, Arial' font-size='12'>QR Code</text></svg>" />
                 </div>
           </div>
 
