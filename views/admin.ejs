@@ -37,7 +37,7 @@
                     <span class="badge-status <%= st==='active' ? 'active' : 'incomplete' %>"><%= x.subscriptionStatus||'' %></span>
                   </td>
                   <td class="small"><%= x.googlePlaceId||'' %></td>
-                  <td class="small"><%= x.createdAt||'' %></td>
+                  <td class="small created-cell" data-created="<%= x.createdAt||'' %>"><%= x.createdAt||'' %></td>
                 </tr>
               <% }) %>
             </tbody>
@@ -98,6 +98,20 @@
       }
       table.tHead.querySelectorAll('th').forEach(th=>{
         th.addEventListener('click', ()=> sortBy(th.dataset.key));
+      });
+
+      // Format created timestamps to human readable
+      function formatTime(iso){
+        if (!iso) return '';
+        try{
+          const d = new Date(iso);
+          if (isNaN(d.getTime())) return iso;
+          return d.toLocaleString(undefined, { year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+        }catch(_){ return iso; }
+      }
+      table.querySelectorAll('.created-cell').forEach(td=>{
+        const iso = td.getAttribute('data-created');
+        td.textContent = formatTime(iso);
       });
 
       // Drawer interactions
