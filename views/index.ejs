@@ -1,23 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReviewPilot</title>
-    <style>
-        body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; display: grid; place-content: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #5A67D8, #805AD5); }
-        div { text-align: center; color: white; }
-        a { margin: 0 10px; text-decoration: none; background-color: rgba(255,255,255,0.15); color: white; padding: 12px 18px; border-radius: 10px; backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.25); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ReviewPilot • Turn happy customers into 5‑star reviews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { --brand:#5A67D8; --brand2:#805AD5; --bg:#0f172a; --card:#0b1221; --text:#e2e8f0; --muted:#94a3b8; --border:#1f2a44; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; color: var(--text); background: radial-gradient(1200px 600px at 10% -10%, rgba(90,103,216,.25), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(128,90,213,.25), transparent), #0b1020; }
+    .nav { display:flex; align-items:center; justify-content:space-between; padding:16px 22px; max-width:1100px; margin:0 auto; }
+    .logo { display:flex; gap:10px; align-items:center; font-weight:800; letter-spacing:.2px; }
+    .logo-badge { width:28px; height:28px; border-radius:6px; background: linear-gradient(135deg, var(--brand), var(--brand2)); display:grid; place-items:center; color:white; font-weight:800; }
+    .nav a { color: var(--text); text-decoration:none; margin-left:14px; font-weight:600; }
+    .btn { display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background: linear-gradient(135deg, rgba(90,103,216,.18), rgba(128,90,213,.18)); color:white; font-weight:700; backdrop-filter: blur(6px); }
+    .hero { max-width:1100px; margin:36px auto; padding:0 22px; display:grid; grid-template-columns:1.1fr .9fr; gap:26px; align-items:center; }
+    .hero h1 { font-size: clamp(28px, 5vw, 46px); margin:0 0 10px; line-height:1.08; }
+    .hero p { color: var(--muted); font-size: clamp(16px, 2.2vw, 18px); }
+    .cta { display:flex; gap:12px; margin-top:18px; }
+    .cta .primary { background: linear-gradient(135deg, var(--brand), var(--brand2)); border:none; }
+    .card { background: rgba(11,18,33,.6); border:1px solid var(--border); border-radius:16px; padding:18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .panel { height: 320px; display:grid; place-items:center; }
+    .logos { display:flex; gap:16px; opacity:.85; flex-wrap:wrap; margin-top:18px; }
+    .logos span { font-size:13px; color: var(--muted); border:1px solid var(--border); padding:6px 10px; border-radius:999px; }
+    .footer { text-align:center; color: var(--muted); padding:28px 0 40px; font-size:13px; }
+    .cookie { position: fixed; left:16px; right:16px; bottom:16px; background:#0c1324; border:1px solid var(--border); border-radius:14px; padding:14px; display:flex; gap:14px; align-items:center; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+    .cookie p { margin:0; color:#cbd5e1; font-size:14px; }
+    .cookie .spacer { flex:1; }
+    .cookie button { background: linear-gradient(135deg, var(--brand), var(--brand2)); color:white; font-weight:700; border:none; border-radius:10px; padding:10px 14px; }
+    @media (max-width: 860px) { .hero { grid-template-columns:1fr; } .panel { height:220px; } }
+  </style>
+  <script>document.documentElement.classList.remove('no-js');</script>
 </head>
 <body>
+  <nav class="nav">
+    <div class="logo"><div class="logo-badge">RP</div> ReviewPilot</div>
     <div>
-        <h1>ReviewPilot</h1>
-        <p>Turn happy customers into 5-star reviews.</p>
-        <div>
-            <a href="/signup">Sign Up</a>
-            <a href="/login">Log In</a>
-        </div>
+      <a href="/login">Log in</a>
+      <a class="btn" href="/signup">Get started</a>
     </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Turn happy customers into 5‑star reviews</h1>
+      <p>Send beautiful review requests, filter negative feedback, and grow your rating on autopilot. Built for local businesses.</p>
+      <div class="cta">
+        <a class="btn primary" href="/signup">Start free</a>
+        <a class="btn" href="/login">I already have an account</a>
+      </div>
+      <div class="logos">
+        <span>Stripe</span><span>Firebase</span><span>hCaptcha</span><span>Fast setup</span>
+      </div>
+    </div>
+    <div class="card panel">
+      <div style="text-align:center;">
+        <div style="font-weight:800; font-size:14px; color:#a5b4fc;">Clean dashboard</div>
+        <div style="margin-top:10px; font-size:13px; color:#cbd5e1;">Track feedback, ratings and conversions at a glance.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">© <script>document.write(new Date().getFullYear())</script> ReviewPilot</div>
+
+  <div id="cookie" class="cookie" style="display:none;">
+    <p>This site uses cookies for basic functionality and analytics. See our <a href="#" style="color:#a5b4fc;">Privacy Policy</a>.</p>
+    <div class="spacer"></div>
+    <button id="accept">Accept</button>
+  </div>
+  <script>
+    (function(){
+      try {
+        if (!localStorage.getItem('rp_cookie_ok')) {
+          document.getElementById('cookie').style.display='flex';
+        }
+        document.getElementById('accept').addEventListener('click', function(){
+          localStorage.setItem('rp_cookie_ok','1');
+          document.getElementById('cookie').style.display='none';
+        });
+      } catch(_){}
+    })();
+  </script>
 </body>
 </html>

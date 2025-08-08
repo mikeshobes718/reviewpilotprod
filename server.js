@@ -154,9 +154,11 @@
     };
 
     // --- 5. DEFINE THE ROUTES (THE "URLS") ---
-    const appUrl = process.env.HEROKU_APP_NAME
-        ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
-        : (isProduction ? `http://localhost:${PORT}` : `http://lvh.me:${PORT}`);
+    // Preferred explicit base URL for links shown in the UI (dashboard public link, success/cancel URLs)
+    // In production set APP_BASE_URL (e.g. https://your-app.herokuapp.com). Fallbacks are provided.
+    const appUrl = process.env.APP_BASE_URL
+        || (process.env.HEROKU_APP_NAME ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` : null)
+        || (isProduction ? `http://localhost:${PORT}` : `http://lvh.me:${PORT}`);
 
     // AUTH ROUTES
     app.get('/', csrfProtection, (req, res) => res.render('index', { csrfToken: req.csrfToken() }));
