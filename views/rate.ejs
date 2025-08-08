@@ -21,7 +21,7 @@
         .star:hover {
             transform: scale(1.2);
         }
-        .star.selected { color: #FBBF24 }
+        .star.selected { color: var(--accent) }
         h2 { font-size: 20px; font-weight: 700 }
         p { color: var(--muted); line-height:1.6; margin-bottom: 16px }
         form {
@@ -45,11 +45,7 @@
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(16,185,129,.2);
         }
-        .branding {
-            margin-top: 2rem;
-            font-size: 0.875rem;
-            color: var(--muted);
-        }
+        .branding { margin: 16px auto 0; font-size: 0.875rem; color: var(--muted); text-align:center }
         .branding a { color: var(--accent); text-decoration:none; font-weight:600 }
     </style>
 </head>
@@ -119,7 +115,7 @@
             stars.forEach(star => {
                 star.addEventListener('mouseover', e => {
                     const hoverValue = parseInt(e.target.dataset.value);
-                    stars.forEach(s => s.style.color = parseInt(s.dataset.value) <= hoverValue ? 'var(--star-color)' : '#CBD5E0');
+                    stars.forEach(s => s.style.color = parseInt(s.dataset.value) <= hoverValue ? 'var(--accent)' : '#CBD5E0');
                 });
 
                 star.addEventListener('mouseout', () => {
@@ -134,9 +130,7 @@
                     userRating = parseInt(e.target.dataset.value);
                     stars.forEach(s => {
                         s.classList.toggle('selected', parseInt(s.dataset.value) <= userRating);
-                        if (s.classList.contains('selected')) {
-                            s.style.color = 'var(--star-color)';
-                        }
+                        if (s.classList.contains('selected')) { s.style.color = 'var(--accent)'; }
                     });
                     handleRating(userRating);
                 });
