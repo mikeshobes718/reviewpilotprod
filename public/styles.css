@@ -150,6 +150,12 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .link-accent{color:var(--accent);text-decoration:none}
 .input{padding:12px 14px;border:1px solid var(--borderHover);border-radius:8px;font-size:14px}
 .input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+/* Two-column auth layout */
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+.auth-left{background:var(--section);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+.auth-left h1{font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:42px;margin:0 0 8px;color:var(--text)}
+.auth-left p{color:var(--muted);margin:0}
+.auth-right{display:flex;align-items:center;justify-content:center;padding:24px}
 
 /* Features page visuals */
 .display{font-size:clamp(36px,6vw,64px);line-height:1.15;font-weight:800;color:var(--text);margin:0}
