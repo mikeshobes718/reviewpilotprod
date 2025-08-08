@@ -1,4 +1,4 @@
-<nav class="nav" style="background: radial-gradient(1200px 600px at 10% -10%, rgba(90,103,216,.25), transparent), radial-gradient(1200px 800px at 110% -30%, rgba(128,90,213,.25), transparent), #0b1020;">
+<nav class="nav" style="background: transparent;">
   <div class="logo"><div class="logo-badge">RP</div> ReviewPilot</div>
   <button id="menu-toggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -8,7 +8,7 @@
     <a href="/pricing" class="btn">Pricing</a>
     <% if (typeof user !== 'undefined' && user) { %>
       <a href="/dashboard" class="btn">Dashboard</a>
-      <span class="btn" style="cursor:default;border-color:rgba(255,255,255,.24);opacity:.85;">Signed in: <%= user.email %></span>
+      <span class="btn" style="cursor:default;opacity:.85;">Signed in: <%= user.email %></span>
       <a href="/logout" class="btn">Log out</a>
     <% } else { %>
       <a href="/login" class="btn">Log in</a>
