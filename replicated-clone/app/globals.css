@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme variables from provided JSON */
+:root {
+  /* Colors */
+  --colors-background-primary: #F9F9F9;
+  --colors-background-card: #FFFFFF;
+  --colors-text-primary: #0A0A0A;
+  --colors-text-secondary: #525252;
+  --colors-text-onAccent: #0A0A0A;
+  --colors-accent-primary: #00F071;
+  --colors-accent-primaryHover: #33F58F;
+  --colors-border-primary: #EAEAEA;
+  --colors-shadow-color: rgba(0, 0, 0, 0.05);
+  --colors-icon-primary: #0A0A0A;
+  --colors-icon-onAccent: #0A0A0A;
+  --colors-icon-accent: #00F071;
+
+  /* Typography */
+  --fontFamily-display: 'DisplaySerif', serif;
+  --fontFamily-sans: 'GeneralSans', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --weights-regular: 400;
+  --weights-medium: 500;
+  --weights-bold: 700;
+  --weights-extraBold: 800;
+
+  /* Effects */
+  --shadow-card: 0px 4px 15px var(--colors-shadow-color);
+  --radius-button: 8px;
+  --radius-card: 16px;
+  --radius-icon: 50%;
+
+  /* Alias to match elementStyling var names */
+  --theme-colors-background-primary: var(--colors-background-primary);
+  --theme-colors-background-card: var(--colors-background-card);
+  --theme-colors-text-primary: var(--colors-text-primary);
+  --theme-colors-text-secondary: var(--colors-text-secondary);
+  --theme-colors-text-onAccent: var(--colors-text-onAccent);
+  --theme-colors-accent-primary: var(--colors-accent-primary);
+  --theme-colors-accent-primaryHover: var(--colors-accent-primaryHover);
+  --theme-colors-border-primary: var(--colors-border-primary);
+  --theme-colors-shadow-color: var(--colors-shadow-color);
+  --theme-colors-icon-primary: var(--colors-icon-primary);
+  --theme-colors-icon-onAccent: var(--colors-icon-onAccent);
+  --theme-effects-borderRadius-button: var(--radius-button);
+  --theme-effects-borderRadius-card: var(--radius-card);
+  --theme-effects-borderRadius-iconContainer: var(--radius-icon);
+  --theme-effects-shadows-card: var(--shadow-card);
+  --theme-typography-styles-cardTitle: var(--fontFamily-sans);
+}
+
+/* Page baseline */
+html, body { background: var(--colors-background-primary); color: var(--colors-text-primary); }
+.container-1100 { max-width: 1100px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+
+/* Components adjusted to the theme (no gradients) */
+.card { background: var(--colors-background-card); border: 1px solid var(--colors-border-primary); border-radius: var(--radius-card); box-shadow: var(--shadow-card); }
+.btn { @apply inline-flex items-center justify-center font-medium; font-family: var(--fontFamily-sans); border-radius: var(--radius-button); padding: 10px 14px; border: 1px solid var(--colors-border-primary); background: #FFFFFF; color: var(--colors-text-primary); }
+.btn-primary { background: var(--colors-accent-primary); color: var(--colors-text-onAccent); border: none; }
+.btn-primary:hover { background: var(--colors-accent-primaryHover); }
+.badge { display: inline-flex; align-items: center; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--colors-border-primary); color: var(--colors-text-secondary); background: transparent; font-weight: var(--weights-medium); font-size: 12px; font-family: var(--fontFamily-sans); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* Typography helpers */
+.eyebrow { font-family: var(--fontFamily-sans); font-weight: var(--weights-medium); font-size: 16px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--colors-text-secondary); }
+.hero-heading { font-family: var(--fontFamily-display); font-weight: var(--weights-extraBold); font-size: clamp(40px, 9vw, 100px); line-height: 1.1; color: var(--colors-text-primary); }
+.body-text { font-family: var(--fontFamily-sans); font-weight: var(--weights-regular); font-size: 20px; line-height: 1.5; color: var(--colors-text-primary); }
+.card-title { font-family: var(--fontFamily-sans); font-weight: var(--weights-medium); font-size: 14px; color: var(--colors-text-primary); }
+
+/* Link styles */
+.icon-link { color: var(--colors-text-primary); display:inline-flex; gap:10px; align-items:center; }
+.icon-link .icon-wrap { background: var(--colors-accent-primary); border-radius: var(--radius-icon); width: 28px; height: 28px; display:grid; place-items:center; }
+.icon-link svg { fill: var(--colors-icon-onAccent); }
+.arrow-link { color: var(--colors-text-primary); display:inline-flex; gap:8px; align-items:center; }
+.arrow-link svg { fill: var(--colors-accent-primary); }
+
+/* Visual filter for background images */
+.image-filter { filter: grayscale(100%) opacity(0.8); }
+
+
