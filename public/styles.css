@@ -16,6 +16,8 @@
   --shadow: 0px 4px 20px var(--shadowCardColor);
   --iconPrimary:#10B981;
   --iconBg:#EBF9F3;
+  --section:#F7F7F7;
+  --borderImage:#EAEAEA;
 
   /* Aliases to match provided naming if referenced */
   --theme-colors-background-primary: var(--bg);
