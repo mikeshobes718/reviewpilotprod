@@ -46,3 +46,12 @@ body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetic
 .subtle{color:var(--muted)}
 .badge{display:inline-block;background:rgba(14,165,233,.15);border:1px solid rgba(56,189,248,.35);color:#cfefff;border-radius:999px;padding:6px 10px;font-weight:700;font-size:12px}
 
+/* Mobile spacing system */
+:root{--space:16px}
+.section{padding-left:var(--space);padding-right:var(--space)}
+@media (max-width: 860px){
+  :root{--space:14px}
+  .card{padding:16px}
+  .btn{padding:10px 12px}
+}
+
