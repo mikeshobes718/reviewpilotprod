@@ -1,8 +1,17 @@
 <% const __body = `
-  <h1 style="margin:0 0 8px;font-size:24px">Welcome to ReviewPilot</h1>
-  <p style="margin:0 0 16px;color:#5E5E5E">Thanks for signing up. You're a step closer to turning happy customers into 5‑star reviews.</p>
-  <p style="margin:0 0 20px;color:#5E5E5E">Set up your account to start sending requests and collecting private feedback.</p>
-  <p style="margin:0"><a href="<%= appUrl %>/dashboard" class="btn">Go to your dashboard</a></p>
+  <h1 style=\"margin:0 0 8px;font-size:24px\">Welcome aboard!</h1>
+  <p style=\"margin:0 0 16px;color:#5E5E5E\">We're excited to help you turn your happy customers into 5-star reviews. To get started, there's just one critical step you need to take.</p>
+
+  <h2 style=\"margin:16px 0 8px;font-size:18px\">Your Critical First Step: Add Your Google Place ID</h2>
+  <ol style=\"margin:0 0 16px 18px;color:#5E5E5E;line-height:1.8\">
+    <li>Go to the official <a href=\"https://developers.google.com/maps/documentation/places/web-service/place-id\" style=\"color:#10B981;text-decoration:underline\">Google Place ID Finder</a> tool.</li>
+    <li>Type your business name in the search bar.</li>
+    <li>Select your business from the list that appears.</li>
+    <li>Your unique Place ID will be shown on the map. Copy it.</li>
+  </ol>
+  <p style=\"margin:18px 0\">
+    <a href=\"<%= appUrl %>/dashboard\" class=\"btn\" style=\"background:#10B981;color:#FFFFFF;border-radius:8px;border:none;text-decoration:none;padding:12px 18px;font-weight:700;display:inline-block\">Enter My Place ID</a>
+  </p>
 `; %>
 <%- include('base', { body: __body, appUrl }) %>
 
