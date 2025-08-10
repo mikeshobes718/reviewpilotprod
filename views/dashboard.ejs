@@ -272,7 +272,7 @@
           try {
             const resp = await fetch('/create-checkout-session', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
               body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
             });
             const data = await resp.json().catch(()=>null);

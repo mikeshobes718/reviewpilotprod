@@ -564,8 +564,12 @@
                 success_url: `${appUrl}/payment-success`,
                 cancel_url: `${appUrl}/dashboard`,
             });
-            // Respond JSON for Stripe.js, but also allow fallback redirect
-            return res.json({ id: sessionObj.id, url: sessionObj.url });
+            // Respond JSON for Stripe.js (AJAX), otherwise redirect for normal form POST
+            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json'));
+            if (isAjax) {
+                return res.json({ id: sessionObj.id, url: sessionObj.url });
+            }
+            return res.redirect(303, sessionObj.url);
         } catch (error) {
             console.error('❌ Error creating checkout session:', error);
             const msg = encodeURIComponent('Error creating checkout session.');
