@@ -74,7 +74,10 @@
                 <% if (business.subscriptionStatus === 'active') { %>
                   <a href="/billing-portal" class="btn btn-secondary">Downgrade</a>
                 <% } else { %>
-                  <button class="btn-primary" disabled>Start free trial</button>
+                  <form action="/start-free-trial" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                    <button type="submit" class="btn btn-secondary">Start free trial</button>
+                  </form>
                 <% } %>
                 <ul style="list-style:none;padding:0;margin:8px 0 0;color:var(--muted);line-height:1.9">
                   <li><span class="check">✓</span>Up to 5 requests each month</li>

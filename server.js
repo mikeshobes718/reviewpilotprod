@@ -537,6 +537,41 @@
             res.status(500).send("Error creating checkout session.");
         }
     });
+
+    // Start free trial (no charge). Records trial dates and ensures Stripe customer exists for later upgrade
+    app.post('/start-free-trial', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            const snap = await ref.get();
+            if (!snap.exists) return res.redirect('/dashboard');
+            const data = snap.data() || {};
+            // If already pro, nothing to do
+            if (data.subscriptionStatus === 'active') return res.redirect('/dashboard');
+
+            // Ensure Stripe customer exists so upgrade is instant later
+            let customerId = data.stripeCustomerId;
+            if (!customerId) {
+                const customer = await stripe.customers.create({
+                    email: data.email || req.session.user.email,
+                    name: data.businessName || req.session.user.displayName || undefined,
+                });
+                customerId = customer.id;
+            }
+
+            const now = new Date();
+            const ends = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+            await ref.update({
+                stripeCustomerId: customerId,
+                subscriptionStatus: 'trial',
+                trialStart: now.toISOString(),
+                trialEndsAt: ends.toISOString(),
+            });
+            return res.redirect('/dashboard');
+        } catch (e) {
+            console.error('❌ Error starting free trial:', e);
+            return res.redirect('/dashboard');
+        }
+    });
     // Downgrade (cancel at period end)
     app.post('/subscription/cancel', requireLogin, csrfProtection, async (req, res) => {
         try {
