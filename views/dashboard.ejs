@@ -64,6 +64,11 @@
         <div class="subscription-wrap">
           <div class="base-card" style="max-width:900px; width:100%">
             <h2 style="margin:0 0 12px;border-bottom:1px solid var(--border);padding-bottom:10px">Subscription</h2>
+            <% if (typeof business !== 'undefined' && business.subscriptionStatus === 'trial' && business.trialEndsAt) { %>
+              <div style="margin:-6px 0 8px; color: var(--muted); font-size:13px">
+                Free trial active — ends <strong><%= new Date(business.trialEndsAt).toLocaleDateString() %></strong>
+              </div>
+            <% } %>
             <div class="plan-cols">
               <div class="plan-col">
                 <div class="card-title" style="font-size:18px">Starter</div>

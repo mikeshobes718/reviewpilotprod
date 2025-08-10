@@ -571,13 +571,17 @@
             if (data.subscriptionStatus === 'active') return res.redirect('/dashboard');
 
             // Ensure Stripe customer exists so upgrade is instant later
-            let customerId = data.stripeCustomerId;
-            if (!customerId) {
-                const customer = await stripe.customers.create({
-                    email: data.email || req.session.user.email,
-                    name: data.businessName || req.session.user.displayName || undefined,
-                });
-                customerId = customer.id;
+            let customerId = data.stripeCustomerId || null;
+            if (!customerId && process.env.STRIPE_SECRET_KEY) {
+                try {
+                    const customer = await stripe.customers.create({
+                        email: data.email || req.session.user.email,
+                        name: data.businessName || req.session.user.displayName || undefined,
+                    });
+                    customerId = customer.id;
+                } catch (stripeErr) {
+                    console.warn('Stripe customer create failed; proceeding with app-side trial only');
+                }
             }
 
             const now = new Date();
@@ -588,7 +592,7 @@
                 trialStart: now.toISOString(),
                 trialEndsAt: ends.toISOString(),
             });
-            return res.redirect('/dashboard');
+            return res.redirect('/dashboard?trial=1');
         } catch (e) {
             console.error('❌ Error starting free trial:', e);
             return res.redirect('/dashboard');
