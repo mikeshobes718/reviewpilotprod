@@ -565,10 +565,7 @@
                 cancel_url: `${appUrl}/dashboard`,
             });
             // Respond JSON for Stripe.js, but also allow fallback redirect
-            if (req.headers['content-type'] && req.headers['content-type'].includes('application/x-www-form-urlencoded')) {
-                return res.json({ id: sessionObj.id, url: sessionObj.url });
-            }
-            return res.redirect(303, sessionObj.url);
+            return res.json({ id: sessionObj.id, url: sessionObj.url });
         } catch (error) {
             console.error('❌ Error creating checkout session:', error);
             const msg = encodeURIComponent('Error creating checkout session.');

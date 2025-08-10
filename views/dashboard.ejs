@@ -264,22 +264,29 @@
     <script>
       (function(){
         var upgradeBtn = document.getElementById('btn-upgrade-pro');
-        if (!upgradeBtn || !window.Stripe) return;
-        var stripe = Stripe('<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>');
+        if (!upgradeBtn) return;
+        var publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>';
+        var stripe = (window.Stripe && publishableKey) ? Stripe(publishableKey) : null;
         upgradeBtn.addEventListener('click', async function(){
           upgradeBtn.disabled = true; upgradeBtn.textContent = 'Redirecting...';
           try {
-            const resp = await fetch('/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>' });
-            // If server redirects directly to Checkout url, follow it; otherwise expect 200 JSON
-            if (resp.redirected && resp.url) { window.location = resp.url; return; }
+            const resp = await fetch('/create-checkout-session', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
+            });
             const data = await resp.json().catch(()=>null);
-            if (data && data.id) {
-              await stripe.redirectToCheckout({ sessionId: data.id });
-              return;
+            if (data && data.id && stripe) {
+              const { error } = await stripe.redirectToCheckout({ sessionId: data.id });
+              if (!error) return;
             }
-            // Fallback reload
-            window.location.reload();
-          } catch (e) { console.error(e); window.location.reload(); }
+            if (data && data.url) { window.location = data.url; return; }
+            if (resp.redirected && resp.url) { window.location = resp.url; return; }
+            window.location.href = '/dashboard?e=' + encodeURIComponent('Checkout session not available');
+          } catch (e) {
+            console.error('stripe checkout error', e);
+            window.location.href = '/dashboard?e=' + encodeURIComponent('Checkout failed');
+          }
         });
       })();
     </script>
