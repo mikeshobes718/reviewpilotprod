@@ -13,7 +13,13 @@
     <section class="section" style="text-align:center">
       <h1 class="hero-title" style="font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:clamp(42px,7vw,64px)">Powerful Features to Grow Your Reputation.</h1>
       <p class="body-text" style="color:var(--muted);max-width:760px;margin:8px auto 0">Everything you need to request reviews, filter feedback, and see clear analytics—all in one place.</p>
-      <div class="mt-3"><a href="/signup" class="btn primary">Get started</a></div>
+      <div class="mt-3">
+        <% if (user) { %>
+          <a href="/dashboard" class="btn primary">Go to Dashboard</a>
+        <% } else { %>
+          <a href="/signup" class="btn primary">Get started</a>
+        <% } %>
+      </div>
     </section>
 
     <!-- Feature Spotlight 1 -->
@@ -44,7 +50,11 @@
     <section class="containedSection">
       <div style="text-align:center">
         <h2 class="hero-title" style="font-size:36px">Ready to turn customers into reviews?</h2>
-        <a href="/signup" class="btn primary" style="margin-top:8px">Get started</a>
+        <% if (user) { %>
+          <a href="/dashboard" class="btn primary" style="margin-top:8px">Go to Dashboard</a>
+        <% } else { %>
+          <a href="/signup" class="btn primary" style="margin-top:8px">Get started</a>
+        <% } %>
       </div>
     </section>
   </main>

@@ -18,7 +18,11 @@
           <h1 class="hero-title" style="font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:clamp(42px,7vw,72px);line-height:1.15;color:var(--text)">Turn happy customers into 5‑star reviews</h1>
           <p class="body-text" style="color:var(--muted)">High‑converting requests, smart filtering for 1‑4★, and simple analytics to grow your rating.</p>
           <div class="d-flex gap-2 justify-content-center justify-content-lg-start mt-3">
-            <a class="btn primary" href="/signup">Start free</a>
+            <% if (user) { %>
+              <a class="btn primary" href="/dashboard">Go to Dashboard</a>
+            <% } else { %>
+              <a class="btn primary" href="/signup">Start free</a>
+            <% } %>
             <a class="btn secondary" href="/pricing">See pricing</a>
           </div>
         </div>
