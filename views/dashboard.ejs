@@ -44,6 +44,8 @@
         @media (max-width: 700px){ .plan-cols{ grid-template-columns:1fr } }
         .plan-col{ padding:8px 16px }
         .plan-col + .plan-col{ border-left:1px solid var(--border) }
+        /* Center the main subscription card */
+        .subscription-wrap{ display:flex; justify-content:center; padding-top:48px }
 
         .table-wrap{ overflow:auto; border:1px solid var(--theme-colors-border-table); border-radius:12px }
         table{ width:100%; border-collapse:collapse }
@@ -59,8 +61,8 @@
 
     <main class="main-content">
       <div class="container">
-        <div class="grid">
-          <div class="base-card">
+        <div class="subscription-wrap">
+          <div class="base-card" style="max-width:900px; width:100%">
             <h2 style="margin:0 0 12px;border-bottom:1px solid var(--border);padding-bottom:10px">Subscription</h2>
             <div class="plan-cols">
               <div class="plan-col">
@@ -99,7 +101,7 @@
                   <li><span class="check">✓</span>Full analytics & exports</li>
                   <li><span class="check">✓</span>Priority support</li>
                 </ul>
-              </div>
+          </div>
             </div>
 
             <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
