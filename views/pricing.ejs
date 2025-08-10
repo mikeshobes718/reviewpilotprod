@@ -24,7 +24,9 @@
             <div class="price-figure">Free</div>
             <div class="price-label">30‑day trial</div>
           </div>
-          <% if (user) { %>
+          <% if (user && subscriptionStatus === 'trial') { %>
+            <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Your Current Plan</button>
+          <% } else if (user) { %>
             <a href="/dashboard" class="btn primary" style="margin:8px 0 12px">Go to Dashboard</a>
           <% } else if (subscriptionStatus === 'active') { %>
             <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Start free trial</button>
@@ -47,7 +49,12 @@
             <div class="price-figure">$49</div>
             <div class="price-label">/mo</div>
           </div>
-          <% if (user && subscriptionStatus === 'active') { %>
+          <% if (user && subscriptionStatus === 'trial') { %>
+            <form action="/create-checkout-session" method="POST" style="margin:0">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <button type="submit" class="btn primary" style="margin:8px 0 12px">Upgrade to Pro</button>
+            </form>
+          <% } else if (user && subscriptionStatus === 'active') { %>
             <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Your Current Plan</button>
           <% } else if (user) { %>
             <a href="/dashboard" class="btn primary" style="margin:8px 0 12px">Go to Dashboard</a>
