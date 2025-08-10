@@ -103,10 +103,7 @@
                  <% if (business.subscriptionStatus === 'active') { %>
                   <a href="/billing-portal" class="btn btn-secondary" style="margin:8px 0 12px">Manage Subscription</a>
                 <% } else { %>
-                  <form action="/create-checkout-session" method="POST">
-                    <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-                    <button type="submit" class="btn-primary" style="margin:8px 0 12px">Upgrade to Pro</button>
-                  </form>
+                  <button id="btn-upgrade-pro" class="btn-primary" style="margin:8px 0 12px">Upgrade to Pro</button>
                 <% } %>
                 <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
                   <li><span class="check">✓</span>Unlimited requests</li>
@@ -253,6 +250,7 @@
     </script>
     <!-- Lightweight QR code generator; allowed in dev where CSP is disabled -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
       (function(){
         var box = document.getElementById('qrcode');
@@ -261,6 +259,28 @@
         // Clear any existing QR to avoid duplicates
         while (box.firstChild) box.removeChild(box.firstChild);
         try { new QRCode(box, { text: link, width: 160, height: 160, correctLevel: QRCode.CorrectLevel.M }); } catch(e) { console.error('QR error', e); }
+      })();
+    </script>
+    <script>
+      (function(){
+        var upgradeBtn = document.getElementById('btn-upgrade-pro');
+        if (!upgradeBtn || !window.Stripe) return;
+        var stripe = Stripe('<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>');
+        upgradeBtn.addEventListener('click', async function(){
+          upgradeBtn.disabled = true; upgradeBtn.textContent = 'Redirecting...';
+          try {
+            const resp = await fetch('/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>' });
+            // If server redirects directly to Checkout url, follow it; otherwise expect 200 JSON
+            if (resp.redirected && resp.url) { window.location = resp.url; return; }
+            const data = await resp.json().catch(()=>null);
+            if (data && data.id) {
+              await stripe.redirectToCheckout({ sessionId: data.id });
+              return;
+            }
+            // Fallback reload
+            window.location.reload();
+          } catch (e) { console.error(e); window.location.reload(); }
+        });
       })();
     </script>
 </body>

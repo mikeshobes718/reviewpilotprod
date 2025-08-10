@@ -53,7 +53,8 @@
                         'https://www.googletagmanager.com',
                         'https://www.google-analytics.com',
                         'https://plausible.io',
-                        'https://cdnjs.cloudflare.com'
+                        'https://cdnjs.cloudflare.com',
+                        'https://js.stripe.com'
                     ],
                     imgSrc: ["'self'", 'data:', 'https:'],
                     styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
@@ -63,7 +64,8 @@
                         "'self'",
                         'https://plausible.io',
                         'https://www.google-analytics.com',
-                        'https://identitytoolkit.googleapis.com'
+                        'https://identitytoolkit.googleapis.com',
+                        'https://api.stripe.com'
                     ],
                     objectSrc: ["'none'"],
                     upgradeInsecureRequests: []
@@ -562,6 +564,10 @@
                 success_url: `${appUrl}/payment-success`,
                 cancel_url: `${appUrl}/dashboard`,
             });
+            // Respond JSON for Stripe.js, but also allow fallback redirect
+            if (req.headers['content-type'] && req.headers['content-type'].includes('application/x-www-form-urlencoded')) {
+                return res.json({ id: sessionObj.id, url: sessionObj.url });
+            }
             return res.redirect(303, sessionObj.url);
         } catch (error) {
             console.error('❌ Error creating checkout session:', error);
