@@ -542,21 +542,31 @@
                 const msg = encodeURIComponent('Stripe price is not configured.');
                 return res.redirect('/dashboard?e=' + msg);
             }
-            const doc = await db.collection('businesses').doc(req.session.user.uid).get();
-            const businessData = doc.data();
-            const checkoutSession = await stripe.checkout.sessions.create({
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            const snap = await ref.get();
+            const b = snap.data() || {};
+            let customerId = b.stripeCustomerId || null;
+            if (!customerId) {
+                const customer = await stripe.customers.create({
+                    email: b.email || req.session.user.email,
+                    name: b.businessName || req.session.user.displayName || undefined,
+                });
+                customerId = customer.id;
+                await ref.update({ stripeCustomerId: customerId });
+            }
+            const sessionObj = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
-                customer: businessData.stripeCustomerId,
+                customer: customerId,
                 line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
                 mode: 'subscription',
                 success_url: `${appUrl}/payment-success`,
                 cancel_url: `${appUrl}/dashboard`,
             });
-            res.redirect(303, checkoutSession.url);
+            return res.redirect(303, sessionObj.url);
         } catch (error) {
-            console.error("❌ Error creating checkout session:", error);
+            console.error('❌ Error creating checkout session:', error);
             const msg = encodeURIComponent('Error creating checkout session.');
-            res.redirect('/dashboard?e=' + msg);
+            return res.redirect('/dashboard?e=' + msg);
         }
     });
 
