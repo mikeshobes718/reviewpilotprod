@@ -408,6 +408,22 @@
                 console.error('Reset error:', body);
                 return res.status(400).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Could not send reset email. Check the address.' });
             }
+            // If SMTP is available, also send a branded reset email (optional) with explicit link
+            try {
+                const transport = nodemailer.createTransport({
+                    host: process.env.SMTP_HOST,
+                    port: Number(process.env.SMTP_PORT || 587),
+                    secure: false,
+                    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+                });
+                if (process.env.SMTP_HOST && appUrl) {
+                    const resetUrl = `${appUrl}/login`; // We do not receive the Firebase OOB link here; the official email is sent by Firebase. Provide dashboard/login as fallback CTA.
+                    const html = await new Promise((resolve, reject) => {
+                        app.render('emails/reset', { appUrl, resetUrl }, (err, str) => err ? reject(err) : resolve(str));
+                    });
+                    await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: 'Reset your password', html });
+                }
+            } catch (mailErr) { console.warn('Optional reset email failed:', mailErr.message); }
             return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null });
         } catch (e) {
             console.error('Reset exception:', e);
