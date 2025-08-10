@@ -290,7 +290,7 @@
     app.post('/signup', async (req, res) => {
         try {
             const { businessName, email, password } = req.body;
-            const userRecord = await auth.createUser({ email, password, displayName: businessName });
+            const userRecord = await auth.createUser({ email, password, displayName: businessName, emailVerified: false });
             const customer = await stripe.customers.create({ email, name: businessName });
             await db.collection('businesses').doc(userRecord.uid).set({
                 businessName, email, googlePlaceId: null,
@@ -298,22 +298,24 @@
                 createdAt: new Date().toISOString(),
             });
             console.log(`✅ Full signup complete for: ${email}`);
-            // Send Welcome email (best-effort)
+            // Send verification + welcome; then show verify page
             try {
-                const transport = nodemailer.createTransport({
-                    host: process.env.SMTP_HOST,
-                    port: Number(process.env.SMTP_PORT || 587),
-                    secure: false,
-                    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
-                });
-                const html = await new Promise((resolve, reject) => {
-                    app.render('emails/welcome', { appUrl }, (err, str) => err ? reject(err) : resolve(str));
-                });
+                const verifyUrl = await auth.generateEmailVerificationLink(email, { url: `${appUrl}/login` });
                 if (process.env.SMTP_HOST) {
-                    await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: 'Welcome to ReviewPilot', html });
+                    const transport = nodemailer.createTransport({
+                        host: process.env.SMTP_HOST,
+                        port: Number(process.env.SMTP_PORT || 587),
+                        secure: false,
+                        auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+                    });
+                    const htmlWelcome = await new Promise((resolve, reject) => {
+                        app.render('emails/welcome', { appUrl }, (err, str) => err ? reject(err) : resolve(str));
+                    });
+                    const htmlVerify = `<p style="font-family:Inter,Arial,sans-serif;color:#1B1B1B">Confirm your email to activate your account:</p><p><a href="${verifyUrl}" style="background:#10B981;color:#fff;text-decoration:none;border-radius:8px;padding:12px 18px;display:inline-block;font-weight:700">Verify Email</a></p>`;
+                    await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: "Welcome to Reviews & Marketing! Let's get you started.", html: htmlWelcome + htmlVerify });
                 }
-            } catch (mailErr) { console.warn('Welcome email failed:', mailErr.message); }
-            res.redirect('/login');
+            } catch (mailErr) { console.warn('Verification/welcome email failed:', mailErr.message); }
+            res.redirect('/verify-email');
         } catch (error) {
             console.error("❌ Error during signup:", error);
             let msg = 'Something went wrong during signup.';
@@ -323,6 +325,9 @@
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
             res.status(400).render('signup', { csrfToken: token, error: msg });
         }
+    });
+    app.get('/verify-email', (req, res) => {
+        res.render('verify', { user: req.session.user || null });
     });
     app.get('/login', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
