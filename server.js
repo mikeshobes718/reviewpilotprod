@@ -563,6 +563,8 @@
                 mode: 'subscription',
                 success_url: `${appUrl}/payment-success`,
                 cancel_url: `${appUrl}/dashboard`,
+                client_reference_id: req.session.user.uid,
+                metadata: { appUserId: req.session.user.uid }
             });
             // Respond JSON for Stripe.js (AJAX), otherwise redirect for normal form POST
             const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json'));
