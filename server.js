@@ -431,7 +431,8 @@
                 appUrl: appUrl, // Pass the appUrl to the dashboard
                 csrfToken: req.csrfToken(),
                 analytics: { total, avg, counts, conversions },
-                billing
+                billing,
+                pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
             });
         } catch (error) {
             console.error("❌ Error fetching dashboard data:", error);

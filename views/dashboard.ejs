@@ -67,6 +67,9 @@
         <div class="subscription-wrap">
           <div class="base-card" style="max-width:900px; width:100%">
             <h2 style="margin:0 0 12px;border-bottom:1px solid var(--border);padding-bottom:10px">Subscription</h2>
+            <% if (typeof pageError !== 'undefined' && pageError) { %>
+              <div class="notice-banner" style="background:#FEF2F2;color:#991B1B">Error: <%= pageError %></div>
+            <% } %>
             <% if (typeof business !== 'undefined' && business.subscriptionStatus === 'trial' && business.trialEndsAt) { %>
               <div class="notice-banner" style="margin-bottom:12px">
                 <span aria-hidden="true">✅</span>
