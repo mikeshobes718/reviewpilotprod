@@ -266,7 +266,16 @@
         }
     });
     app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • ReviewPilot', user: req.session.user || null }));
-    app.get('/pricing', csrfProtection, (req, res) => res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot', user: req.session.user || null }));
+    app.get('/pricing', csrfProtection, async (req, res) => {
+        let subscriptionStatus = null;
+        try {
+            if (req.session.user) {
+                const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+                if (doc.exists) subscriptionStatus = doc.data().subscriptionStatus || null;
+            }
+        } catch (_) { /* ignore */ }
+        res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot', user: req.session.user || null, subscriptionStatus });
+    });
     app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • ReviewPilot', user: req.session.user || null }));
     app.get('/signup', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
