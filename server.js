@@ -55,7 +55,8 @@
                         'https://www.google-analytics.com',
                         'https://plausible.io',
                         'https://cdnjs.cloudflare.com',
-                        'https://js.stripe.com'
+                        'https://js.stripe.com',
+                        'https://www.gstatic.com'
                     ],
                     imgSrc: ["'self'", 'data:', 'https:'],
                     styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
@@ -81,7 +82,8 @@
                         'https://plausible.io',
                         'https://www.google-analytics.com',
                         'https://identitytoolkit.googleapis.com',
-                        'https://api.stripe.com'
+                        'https://api.stripe.com',
+                        'https://www.googleapis.com'
                     ],
                     objectSrc: ["'none'"],
                     upgradeInsecureRequests: []

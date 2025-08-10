@@ -36,18 +36,65 @@
           <% if (sent) { %>
             <div class="noticeBanner">Check your email for a reset link.</div>
           <% } %>
-          <form action="/reset-password" method="POST">
+          <form id="reset-form" action="/reset-password" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div>
               <label>Email</label>
-              <input class="input" type="email" name="email" placeholder="you@business.com" required>
+              <input id="reset-email" class="input" type="email" name="email" placeholder="you@business.com" required>
             </div>
-            <button class="btn-primary" type="submit" style="margin-top:24px">Send reset link</button>
+            <button id="reset-btn" class="btn-primary" type="submit" style="margin-top:24px">Send reset link</button>
           </form>
           <div class="row" style="margin-top:12px"><a class="link-accent" href="/login">Back to login</a></div>
         </div>
       </div>
     </div>
     <%- include('partials/footer') %>
+    <script>
+      (function(){
+        const apiKey = '<%= typeof process !== 'undefined' && process.env && process.env.FIREBASE_API_KEY ? process.env.FIREBASE_API_KEY : '' %>';
+        const form = document.getElementById('reset-form');
+        const email = document.getElementById('reset-email');
+        const btn = document.getElementById('reset-btn');
+        if (!form || !email || !btn || !apiKey) return;
+        form.addEventListener('submit', async function(e){
+          e.preventDefault();
+          btn.disabled = true; btn.textContent = 'Sending...';
+          try {
+            // Minimal client-side Firebase reset (REST API to avoid heavy SDK)
+            const resp = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=' + apiKey, {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ requestType: 'PASSWORD_RESET', email: email.value })
+            });
+            const data = await resp.json().catch(()=>({}));
+            if (!resp.ok) {
+              const code = (data && data.error && data.error.message) || '';
+              let msg = 'Could not send reset email. Check the address.';
+              if (code.includes('EMAIL_NOT_FOUND') || code.includes('USER_NOT_FOUND')) msg = 'No account found for that email.';
+              throw new Error(msg);
+            }
+            // Show success banner inline
+            var banner = document.querySelector('.noticeBanner');
+            if (!banner) {
+              banner = document.createElement('div');
+              banner.className = 'noticeBanner';
+              const card = form.parentNode;
+              card.insertBefore(banner, form);
+            }
+            banner.textContent = 'Check your email for a reset link.';
+            btn.disabled = false; btn.textContent = 'Send reset link';
+          } catch (err) {
+            var errBox = document.querySelector('.error');
+            if (!errBox) {
+              errBox = document.createElement('div');
+              errBox.className = 'error';
+              const card = form.parentNode;
+              card.insertBefore(errBox, form);
+            }
+            errBox.textContent = err.message || 'Reset failed';
+            btn.disabled = false; btn.textContent = 'Send reset link';
+          }
+        });
+      })();
+    </script>
   </body>
   </html>
