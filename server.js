@@ -396,39 +396,85 @@
     });
     app.post('/reset-password', csrfProtection, async (req, res) => {
         try {
-            const apiKey = process.env.FIREBASE_API_KEY;
             const { email } = req.body;
-            const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ requestType: 'PASSWORD_RESET', email })
-            });
-            if (!resp.ok) {
-                const body = await resp.json().catch(() => ({}));
-                console.error('Reset error:', body);
-                return res.status(400).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Could not send reset email. Check the address.' });
-            }
-            // If SMTP is available, also send a branded reset email (optional) with explicit link
+            // Prefer branded email: generate password reset link with continue URL to our handler
+            let resetUrl = null;
             try {
-                const transport = nodemailer.createTransport({
-                    host: process.env.SMTP_HOST,
-                    port: Number(process.env.SMTP_PORT || 587),
-                    secure: false,
-                    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+                resetUrl = await auth.generatePasswordResetLink(email, {
+                    url: `${appUrl}/auth/action`,
+                    handleCodeInApp: true
                 });
-                if (process.env.SMTP_HOST && appUrl) {
-                    const resetUrl = `${appUrl}/login`; // We do not receive the Firebase OOB link here; the official email is sent by Firebase. Provide dashboard/login as fallback CTA.
+            } catch (genErr) {
+                console.warn('generatePasswordResetLink failed; falling back to Firebase default email', genErr.message);
+                const apiKey = process.env.FIREBASE_API_KEY;
+                const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ requestType: 'PASSWORD_RESET', email, continueUrl: `${appUrl}/auth/action` })
+                });
+                if (!resp.ok) {
+                    const body = await resp.json().catch(() => ({}));
+                    console.error('Reset error:', body);
+                    return res.status(400).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Could not send reset email. Check the address.' });
+                }
+            }
+            // Send branded email if SMTP configured and we have a generated link
+            if (resetUrl && process.env.SMTP_HOST) {
+                try {
+                    const transport = nodemailer.createTransport({
+                        host: process.env.SMTP_HOST,
+                        port: Number(process.env.SMTP_PORT || 587),
+                        secure: false,
+                        auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+                    });
                     const html = await new Promise((resolve, reject) => {
                         app.render('emails/reset', { appUrl, resetUrl }, (err, str) => err ? reject(err) : resolve(str));
                     });
                     await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: 'Reset your password', html });
-                }
-            } catch (mailErr) { console.warn('Optional reset email failed:', mailErr.message); }
+                } catch (mailErr) { console.warn('Branded reset email failed:', mailErr.message); }
+            }
             return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null });
         } catch (e) {
             console.error('Reset exception:', e);
             return res.status(500).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Unexpected error. Try again.' });
         }
+    });
+
+    // Firebase Action handler (password reset)
+    app.get('/auth/action', csrfProtection, async (req, res) => {
+        try {
+            const { mode, oobCode } = req.query || {};
+            if (mode !== 'resetPassword' || !oobCode) {
+                return res.status(400).send('Invalid action');
+            }
+            const apiKey = process.env.FIREBASE_API_KEY;
+            // Verify code to get email
+            const v = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${apiKey}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ oobCode })
+            });
+            const vjson = await v.json();
+            if (!v.ok || !vjson.email) {
+                return res.status(400).send('This password reset link is invalid or expired.');
+            }
+            return res.render('action', { csrfToken: req.csrfToken(), oobCode, email: vjson.email });
+        } catch (e) { console.error('action get error', e); return res.status(500).send('Server error'); }
+    });
+    app.post('/auth/action', csrfProtection, async (req, res) => {
+        try {
+            const apiKey = process.env.FIREBASE_API_KEY;
+            const { oobCode, newPassword } = req.body || {};
+            if (!oobCode || !newPassword) return res.status(400).send('Missing fields');
+            const c = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${apiKey}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ oobCode, newPassword })
+            });
+            const cjson = await c.json().catch(()=>({}));
+            if (!c.ok) {
+                const msg = (cjson && cjson.error && cjson.error.message) || 'Could not reset password.';
+                return res.status(400).render('action', { csrfToken: req.csrfToken(), oobCode, email: '', error: msg });
+            }
+            return res.redirect('/login');
+        } catch (e) { console.error('action post error', e); return res.status(500).send('Server error'); }
     });
 
     // DASHBOARD & SETTINGS ROUTES

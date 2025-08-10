@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a new password • ReviewPilot</title>
+    <%- include('partials/head') %>
+    <style>
+      * { box-sizing: border-box; }
+      body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; }
+      .base-card { width: 360px; margin: 40px auto; }
+      label { font-size: 13px; color: var(--muted); font-weight: 600; }
+      p.sub { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+      .error { background:#FEF2F2; color:#991B1B; border:1px solid #FECACA; padding:10px 12px; border-radius:8px; font-size:14px; margin-bottom:8px }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="auth-grid">
+      <div class="auth-left">
+        <div>
+          <h1>Create a new password</h1>
+          <p>Make sure it's secure and memorable.</p>
+        </div>
+      </div>
+      <div class="auth-right">
+        <div class="base-card">
+          <div class="brand"><div class="badge">ReviewPilot</div></div>
+          <h1>Reset your password</h1>
+          <p class="sub">Enter a new password below.</p>
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+          <% } %>
+          <form action="/auth/action" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="oobCode" value="<%= oobCode %>">
+            <div>
+              <label>New password</label>
+              <input class="input" type="password" name="newPassword" placeholder="••••••••" required>
+            </div>
+            <button class="btn-primary" type="submit" style="margin-top:24px">Save New Password</button>
+          </form>
+          <div class="row" style="margin-top:12px"><a class="link-accent" href="/login">Back to login</a></div>
+        </div>
+      </div>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+  </html>
+
+
