@@ -51,7 +51,7 @@
     <%- include('partials/footer') %>
     <script>
       (function(){
-        const apiKey = '<%= typeof process !== 'undefined' && process.env && process.env.FIREBASE_API_KEY ? process.env.FIREBASE_API_KEY : '' %>';
+        const apiKey = '<%= process.env.FIREBASE_API_KEY || '' %>';
         const form = document.getElementById('reset-form');
         const email = document.getElementById('reset-email');
         const btn = document.getElementById('reset-btn');
