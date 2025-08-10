@@ -91,7 +91,7 @@
                   <div class="price-figure">$49</div>
                   <div class="price-label">/mo</div>
                 </div>
-                <% if (business.subscriptionStatus === 'active') { %>
+                 <% if (business.subscriptionStatus === 'active') { %>
                   <a href="/billing-portal" class="btn btn-secondary" style="margin:8px 0 12px">Manage Subscription</a>
                 <% } else { %>
                   <form action="/create-checkout-session" method="POST">

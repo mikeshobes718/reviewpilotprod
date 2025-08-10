@@ -7,7 +7,9 @@
     <a href="/features" class="btn">Features</a>
     <a href="/pricing" class="btn">Pricing</a>
     <% if (typeof user !== 'undefined' && user) { %>
-      <a href="/dashboard" class="btn">Dashboard</a>
+      <% if (typeof userHasAccess !== 'undefined' && userHasAccess) { %>
+        <a href="/dashboard" class="btn">Dashboard</a>
+      <% } %>
       <span class="btn" style="cursor:default;opacity:.85;">Signed in: <%= user.email %></span>
       <a href="/logout" class="btn">Log out</a>
     <% } else { %>

@@ -92,6 +92,23 @@
         }
     }));
 
+    // Attach user access info (trial/active) for header visibility
+    app.use(async (req, res, next) => {
+        try {
+            res.locals.userHasAccess = false;
+            if (req.session && req.session.user) {
+                const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+                if (doc.exists) {
+                    const b = doc.data();
+                    const isActive = b.subscriptionStatus === 'active';
+                    const isTrial = b.subscriptionStatus === 'trial' && b.trialEndsAt && (new Date(b.trialEndsAt) > new Date());
+                    res.locals.userHasAccess = !!(isActive || isTrial);
+                }
+            }
+        } catch (_) { /* noop */ }
+        next();
+    });
+
     // Rate limiters
     const globalLimiter = rateLimit({
         windowMs: 15 * 60 * 1000,
@@ -521,6 +538,10 @@
     // PAYMENT ROUTES
     app.post('/create-checkout-session', requireLogin, csrfProtection, async (req, res) => {
         try {
+            if (!process.env.STRIPE_PRICE_ID) {
+                const msg = encodeURIComponent('Stripe price is not configured.');
+                return res.redirect('/dashboard?e=' + msg);
+            }
             const doc = await db.collection('businesses').doc(req.session.user.uid).get();
             const businessData = doc.data();
             const checkoutSession = await stripe.checkout.sessions.create({
@@ -534,7 +555,8 @@
             res.redirect(303, checkoutSession.url);
         } catch (error) {
             console.error("❌ Error creating checkout session:", error);
-            res.status(500).send("Error creating checkout session.");
+            const msg = encodeURIComponent('Error creating checkout session.');
+            res.redirect('/dashboard?e=' + msg);
         }
     });
 
