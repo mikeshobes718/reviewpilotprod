@@ -89,7 +89,7 @@
           <p style="margin-top:1rem; color: var(--text-secondary);">Distribution: 1★ <%= analytics.counts[1] %> • 2★ <%= analytics.counts[2] %> • 3★ <%= analytics.counts[3] %> • 4★ <%= analytics.counts[4] %> • 5★ <%= analytics.counts[5] %></p>
         </div>
         <% } %>
-        <div class="grid">
+        <div class="grid" id="settings-link">
           <div class="column">
             <div class="card base-card">
               <h2>Customer Feedback</h2>
@@ -120,7 +120,7 @@
                       <% }); %>
                     <% } else { %>
                       <tr>
-                        <td colspan="5" style="text-align:center; color: var(--muted); padding:28px 16px;">Your customer feedback will appear here.</td>
+                        <td colspan="5" style="text-align:center; color: var(--muted); padding:28px 16px;">Your customer feedback will appear here. <a href="#settings-link" style="color:var(--accent); text-decoration:underline">Send your first review request</a> to get started.</td>
                       </tr>
                     <% } %>
                   </tbody>
@@ -254,6 +254,29 @@
             alert('Copy failed');
           }
         });
+      })();
+    </script>
+    <script>
+      (function(){
+        // First-time welcome modal and guided highlight to Google Place ID
+        var welcomeKey = 'rp_welcome_seen';
+        var hasSeen = localStorage.getItem(welcomeKey);
+        var modal = document.getElementById('welcomeModal');
+        var goBtn = document.getElementById('welcomeContinue');
+        var placeInput = document.getElementById('googlePlaceId');
+        if (!hasSeen && modal && goBtn) {
+          modal.style.display = 'flex';
+          goBtn.addEventListener('click', function(){
+            modal.style.display = 'none';
+            localStorage.setItem(welcomeKey, '1');
+            if (placeInput) {
+              placeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              var prev = placeInput.style.boxShadow;
+              placeInput.style.boxShadow = '0 0 0 4px rgba(16,185,129,.35)';
+              setTimeout(function(){ placeInput.style.boxShadow = prev; }, 2200);
+            }
+          });
+        }
       })();
     </script>
     <!-- Lightweight QR code generator; allowed in dev where CSP is disabled -->

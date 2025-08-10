@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ReviewPilot</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+      body{margin:0;background:#F7F7F7;font-family:Inter,Manrope,Arial,sans-serif;color:#1B1B1B}
+      .container{max-width:640px;margin:24px auto;padding:0 16px}
+      .card{background:#FFFFFF;border:1px solid #F0F0F0;border-radius:16px;box-shadow:0 4px 20px rgba(30,30,30,0.06);overflow:hidden}
+      .header{padding:24px 24px 0;text-align:center}
+      .logo{display:inline-block;font-weight:800;color:#10B981;text-decoration:none;font-size:20px}
+      .body{padding:24px}
+      .btn{display:inline-block;background:#10B981;color:#fff;text-decoration:none;border-radius:8px;padding:12px 18px;font-weight:700}
+      .footer{padding:16px;text-align:center;color:#5E5E5E;font-size:12px}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <a class="logo" href="<%= appUrl || '' %>">ReviewPilot</a>
+        </div>
+        <div class="body">
+          <!-- CONTENT -->
+          <%- body %>
+        </div>
+        <div class="footer">© <%= new Date().getFullYear() %> ReviewPilot</div>
+      </div>
+    </div>
+  </body>
+  </html>
+
+

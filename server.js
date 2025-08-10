@@ -15,6 +15,7 @@
     const csurf = require('csurf');
     const morgan = require('morgan');
     const { z } = require('zod');
+    const nodemailer = require('nodemailer');
 
     // --- 2. INITIALIZE THE APP ---
     const app = express();
@@ -295,6 +296,21 @@
                 createdAt: new Date().toISOString(),
             });
             console.log(`✅ Full signup complete for: ${email}`);
+            // Send Welcome email (best-effort)
+            try {
+                const transport = nodemailer.createTransport({
+                    host: process.env.SMTP_HOST,
+                    port: Number(process.env.SMTP_PORT || 587),
+                    secure: false,
+                    auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+                });
+                const html = await new Promise((resolve, reject) => {
+                    app.render('emails/welcome', { appUrl }, (err, str) => err ? reject(err) : resolve(str));
+                });
+                if (process.env.SMTP_HOST) {
+                    await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: 'Welcome to ReviewPilot', html });
+                }
+            } catch (mailErr) { console.warn('Welcome email failed:', mailErr.message); }
             res.redirect('/login');
         } catch (error) {
             console.error("❌ Error during signup:", error);
