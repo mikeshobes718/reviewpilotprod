@@ -59,7 +59,22 @@
                     imgSrc: ["'self'", 'data:', 'https:'],
                     styleSrc: ["'self'", "'unsafe-inline'", 'https:'],
                     fontSrc: ["'self'", 'https:', 'data:'],
-                    frameSrc: ["'self'", 'https://www.youtube.com', 'https://www.youtube-nocookie.com'],
+                    frameSrc: [
+                        "'self'",
+                        'https://www.youtube.com',
+                        'https://www.youtube-nocookie.com',
+                        'https://js.stripe.com',
+                        'https://checkout.stripe.com'
+                    ],
+                    childSrc: [
+                        "'self'",
+                        'https://js.stripe.com',
+                        'https://checkout.stripe.com'
+                    ],
+                    formAction: [
+                        "'self'",
+                        'https://checkout.stripe.com'
+                    ],
                     connectSrc: [
                         "'self'",
                         'https://plausible.io',
