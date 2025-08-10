@@ -83,8 +83,10 @@
                   <div class="price-figure">Free</div>
                   <div class="price-label">30‑day trial</div>
                 </div>
-                <% if (business.subscriptionStatus === 'active' || business.subscriptionStatus === 'trial') { %>
+                <% if (business.subscriptionStatus === 'trial') { %>
                   <button class="btn-disabled" disabled>Your Current Plan</button>
+                <% } else if (business.subscriptionStatus === 'active') { %>
+                  <a href="/billing-portal" class="btn btn-secondary">Downgrade</a>
                 <% } else { %>
                   <form action="/start-free-trial" method="POST">
                     <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">

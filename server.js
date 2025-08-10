@@ -159,12 +159,17 @@
                 case 'checkout.session.completed': {
                     const sessionObj = event.data.object;
                     const customerId = sessionObj.customer;
-                    // Find business by stripeCustomerId
-                    const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
-                    if (!snap.empty) {
-                        const docRef = snap.docs[0].ref;
-                        await docRef.update({ subscriptionStatus: 'active' });
-                        console.log('✅ Subscription activated via webhook for customer:', customerId);
+                    const uid = sessionObj.client_reference_id || null;
+                    if (uid) {
+                        await db.collection('businesses').doc(uid).update({ subscriptionStatus: 'active', stripeCustomerId: customerId });
+                        console.log('✅ Subscription activated via webhook (by uid):', uid);
+                    } else {
+                        const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
+                        if (!snap.empty) {
+                            const docRef = snap.docs[0].ref;
+                            await docRef.update({ subscriptionStatus: 'active' });
+                            console.log('✅ Subscription activated via webhook for customer:', customerId);
+                        }
                     }
                     break;
                 }
