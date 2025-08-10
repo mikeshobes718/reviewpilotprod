@@ -41,10 +41,12 @@
         .qr-placeholder{ width:128px; height:128px; border:1px solid var(--border); border-radius:8px; display:block }
 
         /* Subscription widget layout */
-        .plan-cols{ display:grid; grid-template-columns:1fr 1fr; gap:0 }
-        @media (max-width: 700px){ .plan-cols{ grid-template-columns:1fr } }
-        .plan-col{ padding:8px 16px }
-        .plan-col + .plan-col{ border-left:1px solid var(--border) }
+        .plan-cols{ display:grid; grid-template-columns:1fr; gap:16px; align-items:stretch }
+        @media (min-width: 700px){ .plan-cols{ grid-template-columns:1fr 1fr } }
+        .plan-col{ padding:16px; display:flex; flex-direction:column; border-radius:12px }
+        .plan-price{ display:flex; align-items:baseline; gap:6px; margin-top:4px }
+        .plan-features{ list-style:none; padding:0; margin:12px 0 0; color:var(--muted); line-height:1.9 }
+        .plan-actions{ margin-top:auto }
         /* Center the main subscription card */
         .subscription-wrap{ display:flex; justify-content:center; padding-top:48px }
         /* Notice banner */
@@ -163,42 +165,46 @@
               <div class="plan-cols">
                 <div class="plan-col">
                   <div class="card-title" style="font-size:18px">Starter</div>
-                  <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+                  <div class="plan-price">
                     <div class="price-figure">Free</div>
                     <div class="price-label"><%= business.subscriptionStatus === 'active' ? 'Free Plan' : '30‑day trial' %></div>
                   </div>
-                  <% if (business.subscriptionStatus === 'trial') { %>
-                    <button class="btn-disabled" disabled>Your Current Plan</button>
-                  <% } else if (business.subscriptionStatus === 'active') { %>
-                    <button type="button" id="btn-downgrade" class="btn btn-secondary">Downgrade</button>
-                  <% } else { %>
-                    <form action="/start-free-trial" method="POST">
-                      <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-                      <button type="submit" class="btn btn-secondary">Start free trial</button>
-                    </form>
-                  <% } %>
-                  <ul style="list-style:none;padding:0;margin:8px 0 0;color:var(--muted);line-height:1.9">
+                  <ul class="plan-features">
                     <li><span class="check">✓</span>Up to 5 requests each month</li>
                     <li><span class="check">✓</span>Basic analytics</li>
                     <li><span class="check">✓</span>Email support</li>
                   </ul>
+                  <div class="plan-actions">
+                    <% if (business.subscriptionStatus === 'trial') { %>
+                      <button class="btn-disabled" disabled>Your Current Plan</button>
+                    <% } else if (business.subscriptionStatus === 'active') { %>
+                      <button type="button" id="btn-downgrade" class="btn btn-secondary">Downgrade</button>
+                    <% } else { %>
+                      <form action="/start-free-trial" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                        <button type="submit" class="btn btn-secondary">Start free trial</button>
+                      </form>
+                    <% } %>
+                  </div>
                 </div>
                 <div class="plan-col" style="border:2px solid #10B981; border-radius:12px">
                   <div class="card-title" style="font-size:18px">Pro</div>
-                  <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+                  <div class="plan-price">
                     <div class="price-figure">$49</div>
                     <div class="price-label">/mo</div>
                   </div>
-                  <% if (business.subscriptionStatus === 'active') { %>
-                    <a href="/billing-portal" class="btn btn-secondary" style="margin:8px 0 12px">Manage Subscription</a>
-                  <% } else { %>
-                    <button id="btn-upgrade-pro" class="btn-primary" style="margin:8px 0 12px">Upgrade to Pro</button>
-                  <% } %>
-                  <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+                  <ul class="plan-features">
                     <li><span class="check">✓</span>Unlimited requests</li>
                     <li><span class="check">✓</span>Full analytics & exports</li>
                     <li><span class="check">✓</span>Priority support</li>
                   </ul>
+                  <div class="plan-actions">
+                    <% if (business.subscriptionStatus === 'active') { %>
+                      <a href="/billing-portal" class="btn btn-secondary">Manage Subscription</a>
+                    <% } else { %>
+                      <button id="btn-upgrade-pro" class="btn-primary">Upgrade to Pro</button>
+                    <% } %>
+                  </div>
                 </div>
               </div>
               <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
