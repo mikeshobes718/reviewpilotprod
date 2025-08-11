@@ -18,37 +18,37 @@
     const nodemailer = require('nodemailer');
 
     // --- 2. INITIALIZE THE APP ---
-    const app = express();
-    const PORT = process.env.PORT || 3000;
-    const HOST = '0.0.0.0'; // Necessary for some hosting platforms
-    const isProduction = process.env.NODE_ENV === 'production';
+    ;(async () => {
+        const app = express();
+        const PORT = process.env.PORT || 3000;
+        const HOST = '0.0.0.0'; // Necessary for some hosting platforms
+        const isProduction = process.env.NODE_ENV === 'production';
 
-    // --- 3. FIREBASE SETUP ---
-    // Heroku uses an environment variable for the service account, while local uses a file.
-    let serviceAccount;
-    try {
-      const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
-      const ssm = new SSMClient({ region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1' });
-      const param = await ssm.send(new GetParameterCommand({ Name: '/reviewpilot/prod/google_credentials_json', WithDecryption: true }));
-      serviceAccount = JSON.parse(param.Parameter.Value);
-    } catch (e) {
-      // Fallback to env or local file for local/dev
-      if (process.env.GOOGLE_CREDENTIALS) {
-        serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-      } else {
-        serviceAccount = require('./serviceAccountKey.json');
-      }
-    }
-    if (serviceAccount && typeof serviceAccount.private_key === 'string') {
-      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
-    }
+        // --- 3. FIREBASE SETUP ---
+        // Prefer AWS SSM Parameter Store in production; fallback to env or local file in dev
+        let serviceAccount;
+        try {
+            const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
+            const ssm = new SSMClient({ region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1' });
+            const param = await ssm.send(new GetParameterCommand({ Name: '/reviewpilot/prod/google_credentials_json', WithDecryption: true }));
+            serviceAccount = JSON.parse(param.Parameter.Value);
+        } catch (e) {
+            if (process.env.GOOGLE_CREDENTIALS) {
+                serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+            } else {
+                serviceAccount = require('./serviceAccountKey.json');
+            }
+        }
+        if (serviceAccount && typeof serviceAccount.private_key === 'string') {
+            serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
+        }
 
-    initializeApp({
-      credential: cert(serviceAccount),
-      projectId: 'review-saas-prod',
-    });
-    const db = getFirestore();
-    const auth = getAuth();
+        initializeApp({
+            credential: cert(serviceAccount),
+            projectId: 'review-saas-prod',
+        });
+        const db = getFirestore();
+        const auth = getAuth();
 
     // --- 4. CONFIGURE THE SERVER (MIDDLEWARE) ---
     app.set('trust proxy', 1); // Trust first proxy for secure cookies in production
@@ -900,8 +900,12 @@
         }
     });
 
-    // --- 6. START THE SERVER ---
-    app.listen(PORT, HOST, () => {
-        console.log(`✅ Server is running and listening on port ${PORT}`);
+        // --- 6. START THE SERVER ---
+        app.listen(PORT, HOST, () => {
+            console.log(`✅ Server is running and listening on port ${PORT}`);
+        });
+    })().catch((err) => {
+        console.error('❌ Fatal startup error', err);
+        process.exit(1);
     });
     
