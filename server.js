@@ -25,12 +25,22 @@
 
     // --- 3. FIREBASE SETUP ---
     // Heroku uses an environment variable for the service account, while local uses a file.
-    const serviceAccount = process.env.GOOGLE_CREDENTIALS ?
-      JSON.parse(process.env.GOOGLE_CREDENTIALS) :
-      require('./serviceAccountKey.json');
-    // Ensure private key newlines are correctly formatted when provided via env
+    let serviceAccount;
+    try {
+      const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
+      const ssm = new SSMClient({ region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1' });
+      const param = await ssm.send(new GetParameterCommand({ Name: '/reviewpilot/prod/google_credentials_json', WithDecryption: true }));
+      serviceAccount = JSON.parse(param.Parameter.Value);
+    } catch (e) {
+      // Fallback to env or local file for local/dev
+      if (process.env.GOOGLE_CREDENTIALS) {
+        serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+      } else {
+        serviceAccount = require('./serviceAccountKey.json');
+      }
+    }
     if (serviceAccount && typeof serviceAccount.private_key === 'string') {
-      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+      serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
     }
 
     initializeApp({
