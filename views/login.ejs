@@ -57,53 +57,6 @@
       </div>
     </div>
     <%- include('partials/footer') %>
-    <script>
-      // Progressive enhancement: if Firebase API key provided, do client login for clearer errors
-      (function(){
-        const apiKey = '<%= typeof firebaseApiKey !== 'undefined' ? firebaseApiKey : '' %>';
-        if (!apiKey) return;
-        const form = document.getElementById('login-form');
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const btn = document.getElementById('login-btn');
-        form.addEventListener('submit', async function(e){
-          e.preventDefault();
-          btn.disabled = true; btn.textContent = 'Checking...';
-          try {
-            const resp = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + apiKey, {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email.value, password: password.value, returnSecureToken: true })
-            });
-            if (!resp.ok) {
-              const body = await resp.json().catch(()=>({}));
-              const code = (body && body.error && body.error.message) || '';
-              let msg = 'Invalid credentials';
-              if (code.includes('EMAIL_NOT_FOUND')) msg = 'No account found for that email.';
-              if (code.includes('INVALID_PASSWORD')) msg = 'Incorrect password.';
-              throw new Error(msg);
-            }
-            const data = await resp.json();
-            const token = data.idToken;
-            const csrf = '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>';
-            const sres = await fetch('/session-login', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ idToken: token, _csrf: csrf })
-            });
-            if (!sres.ok) throw new Error('Could not start session');
-            window.location.href = '/dashboard';
-          } catch(err) {
-            const errBox = document.querySelector('.error');
-            if (errBox) { errBox.textContent = err.message; errBox.style.display = 'block'; }
-            else {
-              const div = document.createElement('div');
-              div.className = 'error';
-              div.textContent = err.message;
-              form.parentNode.insertBefore(div, form);
-            }
-            btn.disabled = false; btn.textContent = 'Log in';
-          }
-        });
-      })();
-    </script>
+    <!-- Client-side Firebase login removed; handled by server via Cognito -->
   </body>
 </html>

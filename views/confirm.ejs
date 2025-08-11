@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm your email • ReviewPilot</title>
+    <%- include('partials/head') %>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="auth-grid">
+      <div class="auth-right">
+        <div class="base-card">
+          <div class="brand"><div class="badge">ReviewPilot</div></div>
+          <h1>Confirm your email</h1>
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+          <% } %>
+          <form action="/confirm" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div>
+              <label>Email</label>
+              <input class="input" type="email" name="email" value="<%= email || '' %>" placeholder="you@business.com" required />
+            </div>
+            <div>
+              <label>Confirmation code</label>
+              <input class="input" type="text" name="code" placeholder="6-digit code" required />
+            </div>
+            <button class="btn-primary" type="submit" style="margin-top:16px">Confirm</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+  </html>
+
+

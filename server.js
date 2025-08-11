@@ -5,7 +5,7 @@
     const express = require('express');
     const { initializeApp, cert } = require('firebase-admin/app');
     const { getFirestore } = require('firebase-admin/firestore');
-    const { getAuth } = require('firebase-admin/auth');
+    // Firebase Admin Auth is not used for end-user auth anymore
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
     const session = require('express-session');
     const cookieParser = require('cookie-parser');
@@ -48,7 +48,21 @@
             projectId: 'review-saas-prod',
         });
         const db = getFirestore();
-        const auth = getAuth();
+
+        // --- 3a. Cognito (end-user auth) ---
+        const {
+            CognitoIdentityProviderClient,
+            SignUpCommand,
+            ConfirmSignUpCommand,
+            InitiateAuthCommand,
+            GetUserCommand,
+            ForgotPasswordCommand,
+            ConfirmForgotPasswordCommand
+        } = require('@aws-sdk/client-cognito-identity-provider');
+        const awsRegion = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
+        const cognito = new CognitoIdentityProviderClient({ region: awsRegion });
+        const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || 'us-east-1_RG8iuFsPD';
+        const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '7jriml8d35718cdauoi149ousn';
 
     // --- 4. CONFIGURE THE SERVER (MIDDLEWARE) ---
     app.set('trust proxy', 1); // Trust first proxy for secure cookies in production
@@ -350,61 +364,33 @@
         const error = req.query.e ? decodeURIComponent(req.query.e) : (req.session.__flashError || null);
         req.session.__flashError = null;
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('login', { csrfToken: token, error, firebaseApiKey: process.env.FIREBASE_API_KEY || '', user: req.session.user || null });
+        res.render('login', { csrfToken: token, error, user: req.session.user || null });
     });
     app.post('/login', async (req, res) => {
         try {
-            const { email, password } = req.body;
-            // Verify credentials using Firebase Identity Toolkit
-            const apiKey = process.env.FIREBASE_API_KEY;
-            if (!apiKey) {
-                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-                return res.status(200).render('login', { csrfToken: token, error: 'Login temporarily unavailable (missing API key).', firebaseApiKey: '' });
-            }
-            const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, returnSecureToken: true })
-            });
-            if (!resp.ok) {
-                let msg = 'Invalid credentials';
-                try {
-                    const body = await resp.json();
-                    const code = body?.error?.message || '';
-                    if (code.includes('EMAIL_NOT_FOUND')) msg = 'No account found for that email.';
-                    if (code.includes('INVALID_PASSWORD')) msg = 'Incorrect password.';
-                    if (code.includes('USER_DISABLED')) msg = 'This account is disabled.';
-                    console.error('Login error from Firebase:', code);
-                } catch (_) {}
-                res.set('Cache-Control', 'no-store');
-                return res.status(200).render('login', { csrfToken: (typeof req.csrfToken === 'function' ? req.csrfToken() : ''), error: msg });
-            }
-            const data = await resp.json();
-            // Trust Identity Toolkit response; avoid cross-project mismatch with Admin getUser
-            req.session.user = { uid: data.localId, email: data.email || email, displayName: data.displayName || null };
-            console.log(`✅ User logged in and session created for: ${email}`);
+            const { email, password } = req.body || {};
+            if (!email || !password) return res.status(400).render('login', { csrfToken: req.csrfToken(), error: 'Missing email or password.' });
+            const authRes = await cognito.send(new InitiateAuthCommand({
+                AuthFlow: 'USER_PASSWORD_AUTH',
+                ClientId: COGNITO_CLIENT_ID,
+                AuthParameters: { USERNAME: email, PASSWORD: password }
+            }));
+            const accessToken = authRes?.AuthenticationResult?.AccessToken;
+            if (!accessToken) throw new Error('Invalid login');
+            const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken }));
+            const sub = me?.Username;
+            const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
+            req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
+            console.log(`✅ Cognito login session created for: ${email}`);
             return res.redirect('/dashboard');
         } catch (error) {
-            console.error("❌ Error during login:", error);
-            res.set('Cache-Control', 'no-store');
-            return res.status(200).render('login', { csrfToken: (typeof req.csrfToken === 'function' ? req.csrfToken() : ''), error: 'Login failed.' });
+            console.error('❌ Cognito login error:', error?.message || error);
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            return res.status(200).render('login', { csrfToken: token, error: 'Invalid email or password.' });
         }
     });
 
-    // Client-driven session login: accept Firebase ID token, create server session
-    app.post('/session-login', async (req, res) => {
-        try {
-            const { idToken } = req.body || {};
-            if (!idToken) return res.status(400).json({ error: 'Missing token' });
-            const decoded = await auth.verifyIdToken(idToken);
-            const userRecord = await auth.getUser(decoded.uid);
-            req.session.user = { uid: userRecord.uid, email: userRecord.email, displayName: userRecord.displayName };
-            return res.json({ ok: true });
-        } catch (e) {
-            console.error('❌ Session login failed:', e);
-            return res.status(401).json({ error: 'Invalid token' });
-        }
-    });
+    // Removed Firebase token session endpoint; server handles Cognito login
     app.get('/logout', (req, res) => {
         req.session.destroy(() => res.redirect('/login'));
     });

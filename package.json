@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.637.0",
+    "amazon-cognito-identity-js": "^6.3.13",
     "@aws-sdk/client-ssm": "^3.637.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.7",
