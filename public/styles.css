@@ -487,6 +487,9 @@ main > section, body > section{margin-bottom:48px}
 
 /* Desktop form enhancements: wider and subtle background blur */
 @media (min-width: 769px){
+  /* Header logo sizing and alignment (desktop) */
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo .brand-mark{height:36px;width:auto}
   .auth-card{max-width:480px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background-color:rgba(255,255,255,0.85)}
   .auth-card h1, .auth-card p.sub{ text-align:center }
   .auth-card .btn-primary{ display:block; margin-left:auto; margin-right:auto }
@@ -562,4 +565,10 @@ main > section, body > section{margin-bottom:48px}
   .hero-left .title,.hero-left .sub{text-align:center}
   .video-frame{border-radius:12px}
   .video-embed{border-radius:12px}
+}
+
+/* Header logo refinements on desktop */
+@media (min-width: 769px){
+  .logo{display:flex;align-items:center;gap:12px}
+  .brand-mark{height:36px;width:auto}
 }
