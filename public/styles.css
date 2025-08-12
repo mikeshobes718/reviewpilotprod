@@ -570,5 +570,6 @@ main > section, body > section{margin-bottom:48px}
 /* Header logo refinements on desktop */
 @media (min-width: 769px){
   .logo{display:flex;align-items:center;gap:12px}
-  .brand-mark{height:36px;width:auto}
+  .brand-text{display:none !important}
+  .brand-mark{height:40px;width:auto}
 }
