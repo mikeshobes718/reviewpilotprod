@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ReviewPilot • Turn happy customers into 5‑star reviews</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviews &amp; Marketing • Turn happy customers into 5‑star reviews</title>
   <%- include('partials/head') %>
   <style> * { box-sizing: border-box; } </style>
   <script>document.documentElement.classList.remove('no-js');</script>
@@ -11,55 +11,107 @@
 <body>
   <%- include('partials/header') %>
 
-  <section class="hero-curve">
-    <div class="container">
-      <div class="row align-items-center g-4">
-        <div class="col-12 col-lg-6 text-center text-lg-start">
-          <h1 class="hero-title" style="font-family:Inter,Manrope,sans-serif;font-weight:800;font-size:clamp(42px,7vw,72px);line-height:1.15;color:var(--text)">Turn happy customers into 5‑star reviews</h1>
-          <p class="body-text" style="color:var(--muted)">High‑converting requests, smart filtering for 1‑4★, and simple analytics to grow your rating.</p>
-          <div class="d-flex gap-2 justify-content-center justify-content-lg-start mt-3">
-            <% if (user) { %>
-              <a class="btn primary" href="/dashboard">Go to Dashboard</a>
-            <% } else { %>
-              <a class="btn primary" href="/signup">Start free</a>
-            <% } %>
-            <a class="btn secondary" href="/pricing">See pricing</a>
-          </div>
+  <section class="hero-full hero-section fade-section hero-split">
+    <div class="container hero-grid">
+      <div class="hero-left">
+        <h1 class="title">Finally, Take Control of Your Online Reviews.</h1>
+        <p class="sub">Our smart filtering technology turns your happy customers into 5‑star reviews on Google, while giving you the insights to improve.</p>
+        <div class="hero-actions">
+          <% if (user) { %>
+            <a class="btn primary" href="/dashboard">Go to Dashboard</a>
+          <% } else { %>
+            <a class="btn primary" href="/signup">Start free</a>
+          <% } %>
+          <a class="btn secondary" href="/pricing">See pricing</a>
         </div>
-        <div class="col-12 col-lg-6">
-          <div class="hero-figure">
-            <div class="bubble b1"></div>
-            <div class="bubble b2"></div>
-            <div class="cardlet">“Request sent ✅”</div>
-            <div class="card panel" style="width:100%;">
-              <div style="aspect-ratio:16/9;width:100%;max-width:560px;margin:0 auto;">
-                 <iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/1KjxVwnzMYw?rel=0&modestbranding=1" title="ReviewPilot Explainer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-              </div>
-            </div>
-          </div>
+      </div>
+      <div class="hero-right">
+        <div class="video-frame subtle-elev">
+          <iframe class="video-embed" src="https://www.youtube-nocookie.com/embed/1KjxVwnzMYw?rel=0&modestbranding=1&playsinline=1" title="Explainer video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Proof section: stats + product image + testimonials -->
-  <section class="proof-section">
+  <!-- Client logo marquee moved directly under hero -->
+  <section class="client-logo-marquee-section fade-section">
     <div class="container">
-      <!-- Social proof -->
-      <div class="container" style="max-width:1100px;margin:0 auto;padding:0 16px;">
-        <div class="eyebrow" style="margin-bottom:8px">Trusted by</div>
-        <div class="trusted-logos" style="margin-left:0">
-          <img src="/logos/acme-dental.svg" alt="Acme Dental logo" />
-          <img src="/logos/northside-auto.svg" alt="Northside Auto logo" />
-          <img src="/logos/bloom-spa.svg" alt="Bloom Spa logo" />
-          <img src="/logos/rapid-hvac.svg" alt="Rapid HVAC logo" />
+      <div class="logo-marquee" aria-label="Client logos">
+        <div class="logo-track">
+          <img class="logo-item" src="/logos/acme-dental.svg" alt="Acme Dental" />
+          <img class="logo-item" src="/logos/northside-auto.svg" alt="Northside Auto" />
+          <img class="logo-item" src="/logos/bloom-spa.svg" alt="Bloom Spa" />
+          <img class="logo-item" src="/logos/rapid-hvac.svg" alt="Rapid HVAC" />
+          <img class="logo-item" src="/logos/acme-dental.svg" alt="Acme Dental" />
+          <img class="logo-item" src="/logos/northside-auto.svg" alt="Northside Auto" />
+          <img class="logo-item" src="/logos/bloom-spa.svg" alt="Bloom Spa" />
+          <img class="logo-item" src="/logos/rapid-hvac.svg" alt="Rapid HVAC" />
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="hiw-section fade-section">
+    <div class="container hiw-container">
+      <h2 class="hero-title" style="font-size:32px;text-align:center;margin:0 0 16px">How it works</h2>
+      <p style="color:var(--muted);text-align:center;margin:0 0 20px">A simple 3‑step process to 5‑star results</p>
+      <div class="hiw-grid">
+        <div class="hiw-card base-card">
+          <div class="hiw-num">1</div>
+          <svg class="hiw-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/>
+            <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11"/>
+          </svg>
+          <div class="hiw-title">Connect your business</div>
+          <div class="hiw-desc">Add your details and review link so customers can find you instantly.</div>
+        </div>
+        <div class="hiw-card base-card">
+          <div class="hiw-num">2</div>
+          <svg class="hiw-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 12l7-7v4h5a4 4 0 0 1 4 4v4"/>
+            <path d="M20 12l-7 7v-4h-5a4 4 0 0 1-4-4v-4"/>
+          </svg>
+          <div class="hiw-title">Share with customers</div>
+          <div class="hiw-desc">Use your short link and QR on receipts, countertop signs, and stickers.</div>
+        </div>
+        <div class="hiw-card base-card">
+          <div class="hiw-num">3</div>
+          <svg class="hiw-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3l2.2 4.46 4.92.71-3.56 3.47.84 4.9L12 14.9 7.6 17.54l.84-4.9L4.88 8.17l4.92-.71L12 3z"/>
+            <path d="M4 20h16"/>
+          </svg>
+          <div class="hiw-title">Grow reviews automatically</div>
+          <div class="hiw-desc">Capture feedback, boost 5★ reviews, and track results in your dashboard.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Proof section: stats + product image + testimonials -->
+  <section class="proof-section stats-image-section fade-section">
+    <div class="container">
+      <!-- Combined Social Proof: Prominent testimonial + logo grid -->
+      <section class="social-proof fade-section">
+        <div class="social-stack">
+          <div class="t-hero-card">
+            <img class="t-hero-photo" src="/images/hero-customer.jpg" alt="Customer photo" />
+            <div>
+              <div class="t-hero-name">Sarah Johnson</div>
+              <div class="t-hero-meta">Owner, BrightSmile Dental</div>
+            </div>
+            <div class="t-hero-quote">“Reviews &amp; Marketing helped us triple our Google reviews in just two months. Our phones haven’t stopped ringing.”</div>
+          </div>
+          
+        </div>
+      </section>
 
       <div class="containedSection">
       <div class="proof-grid">
         <div class="proof-left">
-          <img src="/images/hero-customer.jpg" alt="Business owner showing 5-star Google reviews" class="product-shot" />
+          <img src="/images/Homepage.png" alt="Product screenshot" class="product-shot subtle-elev" />
         </div>
         <div class="proof-right">
             <div class="stat-grid">
@@ -83,11 +135,81 @@
         </div>
       </div>
       </div>
+
+      
+
     </div>
   </section>
 
-  
+  <section class="cta-final final-cta-section fade-section">
+    <h2>Ready to turn customers into reviews?</h2>
+    <div class="cta-actions">
+      <% if (user) { %>
+        <a class="btn primary" href="/dashboard">Go to Dashboard</a>
+      <% } else { %>
+        <a class="btn primary" href="/signup">Start free</a>
+      <% } %>
+      <a class="btn secondary" href="/pricing">See pricing</a>
+    </div>
+  </section>
+
+  <div class="video-modal-overlay" id="videoModal">
+    <div class="video-modal">
+      <button class="video-close" id="videoClose">Close</button>
+      <iframe id="videoFrame" src="" title="Demo video" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var open = document.getElementById('watchDemo');
+      var modal = document.getElementById('videoModal');
+      var closeBtn = document.getElementById('videoClose');
+      var frame = document.getElementById('videoFrame');
+      if (open && modal && closeBtn && frame){
+        open.addEventListener('click', function(e){
+          e.preventDefault();
+          frame.src = 'https://www.youtube-nocookie.com/embed/1KjxVwnzMYw?autoplay=1&mute=1&loop=1&playlist=1KjxVwnzMYw';
+          modal.classList.add('open');
+        });
+        function close(){ modal.classList.remove('open'); frame.src=''; }
+        closeBtn.addEventListener('click', close);
+        modal.addEventListener('click', function(e){ if (e.target === modal) close(); });
+      }
+    })();
+  </script>
 
   <%- include('partials/footer') %>
+
+  <!-- Watch a demo modal -->
+  <div id="watchDemoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Watch a Demo</h2>
+      <p>Learn how Reviews &amp; Marketing can help your business grow.</p>
+      <div class="video-container">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Watch a demo modal
+    document.getElementById('watchDemo').addEventListener('click', function(event) {
+      event.preventDefault();
+      document.getElementById('watchDemoModal').style.display = 'block';
+    });
+
+    document.querySelector('.close-button').addEventListener('click', function() {
+      document.getElementById('watchDemoModal').style.display = 'none';
+    });
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('watchDemoModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>

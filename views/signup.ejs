@@ -4,56 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create account • ReviewPilot</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Create account • Reviews &amp; Marketing</title>
      <%- include('partials/head') %>
-    <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; }
-        .base-card { width: 360px; margin: 40px auto; }
-        label { font-size: 13px; color: var(--muted); font-weight: 600; }
-        p.sub { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
-    </style>
 </head>
-<body>
+<body class="auth-bg">
     <%- include('partials/header') %>
     <div class="auth-grid">
-      <div class="auth-left">
-        <div>
-          <h1>Create your account</h1>
-          <p>Join hundreds of businesses turning feedback into 5-star reviews.</p>
-        </div>
-      </div>
+      <div class="auth-left auth-photo"></div>
       <div class="auth-right">
-        <div class="base-card">
-          <div class="brand">
-            <div class="badge">ReviewPilot</div>
-          </div>
+        <div class="base-card auth-card dark-card">
+        <div class="brand"><img src="/logos/main-logo.png" alt="Reviews &amp; Marketing" /></div>
+        <div class="form-container">
           <h1>Create your account</h1>
-          <p class="sub">Start collecting more 5‑star reviews</p>
+          <p class="sub-headline">Start collecting more 5‑star reviews</p>
           <% if (typeof error !== 'undefined' && error) { %>
               <div class="error"><%= error %></div>
           <% } %>
-          <form action="/signup" method="POST">
+            <form action="/signup" method="POST" class="form-grid">
               <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-              <div>
-                  <label>Business name</label>
-                  <input class="input" type="text" name="businessName" placeholder="Acme Dental" required>
-              </div>
-              <div>
-                  <label>Email</label>
-                  <input class="input" type="email" name="email" placeholder="owner@acme.com" required>
-              </div>
-              <div>
-                  <label>Password</label>
-                  <input class="input" type="password" name="password" placeholder="Create a password" required>
-              </div>
-              <button class="btn-primary" type="submit" style="margin-top:24px">Create account</button>
-          </form>
-          <div class="row" style="margin-top:10px;">
-            <span>Already have an account?</span> <a class="link-accent" href="/login">Log in</a>
-          </div>
+                <div class="form-field">
+                  <label for="businessName">Business name</label>
+                  <input id="businessName" class="input" type="text" name="businessName" placeholder="Acme Dental" required>
+                </div>
+                <div class="form-field">
+                  <label for="email">Email</label>
+                  <input id="email" class="input" type="email" name="email" placeholder="owner@acme.com" required>
+                </div>
+                <div class="form-field">
+                  <label for="password">Password</label>
+                  <input id="password" class="input" type="password" name="password" placeholder="Create a password" required>
+                  <div class="password-helper-text">Minimum 8 characters, including uppercase, lowercase, number, and symbol.</div>
+                </div>
+                <div class="form-field button-container"><button class="btn-primary primary-action" type="submit">Create account</button></div>
+            </form>
+          <div class="form-footer-link"><span>Already have an account?</span> <a class="link-accent" href="/login">Log in</a></div>
+        </div>
         </div>
       </div>
     </div>

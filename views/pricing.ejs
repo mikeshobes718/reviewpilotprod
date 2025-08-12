@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= title %></title>
   <%- include('partials/head') %>
 </head>
@@ -17,55 +17,56 @@
 
     <!-- Pricing grid -->
     <section class="section">
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <div class="card-title" style="font-size:18px">Starter</div>
-          <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
-            <div class="price-figure">Free</div>
-            <div class="price-label">30‑day trial</div>
-          </div>
-          <% if (user && subscriptionStatus === 'trial') { %>
-            <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Your Current Plan</button>
-          <% } else if (user) { %>
-            <a href="/dashboard" class="btn primary" style="margin:8px 0 12px">Go to Dashboard</a>
-          <% } else if (subscriptionStatus === 'active') { %>
-            <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Start free trial</button>
-          <% } else { %>
-            <a href="/signup" class="btn primary" style="margin:8px 0 12px">Start free trial</a>
-          <% } %>
-          <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
-            <li><span class="check">✓</span>Up to 5 requests each month</li>
-            <li><span class="check">✓</span>Basic analytics</li>
-            <li><span class="check">✓</span>Email support</li>
-          </ul>
-        </div>
-        <div class="pricing-card highlight">
-          <div class="card-title" style="font-size:18px; display:flex; align-items:center; gap:8px">Pro
-            <% if (subscriptionStatus === 'active') { %>
-              <span style="background:#EBF9F3;color:#065F46;border-radius:12px;padding:4px 10px;font-size:12px;font-weight:600">Current Plan</span>
+      <div class="pricing-section-wrap">
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="card-title" style="font-size:18px">Starter</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+              <div class="price-figure">Free</div>
+              <div class="price-label">30‑day trial</div>
+            </div>
+            <% if (user && subscriptionStatus === 'trial') { %>
+              <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Your Current Plan</button>
+            <% } else if (user) { %>
+              <a href="/dashboard" class="btn primary" style="margin:8px 0 12px">Go to Dashboard</a>
+            <% } else if (subscriptionStatus === 'active') { %>
+              <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Start free trial</button>
+            <% } else { %>
+              <a href="/signup" class="btn primary" style="margin:8px 0 12px">Start free trial</a>
             <% } %>
+            <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+              <li><span class="check">✓</span>Up to 5 requests each month</li>
+              <li><span class="check">✓</span>Basic analytics</li>
+              <li><span class="check">✓</span>Email support</li>
+            </ul>
           </div>
-          <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
-            <div class="price-figure">$49</div>
-            <div class="price-label">/mo</div>
+          <div class="pricing-card highlight">
+            <span class="badge-popular badge-corner">Most Popular</span>
+            <div class="card-title" style="font-size:18px; display:flex; align-items:center; gap:8px; justify-content:space-between">
+              <span>Pro</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+              <div class="price-figure">$49</div>
+              <div class="price-label">/mo</div>
+            </div>
+            <% if (user && subscriptionStatus === 'trial') { %>
+              <form action="/create-checkout-session" method="POST" style="margin:0">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn primary" style="margin:8px 0 12px">Upgrade to Pro</button>
+              </form>
+            <% } else if (user && subscriptionStatus === 'active') { %>
+              <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Your Current Plan</button>
+            <% } else if (user) { %>
+              <a href="/dashboard" class="btn primary" style="margin:8px 0 12px">Go to Dashboard</a>
+            <% } else { %>
+              <a href="/signup" class="btn primary" style="margin:8px 0 12px">Buy Pro</a>
+            <% } %>
+            <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+              <li><span class="check">✓</span>Unlimited requests</li>
+              <li><span class="check">✓</span>Full analytics & exports</li>
+              <li><span class="check">✓</span>Priority support</li>
+            </ul>
           </div>
-          <% if (user && subscriptionStatus === 'trial') { %>
-            <form action="/create-checkout-session" method="POST" style="margin:0">
-              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-              <button type="submit" class="btn primary" style="margin:8px 0 12px">Upgrade to Pro</button>
-            </form>
-          <% } else if (user && subscriptionStatus === 'active') { %>
-            <button class="btn" style="margin:8px 0 12px;background:#F3F4F6;color:#9CA3AF;cursor:not-allowed;border:none;border-radius:8px;padding:10px 12px;font-weight:700">Your Current Plan</button>
-          <% } else if (user) { %>
-            <a href="/dashboard" class="btn primary" style="margin:8px 0 12px">Go to Dashboard</a>
-          <% } else { %>
-            <a href="/signup" class="btn primary" style="margin:8px 0 12px">Buy Pro</a>
-          <% } %>
-          <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
-            <li><span class="check">✓</span>Unlimited requests</li>
-            <li><span class="check">✓</span>Full analytics & exports</li>
-            <li><span class="check">✓</span>Priority support</li>
-          </ul>
         </div>
       </div>
     </section>

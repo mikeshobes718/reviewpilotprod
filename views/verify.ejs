@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify your email • ReviewPilot</title>
+    <title>Verify your email • Reviews &amp; Marketing</title>
     <%- include('partials/head') %>
     <style>
       * { box-sizing: border-box; }
@@ -11,6 +11,7 @@
       .base-card { width: 480px; margin: 40px auto; text-align:center }
       .base-card h1 { margin:0 0 8px }
       .base-card p { color: var(--muted); margin:0 }
+      .email-highlight { font-weight: 600; color: var(--accent, #10B981); }
     </style>
   </head>
   <body>
@@ -19,19 +20,27 @@
       <div class="auth-left">
         <div>
           <h1>Registration Successful!</h1>
-          <p>We've sent a verification link to your email.</p>
+          <% if (typeof email !== 'undefined' && email) { %>
+            <p>We've sent a verification link to <span class="email-highlight"><%= email %></span>.</p>
+          <% } else { %>
+            <p>We've sent a verification link to your email.</p>
+          <% } %>
         </div>
       </div>
       <div class="auth-right">
         <div class="base-card">
-          <div class="brand"><div class="badge">ReviewPilot</div></div>
+          <div class="brand"><div class="badge">RM</div></div>
           <h1>Registration Successful!</h1>
-          <p>We've sent a verification link to your email. Please check your inbox and click the link to activate your account.</p>
+          <% if (typeof email !== 'undefined' && email) { %>
+            <p>We've sent a verification link to <span class="email-highlight"><%= email %></span>. Please check your inbox and click the link to activate your account.</p>
+          <% } else { %>
+            <p>We've sent a verification link to your email. Please check your inbox and click the link to activate your account.</p>
+          <% } %>
         </div>
       </div>
     </div>
     <%- include('partials/footer') %>
   </body>
-  </html>
+</html>
 
 

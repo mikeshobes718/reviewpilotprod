@@ -16,15 +16,23 @@
     const morgan = require('morgan');
     const { z } = require('zod');
     const nodemailer = require('nodemailer');
+    const crypto = require('crypto');
+    const QRCode = require('qrcode');
+    const PDFDocument = require('pdfkit');
+    const path = require('path');
+    const fs = require('fs');
 
     // --- 2. INITIALIZE THE APP ---
     ;(async () => {
-        const app = express();
-        const PORT = process.env.PORT || 3000;
-        const HOST = '0.0.0.0'; // Necessary for some hosting platforms
+    const app = express();
+    const PORT = process.env.PORT || 3000;
+    const HOST = '0.0.0.0'; // Necessary for some hosting platforms
         const isProduction = process.env.NODE_ENV === 'production';
+        const appUrl = process.env.APP_BASE_URL
+            || (process.env.HEROKU_APP_NAME ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` : null)
+            || (isProduction ? `http://localhost:${PORT}` : `http://lvh.me:${PORT}`);
 
-        // --- 3. FIREBASE SETUP ---
+    // --- 3. FIREBASE SETUP ---
         // Prefer AWS SSM Parameter Store in production; fallback to env or local file in dev
         let serviceAccount;
         try {
@@ -43,11 +51,12 @@
             serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
         }
 
-        initializeApp({
-            credential: cert(serviceAccount),
-            projectId: 'review-saas-prod',
-        });
-        const db = getFirestore();
+    initializeApp({
+      credential: cert(serviceAccount),
+      projectId: 'review-saas-prod',
+    });
+    const db = getFirestore();
+        const shortDomain = process.env.SHORT_LINK_DOMAIN || 'reviewpilot.link';
 
         // --- 3a. Cognito (end-user auth) ---
         const {
@@ -57,12 +66,204 @@
             InitiateAuthCommand,
             GetUserCommand,
             ForgotPasswordCommand,
-            ConfirmForgotPasswordCommand
+            ConfirmForgotPasswordCommand,
+            AdminCreateUserCommand,
+            AdminGetUserCommand,
+            AdminSetUserPasswordCommand,
+            AdminConfirmSignUpCommand,
+            ListUsersCommand,
+            ResendConfirmationCodeCommand,
+            RespondToAuthChallengeCommand
         } = require('@aws-sdk/client-cognito-identity-provider');
         const awsRegion = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-east-1';
         const cognito = new CognitoIdentityProviderClient({ region: awsRegion });
         const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || 'us-east-1_RG8iuFsPD';
         const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '7jriml8d35718cdauoi149ousn';
+
+        // --- 3b. Queue for automated sends ---
+        let reviewQueue = null;
+        if (process.env.REDIS_URL) {
+            const { Queue, Worker, QueueScheduler } = require('bullmq');
+            const IORedis = require('ioredis');
+            const redisConnection = new IORedis(process.env.REDIS_URL);
+            reviewQueue = new Queue('review-requests', { connection: redisConnection });
+            new QueueScheduler('review-requests', { connection: redisConnection });
+            new Worker('review-requests', async (job) => {
+                const { channel, customer, merchantId, shortLink } = job.data || {};
+                if (isQuietHours()) {
+                    const next8am = new Date();
+                    if (next8am.getHours() >= 21) next8am.setDate(next8am.getDate() + 1);
+                    next8am.setHours(8,0,0,0);
+                    const delay = next8am.getTime() - Date.now();
+                    await reviewQueue.add('sendReviewRequest', job.data, { delay, attempts: 1 });
+                    return;
+                }
+                console.log(`Would send ${channel} to ${customer?.email || customer?.phone} → ${shortLink} (merchant ${merchantId})`);
+            }, { connection: redisConnection });
+        } else {
+            console.warn('REDIS_URL not set; review-requests queue disabled');
+        }
+
+        function isQuietHours(date = new Date()) {
+            // Basic quiet hours 21:00-08:00 in server time
+            const hour = date.getHours();
+            return (hour >= 21 || hour < 8);
+        }
+
+        
+
+        // --- 3c. KMS helpers for encrypting tokens ---
+        const { KMSClient, EncryptCommand, DecryptCommand } = require('@aws-sdk/client-kms');
+        const kms = new KMSClient({ region: awsRegion });
+        const KMS_KEY_ID = process.env.KMS_KEY_ID || undefined; // use default if absent
+        async function encryptString(plain) {
+            const cmd = new EncryptCommand({ KeyId: KMS_KEY_ID, Plaintext: Buffer.from(plain) });
+            const res = await kms.send(cmd);
+            return Buffer.from(res.CiphertextBlob).toString('base64');
+        }
+        async function decryptString(cipherB64) {
+            const cmd = new DecryptCommand({ CiphertextBlob: Buffer.from(cipherB64, 'base64') });
+            const res = await kms.send(cmd);
+            return Buffer.from(res.Plaintext).toString('utf8');
+        }
+
+        // --- 3d. Square OAuth ---
+        const SQUARE_APP_ID = process.env.SQUARE_APP_ID || '';
+        let SQUARE_APP_SECRET = process.env.SQUARE_APP_SECRET || '';
+        if (!SQUARE_APP_SECRET) {
+            try {
+                const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
+                const ssm2 = new SSMClient({ region: awsRegion });
+                const p = await ssm2.send(new GetParameterCommand({ Name: '/reviewpilot/prod/square_app_secret', WithDecryption: true }));
+                SQUARE_APP_SECRET = p.Parameter.Value;
+            } catch (_) { /* ignore */ }
+        }
+        const SQUARE_REDIRECT_URL = process.env.SQUARE_REDIRECT_URL || (appUrl ? appUrl + '/api/square/callback' : '');
+        const SQUARE_SCOPES = process.env.SQUARE_SCOPES || 'PAYMENTS_READ,ORDERS_READ,CUSTOMERS_READ';
+
+        // --- Auth guard (define before routes use it) ---
+        const requireLogin = (req, res, next) => {
+            if (req.session && req.session.user) return next();
+            return res.status(401).redirect('/login');
+        };
+
+        app.get('/api/square/connect', requireLogin, (req, res) => {
+            const state = crypto.randomBytes(16).toString('hex');
+            req.session.square_oauth_state = state;
+            const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
+            res.redirect(authUrl);
+        });
+
+        app.get('/api/square/callback', requireLogin, async (req, res) => {
+            try {
+                const { code, state } = req.query || {};
+                if (!code || !state || state !== req.session.square_oauth_state) return res.status(400).send('invalid_state');
+                delete req.session.square_oauth_state;
+                // Exchange code
+                const tokenResp = await fetch('https://connect.squareup.com/oauth2/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_id: SQUARE_APP_ID,
+                        client_secret: SQUARE_APP_SECRET,
+                        code,
+                        grant_type: 'authorization_code',
+                        redirect_uri: SQUARE_REDIRECT_URL
+                    })
+                });
+                if (!tokenResp.ok) {
+                    const t = await tokenResp.text();
+                    console.error('square token error', t);
+                    return res.status(400).send('oauth_error');
+                }
+                const tokenJson = await tokenResp.json();
+                const encAccess = await encryptString(tokenJson.access_token);
+                const encRefresh = tokenJson.refresh_token ? await encryptString(tokenJson.refresh_token) : null;
+                await db.collection('businesses').doc(req.session.user.uid).set({
+                    square: {
+                        merchantId: tokenJson.merchant_id || null,
+                        access: encAccess,
+                        refresh: encRefresh,
+                        expiresAt: tokenJson.expires_at || null,
+                        scope: tokenJson.scope || SQUARE_SCOPES
+                    }
+                }, { merge: true });
+                res.redirect('/dashboard');
+            } catch (e) {
+                console.error('square callback error', e);
+                res.status(500).send('server_error');
+            }
+        });
+
+        // Save Square automation settings
+        app.post('/integrations/square/settings', requireLogin, async (req, res) => {
+            try {
+                const { autoSend, delayMinutes, channel } = req.body || {};
+                const settings = {
+                    autoSend: !!autoSend,
+                    delayMinutes: Math.max(0, Math.min(10080, parseInt(delayMinutes || '0', 10))),
+                    channel: channel === 'sms' ? 'sms' : 'email'
+                };
+                await db.collection('businesses').doc(req.session.user.uid).set({ squareSettings: settings }, { merge: true });
+                res.redirect('/dashboard');
+            } catch (e) { console.error('save square settings', e); res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
+        });
+
+        // Square webhook
+        app.post('/api/webhooks/square', express.raw({ type: 'application/json' }), async (req, res) => {
+            try {
+                const signatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY || '';
+                const sigHeader = req.get('x-square-hmacsha256-signature') || req.get('x-square-signature') || '';
+                const bodyStr = req.body.toString('utf8');
+                if (signatureKey && sigHeader) {
+                    const hmac = crypto.createHmac('sha256', signatureKey).update(bodyStr).digest('base64');
+                    if (hmac !== sigHeader) { return res.status(401).send('invalid_signature'); }
+                }
+                const payload = JSON.parse(bodyStr);
+                const type = payload?.type || payload?.event_type || '';
+                if (!type) return res.status(200).send('ok');
+
+                if (type.includes('payment') && JSON.stringify(payload).includes('COMPLETED')) {
+                    const merchantId = payload?.merchant_id || payload?.data?.merchant_id || null;
+                    const customerId = payload?.data?.object?.payment?.customer_id || null;
+                    const businessDoc = await db.collection('businesses').doc(merchantId || req.query.m || '').get();
+                    // Fallback: we store merchantId as Cognito sub; map Square merchant via doc.square.merchantId
+                    let biz = businessDoc.exists ? businessDoc.data() : null;
+                    if (!biz && merchantId) {
+                        const snap = await db.collection('businesses').where('square.merchantId', '==', merchantId).limit(1).get();
+                        if (!snap.empty) { biz = snap.docs[0].data(); }
+                    }
+                    if (!biz) return res.status(200).send('ok');
+                    const settings = biz.squareSettings || { autoSend: false };
+                    if (!settings.autoSend) return res.status(200).send('ok');
+                    // Decrypt token
+                    const tokenCipher = biz?.square?.access;
+                    if (!tokenCipher) return res.status(200).send('ok');
+                    const accessToken = await decryptString(tokenCipher);
+                    // Fetch customer contact
+                    let customer = {};
+                    if (customerId) {
+                        const cResp = await fetch(`https://connect.squareup.com/v2/customers/${customerId}`, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } });
+                        if (cResp.ok) {
+                            const cj = await cResp.json();
+                            const c = cj?.customer || {};
+                            customer = { email: c?.email_address || null, phone: c?.phone_number || null };
+                        }
+                    }
+                    // Short link
+                    const slug = biz.shortSlug || 'MERCHANT';
+                    const shortLink = `${shortDomain}/${slug}`;
+                    // Compute delay
+                    const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
+                    if (reviewQueue) {
+                        await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantId: merchantId || '', shortLink }, { delay: delayMs, attempts: 1 });
+                    } else {
+                        console.log('Queue not configured; skipping enqueue');
+                    }
+                }
+                res.status(200).send('ok');
+            } catch (e) { console.error('square webhook error', e); res.status(200).send('ok'); }
+        });
 
     // --- 4. CONFIGURE THE SERVER (MIDDLEWARE) ---
     app.set('trust proxy', 1); // Trust first proxy for secure cookies in production
@@ -195,11 +396,11 @@
                         await db.collection('businesses').doc(uid).update({ subscriptionStatus: 'active', stripeCustomerId: customerId });
                         console.log('✅ Subscription activated via webhook (by uid):', uid);
                     } else {
-                        const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
-                        if (!snap.empty) {
-                            const docRef = snap.docs[0].ref;
-                            await docRef.update({ subscriptionStatus: 'active' });
-                            console.log('✅ Subscription activated via webhook for customer:', customerId);
+                    const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
+                    if (!snap.empty) {
+                        const docRef = snap.docs[0].ref;
+                        await docRef.update({ subscriptionStatus: 'active' });
+                        console.log('✅ Subscription activated via webhook for customer:', customerId);
                         }
                     }
                     break;
@@ -250,20 +451,10 @@
         next(err);
     });
 
-    const requireLogin = (req, res, next) => {
-        if (req.session.user) {
-            next();
-        } else {
-            res.redirect('/login');
-        }
-    };
+    // legacy requireLogin moved earlier; keep stub to avoid duplicate definition
 
     // --- 5. DEFINE THE ROUTES (THE "URLS") ---
     // Preferred explicit base URL for links shown in the UI (dashboard public link, success/cancel URLs)
-    // In production set APP_BASE_URL (e.g. https://your-app.herokuapp.com). Fallbacks are provided.
-    const appUrl = process.env.APP_BASE_URL
-        || (process.env.HEROKU_APP_NAME ? `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` : null)
-        || (isProduction ? `http://localhost:${PORT}` : `http://lvh.me:${PORT}`);
 
     // AUTH ROUTES
     app.get('/healthz', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
@@ -287,16 +478,16 @@
             }
             return res.render('index', {
                 csrfToken: req.csrfToken(),
-                title: 'ReviewPilot • Turn happy customers into 5‑star reviews',
+                title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews',
                 user: req.session.user || null,
                 homepageStats: __homepageStatsCache.data,
             });
         } catch (e) {
             console.error('home stats error', e);
-            return res.render('index', { csrfToken: req.csrfToken(), title: 'ReviewPilot • Turn happy customers into 5‑star reviews', user: req.session.user || null, homepageStats: { avg: '4.8', convPercent: '62' } });
+            return res.render('index', { csrfToken: req.csrfToken(), title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews', user: req.session.user || null, homepageStats: { avg: '4.8', convPercent: '62' } });
         }
     });
-    app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • ReviewPilot', user: req.session.user || null }));
+    app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • Reviews & Marketing', user: req.session.user || null }));
     app.get('/pricing', csrfProtection, async (req, res) => {
         let subscriptionStatus = null;
         try {
@@ -305,9 +496,9 @@
                 if (doc.exists) subscriptionStatus = doc.data().subscriptionStatus || null;
             }
         } catch (_) { /* ignore */ }
-        res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • ReviewPilot', user: req.session.user || null, subscriptionStatus });
+        res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • Reviews & Marketing', user: req.session.user || null, subscriptionStatus });
     });
-    app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • ReviewPilot', user: req.session.user || null }));
+    app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • Reviews & Marketing', user: req.session.user || null }));
     app.get('/signup', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
@@ -317,45 +508,63 @@
     });
     app.post('/signup', async (req, res) => {
         try {
-            const { businessName, email, password } = req.body;
-            const userRecord = await auth.createUser({ email, password, displayName: businessName, emailVerified: false });
+            const { businessName, email, password } = req.body || {};
+            if (!businessName || !email || !password) {
+                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(400).render('signup', { csrfToken: token, error: 'Missing fields' });
+            }
+            const signUpRes = await cognito.send(new SignUpCommand({
+                ClientId: COGNITO_CLIENT_ID,
+                Username: email,
+                Password: password,
+                UserAttributes: [
+                    { Name: 'email', Value: email },
+                    { Name: 'name', Value: businessName }
+                ]
+            }));
+            const userSub = signUpRes?.UserSub;
             const customer = await stripe.customers.create({ email, name: businessName });
-            await db.collection('businesses').doc(userRecord.uid).set({
+            if (userSub) {
+                await db.collection('businesses').doc(userSub).set({
                 businessName, email, googlePlaceId: null,
                 stripeCustomerId: customer.id, subscriptionStatus: 'incomplete',
                 createdAt: new Date().toISOString(),
             });
-            console.log(`✅ Full signup complete for: ${email}`);
-            // Send verification + welcome; then show verify page
-            try {
-                const verifyUrl = await auth.generateEmailVerificationLink(email, { url: `${appUrl}/login` });
-                if (process.env.SMTP_HOST) {
-                    const transport = nodemailer.createTransport({
-                        host: process.env.SMTP_HOST,
-                        port: Number(process.env.SMTP_PORT || 587),
-                        secure: false,
-                        auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
-                    });
-                    const htmlWelcome = await new Promise((resolve, reject) => {
-                        app.render('emails/welcome', { appUrl }, (err, str) => err ? reject(err) : resolve(str));
-                    });
-                    const htmlVerify = `<p style="font-family:Inter,Arial,sans-serif;color:#1B1B1B">Confirm your email to activate your account:</p><p><a href="${verifyUrl}" style="background:#10B981;color:#fff;text-decoration:none;border-radius:8px;padding:12px 18px;display:inline-block;font-weight:700">Verify Email</a></p>`;
-                    await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: "Welcome to Reviews & Marketing! Let's get you started.", html: htmlWelcome + htmlVerify });
-                }
-            } catch (mailErr) { console.warn('Verification/welcome email failed:', mailErr.message); }
-            res.redirect('/verify-email');
+                const base = (businessName || 'merchant').replace(/[^A-Za-z0-9]/g, '').slice(0,6).toUpperCase();
+                const rand = Math.random().toString(36).slice(2,5).toUpperCase();
+                await db.collection('businesses').doc(userSub).set({ shortSlug: `${base}${rand}` }, { merge: true });
+            }
+            console.log(`✅ Cognito signup initiated for: ${email}`);
+            return res.redirect(`/confirm?email=${encodeURIComponent(email)}`);
         } catch (error) {
-            console.error("❌ Error during signup:", error);
-            let msg = 'Something went wrong during signup.';
-            if (error?.errorInfo?.code === 'auth/email-already-exists') {
-                msg = 'That email is already in use. Try logging in or use a different email.';
+            try {
+                console.error('❌ Cognito signup error (full object):', JSON.stringify(error, Object.getOwnPropertyNames(error || {})));
+            } catch (_) {
+                console.error('❌ Cognito signup error (raw object):', error);
+            }
+            console.error('❌ Cognito signup error (message):', error?.message);
+            console.error('❌ Cognito signup error (name):', error?.name);
+            console.error('❌ Cognito signup error (stack):', error?.stack);
+            if (error && error.$metadata) {
+                console.error('❌ Cognito signup error ($metadata):', JSON.stringify(error.$metadata));
             }
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            res.status(400).render('signup', { csrfToken: token, error: msg });
+            return res.status(400).render('signup', { csrfToken: token, error: 'Signup failed. Try a different email.' });
         }
     });
+
+    // New confirmation landing route
+    app.get('/confirm', (req, res) => {
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        const email = (req.query && req.query.email) || '';
+        return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
+    });
+
+    // Legacy path retained for compatibility
     app.get('/verify-email', (req, res) => {
-        res.render('verify', { user: req.session.user || null });
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        const email = req.query && req.query.email ? req.query.email : '';
+        res.render('confirm', { csrfToken: token, email, user: req.session.user || null });
     });
     app.get('/login', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -370,23 +579,86 @@
         try {
             const { email, password } = req.body || {};
             if (!email || !password) return res.status(400).render('login', { csrfToken: req.csrfToken(), error: 'Missing email or password.' });
-            const authRes = await cognito.send(new InitiateAuthCommand({
+            let authRes = await cognito.send(new InitiateAuthCommand({
                 AuthFlow: 'USER_PASSWORD_AUTH',
                 ClientId: COGNITO_CLIENT_ID,
                 AuthParameters: { USERNAME: email, PASSWORD: password }
             }));
+            // Handle NEW_PASSWORD_REQUIRED challenge
+            if (authRes && authRes.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+                req.session.cognitoNewPassword = { session: authRes.Session, username: email };
+                return res.redirect('/new-password');
+            }
             const accessToken = authRes?.AuthenticationResult?.AccessToken;
             if (!accessToken) throw new Error('Invalid login');
             const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken }));
             const sub = me?.Username;
             const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
+
+            // On first Cognito login, if this merchant previously existed (Firebase UID),
+            // clone their business doc by matching email so they keep their data.
+            try {
+                const hasDoc = await db.collection('businesses').doc(sub).get();
+                if (!hasDoc.exists && attrs.email) {
+                    const legacy = await db.collection('businesses').where('email', '==', attrs.email).limit(1).get();
+                    if (!legacy.empty) {
+                        await db.collection('businesses').doc(sub).set(legacy.docs[0].data());
+                    }
+                }
+            } catch (_) { /* non-fatal */ }
             req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
             console.log(`✅ Cognito login session created for: ${email}`);
             return res.redirect('/dashboard');
         } catch (error) {
-            console.error('❌ Cognito login error:', error?.message || error);
+            const errMsg = (error && (error.name || error.code || error.message)) || '';
+            console.error('❌ Cognito login error:', errMsg);
+            if (['NotAuthorizedException','UserNotFoundException','UserNotConfirmedException','InvalidParameterException'].includes(errMsg)) {
+                try {
+                    const { email } = req.body || {};
+                    const snap = await db.collection('businesses').where('email', '==', email).limit(1).get();
+                    if (!snap.empty) {
+                        try {
+                            await cognito.send(new AdminCreateUserCommand({ UserPoolId: COGNITO_USER_POOL_ID, Username: email, UserAttributes: [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }, { Name: 'name', Value: snap.docs[0].data().businessName || '' }] }));
+                        } catch(_){}
+                        try { await cognito.send(new AdminSetUserPasswordCommand({ UserPoolId: COGNITO_USER_POOL_ID, Username: email, Password: (req.body && req.body.password) || '', Permanent: true })); } catch(_){ }
+                        try { await cognito.send(new AdminConfirmSignUpCommand({ UserPoolId: COGNITO_USER_POOL_ID, Username: email })); } catch(_){ }
+                        // Retry auth
+                        const authRes = await cognito.send(new InitiateAuthCommand({
+                            AuthFlow: 'USER_PASSWORD_AUTH',
+                            ClientId: COGNITO_CLIENT_ID,
+                            AuthParameters: { USERNAME: email, PASSWORD: (req.body && req.body.password) || '' }
+                        }));
+                        if (authRes && authRes.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+                            req.session.cognitoNewPassword = { session: authRes.Session, username: email };
+                            return res.redirect('/new-password');
+                        }
+                        const accessToken2 = authRes?.AuthenticationResult?.AccessToken;
+                        if (accessToken2) {
+                            const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken2 }));
+                            const sub = me?.Username; const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
+                            req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
+                            return res.redirect('/dashboard');
+                        }
+                    }
+                } catch (e2) { console.warn('auto-signup fallback failed', e2?.message || e2); }
+            }
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            return res.status(200).render('login', { csrfToken: token, error: 'Invalid email or password.' });
+            let userMsg = 'Invalid email or password.';
+            let resendLink = null;
+            let showHint = true;
+            if (/Password.*requirements|Password.*minimum|Password.*complex/i.test(errMsg)) {
+                userMsg = 'Password does not meet complexity requirements.';
+            }
+            if (/UserNotConfirmed/i.test(errMsg)) {
+                userMsg = 'Your account is not confirmed. Please check your email for a verification link.';
+                const { email } = req.body || {};
+                if (email) resendLink = `/resend-confirmation?email=${encodeURIComponent(email)}`;
+                showHint = false;
+            }
+            if (/NotAuthorizedException/i.test(errMsg)) {
+                userMsg = 'Incorrect email or password.';
+            }
+            return res.status(200).render('login', { csrfToken: token, error: userMsg, hint: showHint ? errMsg : null, resendLink });
         }
     });
 
@@ -401,43 +673,10 @@
     });
     app.post('/reset-password', csrfProtection, async (req, res) => {
         try {
-            const { email } = req.body;
+            const { email } = req.body || {};
             // Prefer branded email: generate password reset link with continue URL to our handler
-            let resetUrl = null;
-            try {
-                resetUrl = await auth.generatePasswordResetLink(email, {
-                    url: `${appUrl}/auth/action`,
-                    handleCodeInApp: true
-                });
-            } catch (genErr) {
-                console.warn('generatePasswordResetLink failed; falling back to Firebase default email', genErr.message);
-                const apiKey = process.env.FIREBASE_API_KEY;
-                const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${apiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ requestType: 'PASSWORD_RESET', email, continueUrl: `${appUrl}/auth/action` })
-                });
-                if (!resp.ok) {
-                    const body = await resp.json().catch(() => ({}));
-                    console.error('Reset error:', body);
-                    return res.status(400).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Could not send reset email. Check the address.' });
-                }
-            }
-            // Send branded email if SMTP configured and we have a generated link
-            if (resetUrl && process.env.SMTP_HOST) {
-                try {
-                    const transport = nodemailer.createTransport({
-                        host: process.env.SMTP_HOST,
-                        port: Number(process.env.SMTP_PORT || 587),
-                        secure: false,
-                        auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
-                    });
-                    const html = await new Promise((resolve, reject) => {
-                        app.render('emails/reset', { appUrl, resetUrl }, (err, str) => err ? reject(err) : resolve(str));
-                    });
-                    await transport.sendMail({ from: process.env.SMTP_FROM || 'ReviewPilot <noreply@reviewpilot>', to: email, subject: 'Reset your password', html });
-                } catch (mailErr) { console.warn('Branded reset email failed:', mailErr.message); }
-            }
-            return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null });
+            await cognito.send(new ForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email }));
+            return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null, email });
         } catch (e) {
             console.error('Reset exception:', e);
             return res.status(500).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Unexpected error. Try again.' });
@@ -886,10 +1125,84 @@
         }
     });
 
-        // --- 6. START THE SERVER ---
-        app.listen(PORT, HOST, () => {
-            console.log(`✅ Server is running and listening on port ${PORT}`);
-        });
+    // --- 6. START THE SERVER ---
+    // Assets API: secure route to generate QR and PDFs for merchant
+    const requireMerchant = (req, res, next) => {
+        if (!req.session.user) return res.status(401).json({ error: 'unauthorized' });
+        next();
+    };
+
+    app.get('/api/merchants/:merchantId/assets', requireMerchant, async (req, res) => {
+        try {
+            const { merchantId } = req.params;
+            if (req.session.user.uid !== merchantId) return res.status(403).json({ error: 'forbidden' });
+            const ref = db.collection('businesses').doc(merchantId);
+            const snap = await ref.get();
+            if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
+            const data = snap.data() || {};
+            const slug = data.shortSlug || 'MERCHANT';
+            const shortLink = `${shortDomain}/${slug}`;
+
+            // Prepare output directory
+            const outDir = path.join(__dirname, 'public', 'assets', merchantId);
+            fs.mkdirSync(outDir, { recursive: true });
+
+            // Generate QR as PNG and SVG
+            const qrPngPath = path.join(outDir, 'qr.png');
+            const qrSvgPath = path.join(outDir, 'qr.svg');
+            await QRCode.toFile(qrPngPath, `https://${shortLink}`, { scale: 8, margin: 1 });
+            const svgStr = await QRCode.toString(`https://${shortLink}`, { type: 'svg', margin: 1 });
+            fs.writeFileSync(qrSvgPath, svgStr, 'utf8');
+
+            // Countertop sign PDF (5x7 inches)
+            const signPdfPath = path.join(outDir, 'sign.pdf');
+            await new Promise((resolve) => {
+                const doc = new PDFDocument({ size: [360, 504] }); // 72 DPI * (5x7)
+                doc.pipe(fs.createWriteStream(signPdfPath)).on('finish', resolve);
+                doc.fontSize(22).text('Leave us a 5‑star review', { align: 'center', margin: 24 });
+                const png = fs.readFileSync(qrPngPath);
+                doc.image(png, (360-200)/2, 120, { width: 200, height: 200 });
+                doc.moveDown(2);
+                doc.fontSize(12).text(shortLink, { align: 'center' });
+                doc.end();
+            });
+
+            // Sticker sheet PDF (US Letter with multiple QR codes)
+            const stickerPdfPath = path.join(outDir, 'stickers.pdf');
+            await new Promise((resolve) => {
+                const doc = new PDFDocument({ size: 'LETTER', margins: { top: 36, left: 36, right: 36, bottom: 36 } });
+                doc.pipe(fs.createWriteStream(stickerPdfPath)).on('finish', resolve);
+                const png = fs.readFileSync(qrPngPath);
+                const cols = 3, rows = 8; // 24 stickers
+                const cellW = (612 - 72) / cols; // page width - margins
+                const cellH = (792 - 72) / rows; // page height - margins
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const x = 36 + c * cellW + (cellW - 120) / 2;
+                        const y = 36 + r * cellH + (cellH - 120) / 2;
+                        doc.image(png, x, y, { width: 120, height: 120 });
+                    }
+                }
+                doc.end();
+            });
+
+            const base = `${appUrl}/assets/${merchantId}`;
+            return res.json({
+                shortLink: shortLink,
+                qrCodePngUrl: `${base}/qr.png`,
+                qrCodeSvgUrl: `${base}/qr.svg`,
+                signPdfUrl: `${base}/sign.pdf`,
+                stickerPdfUrl: `${base}/stickers.pdf`
+            });
+        } catch (e) {
+            console.error('assets api error', e);
+            return res.status(500).json({ error: 'server_error' });
+        }
+    });
+
+    app.listen(PORT, HOST, () => {
+        console.log(`✅ Server is running and listening on port ${PORT}`);
+    });
     })().catch((err) => {
         console.error('❌ Fatal startup error', err);
         process.exit(1);

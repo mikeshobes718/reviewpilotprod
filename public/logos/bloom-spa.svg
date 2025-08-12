@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" width="120" height="24"><text x="0" y="18" font-family="Inter,Arial" font-size="16" fill="#000">Bloom</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="36" viewBox="0 0 140 36" fill="none">
+  <path d="M10 26c8-4 8-16 0-20 6 0 12 6 12 10S16 26 10 26z" fill="#10B981"/>
+  <text x="36" y="24" font-family="Inter, Manrope, Arial, sans-serif" font-size="16" font-weight="700" fill="#1B1B1B">Bloom Spa</text>
+</svg>

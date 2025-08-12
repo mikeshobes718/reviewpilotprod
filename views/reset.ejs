@@ -3,68 +3,38 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset password • ReviewPilot</title>
+    <title>Reset password • Reviews &amp; Marketing</title>
     <%- include('partials/head') %>
-    <style>
-      * { box-sizing: border-box; }
-      body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; }
-      .base-card { width: 360px; margin: 40px auto; }
-      label { font-size: 13px; color: var(--muted); font-weight: 600; }
-      p.sub { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
-      .noticeBanner { background:#EBF9F3; color:#065F46; padding:12px 16px; border-radius:8px; border:1px solid #DBF3E8; }
-    </style>
   </head>
-  <body>
+  <body class="auth-bg">
     <%- include('partials/header') %>
     <div class="auth-grid">
-      <div class="auth-left">
-        <div>
-          <h1>Reset your password</h1>
-          <p>Enter your account email to receive a reset link.</p>
-        </div>
-      </div>
+      <div class="auth-left auth-photo"></div>
       <div class="auth-right">
-        <div class="base-card">
-          <div class="brand">
-            <div class="badge">ReviewPilot</div>
+        <div class="base-card auth-card dark-card">
+          <div class="brand" style="text-align:center"><img src="/logos/main-logo.png" alt="Reviews &amp; Marketing" /></div>
+          <div class="form-container">
+          <h2>Reset your password</h2>
+          <p class="sub-headline">Enter your email and we'll send you a link to get back into your account.</p>
+            <% if (typeof error !== 'undefined' && error) { %>
+              <div class="error"><%= error %></div>
+            <% } %>
+            <% if (!sent) { %>
+            <form action="/reset-password" method="POST">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <div class="form-field">
+                <label for="email">Email</label>
+                <input id="email" class="input" type="email" name="email" placeholder="you@business.com" required />
+              </div>
+              <div class="button-container"><button class="btn-primary primary-action" type="submit">Send reset email</button></div>
+            </form>
+            <% } else { %>
+            <p class="sub-headline">Please check your inbox for a password reset email.</p>
+            <% } %>
           </div>
-          <h1>Reset your password</h1>
-          <p class="sub">Enter your account email to receive a reset link.</p>
-          <% if (error) { %>
-            <div class="error"><%= error %></div>
-          <% } %>
-          <% if (sent) { %>
-            <div class="noticeBanner">Check your email for a reset link.</div>
-          <% } %>
-           <form id="reset-form" action="/reset-password" method="POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <div>
-              <label>Email</label>
-              <input id="reset-email" class="input" type="email" name="email" placeholder="you@business.com" required>
-            </div>
-            <button id="reset-btn" class="btn-primary" type="submit" style="margin-top:24px">Send reset link</button>
-          </form>
-           <form id="reset-confirm-form" action="/reset-password/confirm" method="POST" style="margin-top:16px;">
-             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-             <div>
-               <label>Verification code</label>
-               <input class="input" type="text" name="code" placeholder="6-digit code" />
-             </div>
-             <div>
-               <label>New password</label>
-               <input class="input" type="password" name="newPassword" placeholder="New password" />
-             </div>
-             <div>
-               <label>Email (again)</label>
-               <input class="input" type="email" name="email" value="<%= typeof email !== 'undefined' ? email : '' %>" placeholder="you@business.com" />
-             </div>
-             <button class="btn-secondary" type="submit" style="margin-top:12px">Confirm reset</button>
-           </form>
-          <div class="row" style="margin-top:12px"><a class="link-accent" href="/login">Back to login</a></div>
         </div>
       </div>
     </div>
     <%- include('partials/footer') %>
-    <!-- Client-side Firebase reset removed; handled by server via Cognito -->
   </body>
-  </html>
+</html>

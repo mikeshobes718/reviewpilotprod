@@ -2,149 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin • ReviewPilot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin • Reviews &amp; Marketing</title>
   <%- include('partials/head') %>
 </head>
 <body>
   <%- include('partials/header') %>
-  <main class="main-content">
-    <div class="container">
-      <div class="base-card" style="overflow:auto">
-        <h1 class="page-heading" style="font-size:28px;margin:0 0 12px">Admin</h1>
-        <div class="table-wrap" style="min-width:960px">
-          <table class="admin-table" id="admin-table">
-            <thead>
-              <tr>
-                <th data-key="id"><span class="th-flex">UID <span class="sort-icon">↕</span></span></th>
-                <th data-key="businessName"><span class="th-flex">Business <span class="sort-icon">↕</span></span></th>
-                <th data-key="email"><span class="th-flex">Email <span class="sort-icon">↕</span></span></th>
-                <th data-key="stripeCustomerId"><span class="th-flex">Stripe Customer <span class="sort-icon">↕</span></span></th>
-                <th data-key="subscriptionStatus"><span class="th-flex">Status <span class="sort-icon">↕</span></span></th>
-                <th data-key="googlePlaceId"><span class="th-flex">Place ID <span class="sort-icon">↕</span></span></th>
-                <th data-key="createdAt"><span class="th-flex">Created <span class="sort-icon">↕</span></span></th>
-              </tr>
-            </thead>
-            <tbody>
-              <% items.forEach(function(x){ %>
-                <tr class="row-item" data-id="<%= x.id %>">
-                  <td class="small"><%= x.id %></td>
-                  <td><%= x.businessName||'' %></td>
-                  <td><%= x.email||'' %></td>
-                  <td class="small"><%= x.stripeCustomerId||'' %></td>
-                  <td>
-                    <% const st = (x.subscriptionStatus||'').toLowerCase(); %>
-                    <span class="badge-status <%= st==='active' ? 'active' : 'incomplete' %>"><%= x.subscriptionStatus||'' %></span>
-                  </td>
-                  <td class="small"><%= x.googlePlaceId||'' %></td>
-                  <td class="small created-cell" data-created="<%= x.createdAt||'' %>"><%= x.createdAt||'' %></td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- Detail Drawer -->
-  <div class="drawer-overlay" id="drawer-overlay">
-    <div class="drawer" id="drawer">
-      <div class="drawer-header">
-        <div id="drawer-title" style="font-weight:800">Details</div>
-        <button class="drawer-close" id="drawer-close">Close</button>
-      </div>
-      <div class="drawer-body">
-        <div id="drawer-biz" style="margin-bottom:12px">
-          <div id="drawer-biz-name" style="font-size:20px;font-weight:800;color:var(--text)">Business</div>
-          <div id="drawer-biz-email" style="color:var(--muted);font-size:14px">email@example.com</div>
-        </div>
-        <div class="eyebrow" style="margin-bottom:8px">Key metrics</div>
-        <div class="kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
-          <div class="kpi"><div class="label">Total feedback</div><div class="value" id="m-total">—</div></div>
-          <div class="kpi"><div class="label">Average rating</div><div class="value" id="m-avg">—</div></div>
-          <div class="kpi"><div class="label">5★ conversions</div><div class="value" id="m-conv">—</div></div>
-        </div>
-        <div class="eyebrow" style="margin-bottom:8px">Review activity over time</div>
-        <div style="height:140px;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center;color:var(--muted);margin-bottom:12px">Bar chart placeholder</div>
-        <div class="eyebrow" style="margin-bottom:8px">Admin Actions</div>
-        <div style="display:flex;gap:8px">
-          <a id="viewDashLink" class="btn-primary" style="padding:10px 12px;border-radius:8px;text-decoration:none;display:inline-block" href="#">View Dashboard</a>
-          <a id="manageSubLink" class="btn btn-secondary" style="padding:10px 12px;border-radius:8px" href="#">Manage Subscription</a>
-        </div>
-      </div>
-    </div>
+  <div class="container" style="max-width:1100px;margin:24px auto;">
+    <h1>Admin</h1>
+    <table class="table">
+      <thead><tr><th>Business ID</th><th>Name</th><th>Email</th></tr></thead>
+      <tbody>
+        <% items.forEach(function(item){ %>
+          <tr><td><%= item.id %></td><td><%= item.businessName || '' %></td><td><%= item.email || '' %></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
   </div>
-
-  <script>
-    (function(){
-      const table = document.getElementById('admin-table');
-      if (!table) return;
-      let sortKey = null, sortDir = 1;
-      function getCellValue(tr, key){
-        const map = { id:0, businessName:1, email:2, stripeCustomerId:3, subscriptionStatus:4, googlePlaceId:5, createdAt:6 };
-        const idx = map[key];
-        const td = tr.children[idx];
-        return td ? td.textContent.trim().toLowerCase() : '';
-      }
-      function sortBy(key){
-        const tbody = table.tBodies[0];
-        const rows = Array.from(tbody.rows);
-        if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
-        rows.sort((a,b)=> (getCellValue(a,key) > getCellValue(b,key) ? 1 : -1) * sortDir);
-        rows.forEach(r=>tbody.appendChild(r));
-      }
-      table.tHead.querySelectorAll('th').forEach(th=>{
-        th.addEventListener('click', ()=> sortBy(th.dataset.key));
-      });
-
-      // Format created timestamps to human readable
-      function formatTime(iso){
-        if (!iso) return '';
-        try{
-          const d = new Date(iso);
-          if (isNaN(d.getTime())) return iso;
-          return d.toLocaleString(undefined, { year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-        }catch(_){ return iso; }
-      }
-      table.querySelectorAll('.created-cell').forEach(td=>{
-        const iso = td.getAttribute('data-created');
-        td.textContent = formatTime(iso);
-      });
-
-      // Drawer interactions
-      const overlay = document.getElementById('drawer-overlay');
-      const drawer = document.getElementById('drawer');
-      const title = document.getElementById('drawer-title');
-      const closeBtn = document.getElementById('drawer-close');
-      function openDrawer(name, email, id){
-        overlay.classList.add('open'); drawer.classList.add('open'); title.textContent = 'Details';
-        document.getElementById('drawer-biz-name').textContent = name || 'Business';
-        document.getElementById('drawer-biz-email').textContent = email || '';
-        fetch(`/admin/metrics/${id}`).then(r=>r.json()).then(m=>{
-          if (m && !m.error){
-            document.getElementById('m-total').textContent = m.total;
-            document.getElementById('m-avg').textContent = m.avg;
-            document.getElementById('m-conv').textContent = m.conversions;
-          }
-        }).catch(()=>{});
-        const view = document.getElementById('viewDashLink');
-        view.href = `/admin/impersonate/${id}`;
-        const manage = document.getElementById('manageSubLink');
-        manage.href = `/admin/manage-subscription/${id}`;
-      }
-      function closeDrawer(){ overlay.classList.remove('open'); drawer.classList.remove('open'); }
-      closeBtn.addEventListener('click', closeDrawer);
-      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeDrawer(); });
-      table.tBodies[0].querySelectorAll('tr').forEach(tr=>{
-        tr.addEventListener('click', ()=> openDrawer(
-          tr.children[1]?.textContent.trim(),
-          tr.children[2]?.textContent.trim(),
-          tr.dataset.id
-        ));
-      });
-    })();
-  </script>
   <%- include('partials/footer') %>
 </body>
 </html>

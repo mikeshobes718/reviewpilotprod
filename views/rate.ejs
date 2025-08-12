@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rate Your Experience • ReviewPilot</title>
+    <title>Rate Your Experience • Reviews &amp; Marketing</title>
     <meta name="csrf-token" content="<%= csrfToken %>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,7 +50,9 @@
     </style>
 </head>
 <body>
-    <div class="base-card modal-card" id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId %>">
+    <%- include('partials/header') %>
+    <div class="container" style="max-width:760px;margin:24px auto;padding:0 16px;">
+      <h1>Rate Your Experience</h1>
         <!-- Initial Rating Section -->
         <div id="rating-section">
             <div class="modal-title">How was your experience at<br><strong><%= business.businessName %></strong>?</div>
@@ -86,9 +88,7 @@
         </div>
     </div>
     
-    <div class="branding">
-        Powered by <a href="#" target="_blank">ReviewPilot</a>
-    </div>
+    <div class="muted" style="margin-top:32px;font-size:12px;opacity:.75">Powered by <a href="#" target="_blank">Reviews &amp; Marketing</a></div>
 
     <% if (hcaptchaSiteKey) { %>
     <div class="hidden">

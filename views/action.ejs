@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create a new password • ReviewPilot</title>
+    <title>Create a new password • Reviews &amp; Marketing</title>
     <%- include('partials/head') %>
     <style>
       * { box-sizing: border-box; }
@@ -17,17 +17,10 @@
   <body>
     <%- include('partials/header') %>
     <div class="auth-grid">
-      <div class="auth-left">
-        <div>
-          <h1>Create a new password</h1>
-          <p>Make sure it's secure and memorable.</p>
-        </div>
-      </div>
       <div class="auth-right">
         <div class="base-card">
-          <div class="brand"><div class="badge">ReviewPilot</div></div>
-          <h1>Reset your password</h1>
-          <p class="sub">Enter a new password below.</p>
+          <div class="brand"><div class="badge">RM</div></div>
+          <h1>Create a new password</h1>
           <% if (typeof error !== 'undefined' && error) { %>
             <div class="error"><%= error %></div>
           <% } %>
@@ -35,17 +28,20 @@
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <input type="hidden" name="oobCode" value="<%= oobCode %>">
             <div>
-              <label>New password</label>
-              <input class="input" type="password" name="newPassword" placeholder="••••••••" required>
+              <label>Email</label>
+              <input class="input" type="email" value="<%= email %>" disabled />
             </div>
-            <button class="btn-primary" type="submit" style="margin-top:24px">Save New Password</button>
+            <div>
+              <label>New Password</label>
+              <input class="input" type="password" name="newPassword" required />
+            </div>
+            <button class="btn-primary" type="submit" style="margin-top:16px">Save password</button>
           </form>
-          <div class="row" style="margin-top:12px"><a class="link-accent" href="/login">Back to login</a></div>
         </div>
       </div>
     </div>
     <%- include('partials/footer') %>
   </body>
-  </html>
+</html>
 
 

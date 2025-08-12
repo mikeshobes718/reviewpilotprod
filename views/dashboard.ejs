@@ -86,7 +86,9 @@
             <div class="kpi"><div class="label">Average rating</div><div class="value"><%= analytics.avg %></div></div>
             <div class="kpi"><div class="label">5★ conversions</div><div class="value"><%= analytics.conversions %></div></div>
           </div>
-          <p style="margin-top:1rem; color: var(--text-secondary);">Distribution: 1★ <%= analytics.counts[1] %> • 2★ <%= analytics.counts[2] %> • 3★ <%= analytics.counts[3] %> • 4★ <%= analytics.counts[4] %> • 5★ <%= analytics.counts[5] %></p>
+          <div style="margin-top:1rem">
+            <div id="distChart" style="display:grid;gap:6px"></div>
+          </div>
         </div>
         <% } %>
         <div class="grid" id="settings-link">
@@ -138,16 +140,32 @@
                 <input type="text" id="googlePlaceId" name="googlePlaceId" value="<%= business.googlePlaceId || '' %>" placeholder="Enter your Google Place ID here" required>
                 <button type="submit" class="btn-primary">Save Settings</button>
               </form>
-              <br>
-              <label>Your Unique Rating Link:</label>
-              <div class="link-box" id="publicLink"><%= appUrl %>/rate/<%= user.uid %></div>
-              <div class="btns" style="display:flex; gap:.5rem; margin-top:.5rem;">
-                <button class="btn btn-secondary" id="copyBtn" type="button">Copy link</button>
-                <a class="btn btn-secondary" id="openLink" href="<%= appUrl %>/rate/<%= user.uid %>" target="_blank" rel="noopener">Open link</a>
+            </div>
+
+            <div class="card base-card">
+              <h2>Review Collection Kit</h2>
+              <div class="sub-row" style="margin-bottom:10px">
+                <div style="flex:1">
+                  <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Short link</div>
+                  <div class="link-box" id="kitShortLink">Loading…</div>
+                  <div class="btns" style="display:flex; gap:.5rem; margin-top:.5rem;">
+                    <button class="btn btn-secondary" id="kitCopyLink" type="button">Copy</button>
+                  </div>
+                </div>
+                <div>
+                  <img id="kitQrPreview" alt="QR code" class="qr-placeholder" src=""/>
+                </div>
               </div>
-              <div style="margin-top:1rem;">
-                <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">QR Code</div>
-                <div id="qrcode" aria-label="QR code for your rating link"></div>
+              <div class="sub-row">
+                <a id="btnSignPdf" class="btn btn-secondary" href="#" download>Download Countertop Sign (PDF)</a>
+                <a id="btnStickerPdf" class="btn btn-secondary" href="#" download>Download Sticker Sheet (PDF)</a>
+              </div>
+              <div style="margin-top:14px">
+                <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Suggested receipt text</div>
+                <textarea id="kitReceiptText" readonly style="width:100%; min-height:92px; padding:12px; border:1px solid var(--border); border-radius:8px; background: var(--bg);"></textarea>
+                <div style="margin-top:.5rem">
+                  <button class="btn btn-secondary" id="kitCopyReceipt" type="button">Copy Text</button>
+                </div>
               </div>
             </div>
 
@@ -219,6 +237,52 @@
     <%- include('partials/footer') %>
     <script>
       (function(){
+        // Review Collection Kit loader
+        async function fetchKit(){
+          try {
+            const uid = '<%= user && user.uid ? user.uid : "" %>';
+            if (!uid) return;
+            const resp = await fetch('/api/merchants/' + uid + '/assets', { credentials: 'same-origin' });
+            if (!resp.ok) return;
+            const data = await resp.json();
+            var shortBox = document.getElementById('kitShortLink');
+            var qrImg = document.getElementById('kitQrPreview');
+            var signA = document.getElementById('btnSignPdf');
+            var stickerA = document.getElementById('btnStickerPdf');
+            var receipt = document.getElementById('kitReceiptText');
+            if (shortBox && data.shortLink) shortBox.textContent = data.shortLink;
+            if (qrImg && data.qrCodePngUrl) { qrImg.src = data.qrCodePngUrl; qrImg.classList.remove('qr-placeholder'); }
+            if (signA && data.signPdfUrl) { signA.href = data.signPdfUrl; }
+            if (stickerA && data.stickerPdfUrl) { stickerA.href = data.stickerPdfUrl; }
+            if (receipt) {
+              const link = data.shortLink || '';
+              receipt.value = `Thanks for your purchase! If we made your day, please leave us a quick 5-star review here: ${link}`;
+            }
+          } catch(e) { console.error('kit load error', e); }
+        }
+        fetchKit();
+
+        // Copy helpers
+        async function copyText2(str){
+          try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(str); return true; } } catch(_){ }
+          try { const ta=document.createElement('textarea'); ta.value=str; ta.setAttribute('readonly',''); ta.style.position='absolute'; ta.style.left='-9999px'; document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, str.length); const ok=document.execCommand('copy'); document.body.removeChild(ta); return ok; } catch(_){ return false; }
+        }
+        var kitCopyBtn = document.getElementById('kitCopyLink');
+        if (kitCopyBtn) {
+          kitCopyBtn.addEventListener('click', async function(){
+            var shortBox = document.getElementById('kitShortLink');
+            const ok = await copyText2(shortBox ? shortBox.textContent.trim() : '');
+            if (ok) alert('Short link copied!'); else alert('Copy failed');
+          });
+        }
+        var kitCopyReceipt = document.getElementById('kitCopyReceipt');
+        if (kitCopyReceipt) {
+          kitCopyReceipt.addEventListener('click', async function(){
+            var receipt = document.getElementById('kitReceiptText');
+            const ok = await copyText2(receipt ? receipt.value : '');
+            if (ok) alert('Receipt text copied!'); else alert('Copy failed');
+          });
+        }
         const btn = document.getElementById('copyBtn');
         if (!btn) return;
         const toast = document.getElementById('toast');
@@ -299,7 +363,7 @@
         var modalConfirm = document.getElementById('cancelConfirm');
         if (downgradeBtn && modal) {
           downgradeBtn.addEventListener('click', function(){ modal.style.display = 'flex'; });
-          modalClose && modalClose.addEventListener('click', function(){ modal.style.display = 'none'; });
+          if (modalClose) modalClose.addEventListener('click', function(){ modal.style.display = 'none'; });
           modal.addEventListener('click', function(e){ if (e.target === modal) modal.style.display = 'none'; });
           if (modalConfirm) {
             modalConfirm.addEventListener('click', async function(){
@@ -339,6 +403,45 @@
             window.location.href = '/dashboard?e=' + encodeURIComponent('Checkout failed');
           }
         });
+      })();
+    </script>
+    <script>
+      (function(){
+        try{
+          var el = document.getElementById('distChart');
+          if(!el) return;
+          var counts = <%- JSON.stringify(analytics.counts || {1:0,2:0,3:0,4:0,5:0}) %>;
+          var max = Math.max(1, counts[1]||0, counts[2]||0, counts[3]||0, counts[4]||0, counts[5]||0);
+          function row(star){
+            var val = counts[star] || 0;
+            var pct = Math.round((val / max) * 100);
+            var wrap = document.createElement('div');
+            wrap.style.display = 'grid';
+            wrap.style.gridTemplateColumns = '44px 1fr 48px';
+            wrap.style.alignItems = 'center';
+            wrap.style.gap = '8px';
+            var label = document.createElement('div');
+            label.textContent = star + '★';
+            label.style.color = 'var(--muted)';
+            label.style.fontWeight = '600';
+            var barWrap = document.createElement('div');
+            barWrap.style.background = 'var(--border)';
+            barWrap.style.borderRadius = '999px';
+            barWrap.style.overflow = 'hidden';
+            var bar = document.createElement('div');
+            bar.style.height = '8px';
+            bar.style.width = pct + '%';
+            bar.style.background = 'var(--accent)';
+            barWrap.appendChild(bar);
+            var value = document.createElement('div');
+            value.textContent = val;
+            value.style.textAlign = 'right';
+            value.style.color = 'var(--muted)';
+            wrap.appendChild(label); wrap.appendChild(barWrap); wrap.appendChild(value);
+            el.appendChild(wrap);
+          }
+          [5,4,3,2,1].forEach(row);
+        }catch(e){ console.error('dist chart error', e); }
       })();
     </script>
 </body>
