@@ -562,6 +562,21 @@
                 return res.status(400).render('signup', { csrfToken: token, error: 'Missing fields' });
             }
 
+            // If this is an AJAX request, prefer JSON responses
+            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json'));
+
+            // Duplicate email pre-check in our database
+            try {
+                const existingSnap = await db.collection('businesses').where('email', '==', decodedEmail).limit(1).get();
+                if (!existingSnap.empty) {
+                    if (isAjax) {
+                        return res.status(409).json({ error: 'EMAIL_ALREADY_REGISTERED' });
+                    } else {
+                        return res.status(409).render('signup', { csrfToken: token, error: 'An account with this email already exists. Please <a href="/login">log in</a> instead.' });
+                    }
+                }
+            } catch (_) { /* non-fatal: continue to signup */ }
+
             const signUpRes = await cognito.send(new SignUpCommand({
                 ClientId: COGNITO_CLIENT_ID,
                 Username: decodedEmail,
@@ -594,6 +609,9 @@
                 } catch (_) { /* ignore email errors */ }
             }
 
+            if (isAjax) {
+                return res.json({ redirect: `/confirm?email=${encodeURIComponent(decodedEmail)}` });
+            }
             return res.redirect(`/confirm?email=${encodeURIComponent(decodedEmail)}`);
         } catch (error) {
             console.error('Signup error:', error && (error.message || error));
@@ -602,9 +620,19 @@
             let passwordMsg = null;
             const errName = (error && (error.name || error.code)) || '';
             const errText = (error && (error.message || '')) || '';
+            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json'));
+            if (errName === 'UsernameExistsException') {
+                if (isAjax) {
+                    return res.status(409).json({ error: 'EMAIL_ALREADY_REGISTERED' });
+                }
+                return res.status(409).render('signup', { csrfToken: token, error: 'An account with this email already exists. Please <a href="/login">log in</a> instead.' });
+            }
             if (errName === 'InvalidPasswordException' || /Password.*symbol|Password.*requirements|conform with policy|complex/i.test(errText)) {
                 passwordMsg = 'Password must include at least one symbol (!@#$%).';
                 userMsg = null;
+            }
+            if (isAjax) {
+                return res.status(400).json({ error: userMsg ? 'GENERIC_SIGNUP_FAILED' : 'PASSWORD_POLICY', message: userMsg || passwordMsg || 'Signup failed' });
             }
             return res.status(400).render('signup', { csrfToken: token, error: userMsg, passwordError: passwordMsg });
         }

@@ -59,3 +59,49 @@
 })();
 
 
+// Signup form client handling (duplicate email UX)
+(function(){
+  try{
+    var form = document.querySelector('form[action="/signup"]');
+    if (!form) return;
+    var submitting = false;
+    form.addEventListener('submit', async function(ev){
+      try {
+        if (submitting) return;
+        submitting = true;
+        ev.preventDefault();
+        var fd = new FormData(form);
+        var body = new URLSearchParams();
+        fd.forEach(function(v,k){ body.append(k,v); });
+        var resp = await fetch('/signup', {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
+          credentials: 'same-origin',
+          body: body.toString()
+        });
+        if (resp.ok) {
+          var data = await resp.json().catch(function(){ return null; });
+          if (data && data.redirect) { window.location = data.redirect; return; }
+          window.location.reload();
+          return;
+        }
+        var data = await resp.json().catch(function(){ return { error: 'GENERIC_SIGNUP_FAILED' }; });
+        var container = document.querySelector('.form-container');
+        if (!container) { form.insertAdjacentHTML('afterbegin', '<div class="error">Unexpected error.</div>'); return; }
+        var old = container.querySelector('.error'); if (old) old.remove();
+        if (data && data.error === 'EMAIL_ALREADY_REGISTERED') {
+          container.insertAdjacentHTML('afterbegin', '<div class="error">An account with this email already exists. Please <a href="/login">log in</a> instead.</div>');
+        } else if (data && data.error === 'PASSWORD_POLICY') {
+          container.insertAdjacentHTML('afterbegin', '<div class="error">Password must include at least one symbol (!@#$%).</div>');
+        } else {
+          container.insertAdjacentHTML('afterbegin', '<div class="error">Signup failed. Try a different email.</div>');
+        }
+      } catch(e) {
+        try { form.submit(); } catch(_) {}
+      } finally {
+        submitting = false;
+      }
+    });
+  }catch(_){ }
+})();
+
