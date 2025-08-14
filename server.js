@@ -584,7 +584,12 @@
                 } catch (e) { console.warn('postmark verification send failed', e?.message || e); }
             }
             console.log(`✅ Cognito signup initiated for: ${email}`);
-            return res.redirect(`/confirm?email=${encodeURIComponent(email)}`);
+            const redirectUrl = `/confirm?email=${encodeURIComponent(email)}`;
+            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json')) || (req.headers['content-type'] && req.headers['content-type'].includes('application/json'));
+            if (isAjax) {
+                return res.status(200).json({ ok: true, redirect: redirectUrl });
+            }
+            return res.redirect(303, redirectUrl);
         } catch (error) {
             try {
                 console.error('❌ Cognito signup error (full object):', JSON.stringify(error, Object.getOwnPropertyNames(error || {})));
@@ -596,6 +601,10 @@
             console.error('❌ Cognito signup error (stack):', error?.stack);
             if (error && error.$metadata) {
                 console.error('❌ Cognito signup error ($metadata):', JSON.stringify(error.$metadata));
+            }
+            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json')) || (req.headers['content-type'] && req.headers['content-type'].includes('application/json'));
+            if (isAjax) {
+                return res.status(400).json({ ok: false, error: 'signup_failed' });
             }
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
             return res.status(400).render('signup', { csrfToken: token, error: 'Signup failed. Try a different email.' });
