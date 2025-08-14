@@ -10,36 +10,65 @@
       body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; }
       .base-card { width: 480px; margin: 40px auto; text-align:center }
       .base-card h1 { margin:0 0 8px }
-      .base-card p { color: var(--muted); margin:0 }
+      .base-card p { color: var(--muted); margin:0 0 10px }
       .email-highlight { font-weight: 600; color: var(--accent, #10B981); }
+      form { display:grid; gap:12px; margin-top:12px }
+      input[type="text"] { padding:12px 14px; border:1px solid var(--border); border-radius:8px }
+      .btn-primary { background: var(--accent); color:#fff; border:none; border-radius:8px; padding:12px 14px; font-weight:700 }
+      .error { color:#B91C1C; background:#FEF2F2; border:1px solid #FECACA; border-radius:8px; padding:10px; margin-bottom:10px }
+      .success { color:#065F46; background:#ECFDF5; border:1px solid #A7F3D0; border-radius:8px; padding:10px; margin-bottom:10px }
     </style>
   </head>
   <body>
     <%- include('partials/header') %>
-    <div class="auth-grid">
-      <div class="auth-left">
-        <div>
-          <h1>Registration Successful!</h1>
-          <% if (typeof email !== 'undefined' && email) { %>
-            <p>We've sent a verification link to <span class="email-highlight"><%= email %></span>.</p>
-          <% } else { %>
-            <p>We've sent a verification link to your email.</p>
-          <% } %>
-        </div>
+    <main class="main-content">
+      <div class="base-card card">
+        <h1>Verify your email</h1>
+        <% if (typeof email !== 'undefined' && email) { %>
+          <p>We sent a 6‑digit code to <span class="email-highlight"><%= email %></span>. Enter it below to activate your account.</p>
+        <% } else { %>
+          <p>We sent a 6‑digit code to your email. Enter it below to activate your account.</p>
+        <% } %>
+        <div id="verifyMsg" style="display:none"></div>
+        <form id="verifyForm">
+          <input type="hidden" name="email" value="<%= email || '' %>">
+          <input type="text" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6‑digit code" required>
+          <button class="btn-primary" type="submit">Verify Account</button>
+        </form>
       </div>
-      <div class="auth-right">
-        <div class="base-card">
-          <div class="brand"><div class="badge">RM</div></div>
-          <h1>Registration Successful!</h1>
-          <% if (typeof email !== 'undefined' && email) { %>
-            <p>We've sent a verification link to <span class="email-highlight"><%= email %></span>. Please check your inbox and click the link to activate your account.</p>
-          <% } else { %>
-            <p>We've sent a verification link to your email. Please check your inbox and click the link to activate your account.</p>
-          <% } %>
-        </div>
-      </div>
-    </div>
+    </main>
     <%- include('partials/footer') %>
+    <script>
+      (function(){
+        try{
+          var form = document.getElementById('verifyForm');
+          var msg = document.getElementById('verifyMsg');
+          if(!form) return;
+          form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            msg.style.display='none';
+            var fd = new FormData(form);
+            var body = new URLSearchParams();
+            fd.forEach(function(v,k){ body.append(k,v); });
+            try{
+              var resp = await fetch('/verify-email', { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest', 'Content-Type':'application/x-www-form-urlencoded', 'Accept':'application/json' }, body: body.toString(), credentials:'same-origin' });
+              var data = await resp.json().catch(function(){ return null; });
+              if (resp.ok && data && data.ok){
+                msg.className='success'; msg.textContent='Your email has been verified. You can now log in.'; msg.style.display='block';
+                setTimeout(function(){ window.location = '/login'; }, 1200);
+                return;
+              }
+              var err = (data && data.error) || 'VERIFY_FAILED';
+              var text = 'Verification failed. Please re-check the code.';
+              if (err==='CODE_MISMATCH') text='That code did not match. Please try again.';
+              if (err==='CODE_EXPIRED') text='That code has expired. Please request a new code.';
+              if (err==='ALREADY_CONFIRMED') text='This account is already verified. You can log in now.';
+              msg.className='error'; msg.textContent=text; msg.style.display='block';
+            }catch(ex){ msg.className='error'; msg.textContent='Server error. Please try again.'; msg.style.display='block'; }
+          });
+        }catch(_){ }
+      })();
+    </script>
   </body>
 </html>
 

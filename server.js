@@ -610,9 +610,9 @@
             }
 
             if (isAjax) {
-                return res.json({ redirect: `/confirm?email=${encodeURIComponent(decodedEmail)}` });
+                return res.json({ redirect: `/verify?email=${encodeURIComponent(decodedEmail)}` });
             }
-            return res.redirect(`/confirm?email=${encodeURIComponent(decodedEmail)}`);
+            return res.redirect(`/verify?email=${encodeURIComponent(decodedEmail)}`);
         } catch (error) {
             console.error('Signup error:', error && (error.message || error));
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
@@ -638,11 +638,48 @@
         }
     });
 
-    // New confirmation landing route
+    // New confirmation landing route (legacy alias)
     app.get('/confirm', (req, res) => {
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         const email = (req.query && req.query.email) || '';
         return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
+    });
+
+    // Explicit verify page
+    app.get('/verify', (req, res) => {
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        const email = (req.query && req.query.email) || '';
+        return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
+    });
+
+    // Verify email endpoint (confirm signup with code)
+    app.post('/verify-email', csrfProtection, async (req, res) => {
+        try {
+            const { email, verificationCode } = req.body || {};
+            if (!email || !verificationCode) {
+                return res.status(400).json({ error: 'MISSING_FIELDS' });
+            }
+            try {
+                await cognito.send(new ConfirmSignUpCommand({
+                    ClientId: COGNITO_CLIENT_ID,
+                    Username: email,
+                    ConfirmationCode: String(verificationCode).trim()
+                }));
+            } catch (err) {
+                const name = (err && (err.name || err.code)) || '';
+                let errorCode = 'VERIFY_FAILED';
+                if (name === 'CodeMismatchException') errorCode = 'CODE_MISMATCH';
+                else if (name === 'ExpiredCodeException') errorCode = 'CODE_EXPIRED';
+                else if (name === 'UserNotFoundException') errorCode = 'USER_NOT_FOUND';
+                else if (name === 'NotAuthorizedException') errorCode = 'ALREADY_CONFIRMED';
+                console.error('verify-email error:', err);
+                return res.status(400).json({ error: errorCode, message: err && err.message ? err.message : 'Verification failed' });
+            }
+            return res.json({ ok: true });
+        } catch (e) {
+            console.error('verify-email server error:', e);
+            return res.status(500).json({ error: 'SERVER_ERROR' });
+        }
     });
 
     // Legacy path retained for compatibility
