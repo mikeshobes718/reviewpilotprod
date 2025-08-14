@@ -547,69 +547,105 @@
         res.render('signup', { csrfToken: token, error: null, user: req.session.user || null });
     });
     app.post('/signup', async (req, res) => {
+        const traceId = require('crypto').randomBytes(8).toString('hex');
+        const startedAt = new Date().toISOString();
         try {
             const { businessName, email, password } = req.body || {};
-            console.log(`[Signup] Starting signup for email="${email || ''}" businessName="${businessName || ''}"`);
+            console.log(`[Signup][${traceId}] START at=${startedAt} ip=${req.ip} ua="${(req.headers['user-agent']||'').slice(0,120)}"`);
+            console.log(`[Signup][${traceId}] Payload received:`, { businessName, email, passwordLength: password ? String(password).length : 0 });
             if (!businessName || !email || !password) {
-                console.warn('[Signup] Missing required fields', { hasBusinessName: !!businessName, hasEmail: !!email, hasPassword: !!password });
+                console.warn(`[Signup][${traceId}] Missing required fields`, { hasBusinessName: !!businessName, hasEmail: !!email, hasPassword: !!password });
                 const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
                 return res.status(400).render('signup', { csrfToken: token, error: 'Missing fields' });
             }
-            console.log('[Signup] Attempting Cognito SignUp...');
-            const signUpRes = await cognito.send(new SignUpCommand({
-                ClientId: COGNITO_CLIENT_ID,
-                Username: email,
-                Password: password,
-                UserAttributes: [
-                    { Name: 'email', Value: email },
-                    { Name: 'name', Value: businessName }
-                ]
-            }));
-            try { console.log('[Signup] Cognito SignUp response UserSub:', signUpRes && signUpRes.UserSub); } catch(_) {}
-            const userSub = signUpRes?.UserSub;
-            console.log('[Signup] Creating Stripe customer...');
-            const customer = await stripe.customers.create({ email, name: businessName });
-            console.log('[Signup] Stripe customer created:', customer && customer.id);
-            if (userSub) {
-                console.log('[Signup] Writing Firestore business document for userSub:', userSub);
-                await db.collection('businesses').doc(userSub).set({
-                businessName, email, googlePlaceId: null,
-                stripeCustomerId: customer.id, subscriptionStatus: 'incomplete',
-                createdAt: new Date().toISOString(),
-            });
-                console.log('[Signup] Business document write successful');
+
+            // 1) Cognito SignUp
+            let userSub = null;
+            try {
+                console.log(`[Signup][${traceId}] Calling Cognito SignUp with:`, { ClientId: COGNITO_CLIENT_ID, Username: email, UserAttributes: [{ Name: 'email' }, { Name: 'name' }] });
+                const signUpRes = await cognito.send(new SignUpCommand({
+                    ClientId: COGNITO_CLIENT_ID,
+                    Username: email,
+                    Password: password,
+                    UserAttributes: [
+                        { Name: 'email', Value: email },
+                        { Name: 'name', Value: businessName }
+                    ]
+                }));
+                userSub = signUpRes?.UserSub || null;
+                console.log(`[Signup][${traceId}] Cognito SignUp response:`, { UserSub: userSub, CodeDeliveryDetails: signUpRes?.CodeDeliveryDetails || null });
+            } catch (e) {
+                console.error(`[Signup][${traceId}] ERROR during Cognito SignUp:`, e);
+                throw e;
+            }
+
+            // 2) Stripe customer create
+            let customer = null;
+            try {
+                console.log(`[Signup][${traceId}] Creating Stripe customer with:`, { email, name: businessName });
+                customer = await stripe.customers.create({ email, name: businessName });
+                console.log(`[Signup][${traceId}] Stripe customer created:`, { id: customer && customer.id });
+            } catch (e) {
+                console.error(`[Signup][${traceId}] ERROR during Stripe customer creation:`, e);
+                throw e;
+            }
+
+            // 3) Firestore writes
+            try {
+                console.log(`[Signup][${traceId}] Writing Firestore business doc for userSub=${userSub}`);
+                const docPayload = {
+                    businessName,
+                    email,
+                    googlePlaceId: null,
+                    stripeCustomerId: customer ? customer.id : null,
+                    subscriptionStatus: 'incomplete',
+                    createdAt: new Date().toISOString(),
+                };
+                console.log(`[Signup][${traceId}] Firestore payload:`, docPayload);
+                await db.collection('businesses').doc(userSub).set(docPayload);
+                console.log(`[Signup][${traceId}] Firestore write successful`);
+            } catch (e) {
+                console.error(`[Signup][${traceId}] ERROR during Firestore write:`, e);
+                throw e;
+            }
+
+            // 3b) Firestore shortSlug
+            try {
                 const base = (businessName || 'merchant').replace(/[^A-Za-z0-9]/g, '').slice(0,6).toUpperCase();
                 const rand = Math.random().toString(36).slice(2,5).toUpperCase();
-                console.log('[Signup] Setting shortSlug...');
-                await db.collection('businesses').doc(userSub).set({ shortSlug: `${base}${rand}` }, { merge: true });
-                console.log('[Signup] shortSlug set successfully');
-                // Trigger: After successful registration (send verification)
-                try {
-                    const verificationUrl = `${(process.env.APP_BASE_URL || '')}/confirm?email=${encodeURIComponent(email)}`;
-                    console.log('[Signup] Attempting to send verification email to:', email);
-                    await sendEmail({
-                        to: email,
-                        template: 'Email Address Verification',
-                        data: { businessName, verificationUrl }
-                    });
-                    console.log('[Signup] Verification email send successful');
-                } catch (e) { console.warn('postmark verification send failed', e?.message || e); }
+                const shortSlug = `${base}${rand}`;
+                console.log(`[Signup][${traceId}] Setting shortSlug:`, shortSlug);
+                await db.collection('businesses').doc(userSub).set({ shortSlug }, { merge: true });
+                console.log(`[Signup][${traceId}] shortSlug set successful`);
+            } catch (e) {
+                console.error(`[Signup][${traceId}] ERROR during shortSlug set (non-fatal):`, e);
             }
-            console.log(`✅ Cognito signup initiated for: ${email}`);
-            console.log('[Signup] Sending success redirect to /confirm with email');
+
+            // 4) Postmark verification email (non-fatal)
+            try {
+                const verificationUrl = `${(process.env.APP_BASE_URL || '')}/confirm?email=${encodeURIComponent(email)}`;
+                console.log(`[Signup][${traceId}] Sending verification email via Postmark to=${email} url=${verificationUrl}`);
+                const emailRes = await sendEmail({
+                    to: email,
+                    template: 'Email Address Verification',
+                    data: { businessName, verificationUrl }
+                });
+                console.log(`[Signup][${traceId}] Postmark response:`, emailRes);
+            } catch (e) {
+                console.error(`[Signup][${traceId}] ERROR during Postmark send (non-fatal):`, e);
+            }
+
+            console.log(`[Signup][${traceId}] SUCCESS. Redirecting to /confirm for email=${email}`);
             return res.redirect(`/confirm?email=${encodeURIComponent(email)}`);
         } catch (error) {
-            console.error('CRITICAL SIGNUP ERROR:', error);
+            console.error(`[Signup][${traceId}] CRITICAL SIGNUP ERROR:`, error);
             try {
-                console.error('❌ Cognito signup error (full object):', JSON.stringify(error, Object.getOwnPropertyNames(error || {})));
+                console.error(`[Signup][${traceId}] error (stringified):`, JSON.stringify(error, Object.getOwnPropertyNames(error || {})));
             } catch (_) {
-                console.error('❌ Cognito signup error (raw object):', error);
+                console.error(`[Signup][${traceId}] error (raw):`, error);
             }
-            console.error('❌ Cognito signup error (message):', error?.message);
-            console.error('❌ Cognito signup error (name):', error?.name);
-            console.error('❌ Cognito signup error (stack):', error?.stack);
             if (error && error.$metadata) {
-                console.error('❌ Cognito signup error ($metadata):', JSON.stringify(error.$metadata));
+                console.error(`[Signup][${traceId}] error ($metadata):`, JSON.stringify(error.$metadata));
             }
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
             let userMsg = 'Signup failed. Try a different email.';
@@ -618,7 +654,7 @@
             const errText = (error && (error.message || '')) || '';
             if (errName === 'InvalidPasswordException' || /Password.*symbol|Password.*requirements|conform with policy|complex/i.test(errText)) {
                 passwordMsg = 'Password must include at least one symbol (!@#$%).';
-                userMsg = null; // focus on field-level error
+                userMsg = null;
             }
             return res.status(400).render('signup', { csrfToken: token, error: userMsg, passwordError: passwordMsg });
         }
