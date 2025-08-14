@@ -145,7 +145,7 @@
         // --- Auth guard (define before routes use it) ---
         const requireLogin = (req, res, next) => {
             if (req.session && req.session.user) return next();
-            return res.status(401).redirect('/login');
+            return res.redirect(302, '/login');
         };
 
         app.get('/api/square/connect', requireLogin, (req, res) => {
@@ -729,7 +729,10 @@
                     await ref.set({ lastUaHash: uaHash }, { merge: true });
                 }
             } catch (e) { console.warn('postmark device alert failed', e?.message || e); }
-            return res.redirect('/dashboard');
+            return req.session.save((err) => {
+                if (err) console.warn('session save error (login):', err);
+                return res.redirect('/dashboard');
+            });
         } catch (error) {
             const errMsg = (error && (error.name || error.code || error.message)) || '';
             console.error('❌ Cognito login error:', errMsg);
@@ -758,7 +761,10 @@
                             const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken2 }));
                             const sub = me?.Username; const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
                             req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
-                            return res.redirect('/dashboard');
+                            return req.session.save((err) => {
+                                if (err) console.warn('session save error (fallback login):', err);
+                                return res.redirect('/dashboard');
+                            });
                         }
                     }
                 } catch (e2) { console.warn('auto-signup fallback failed', e2?.message || e2); }
