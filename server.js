@@ -1335,6 +1335,26 @@
         }
     });
 
+    // TEMP: Test Postmark integration endpoint (secured via env key). Remove after diagnostics.
+    app.get('/api/test-email', async (req, res) => {
+        try {
+            const requiredKey = process.env.TEST_EMAIL_KEY || '';
+            if (requiredKey && req.query.key !== requiredKey) return res.status(403).json({ error: 'forbidden' });
+
+            const to = process.env.TEST_EMAIL_TO || process.env.ADMIN_EMAIL || '';
+            if (!to) return res.status(400).json({ error: 'missing_recipient' });
+
+            const data = { businessName: 'Diagnostics', loginUrl: (process.env.APP_BASE_URL || appUrl || '') + '/login' };
+            console.log('▶️ Postmark test: sending to', to);
+            const result = await sendEmail({ to, template: 'Welcome / Account Creation', data });
+            console.log('✅ Postmark test result:', JSON.stringify(result, null, 2));
+            return res.json({ ok: true, result });
+        } catch (e) {
+            console.error('❌ Postmark test error:', e && (e.stack || e.message || e));
+            return res.status(500).json({ error: 'send_failed' });
+        }
+    });
+
     app.listen(PORT, HOST, () => {
         console.log(`✅ Server is running and listening on port ${PORT}`);
     });
