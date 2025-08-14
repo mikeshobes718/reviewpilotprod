@@ -802,7 +802,12 @@
         try {
             const { email } = req.body || {};
             // Prefer branded email: generate password reset link with continue URL to our handler
-            await cognito.send(new ForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email }));
+            try {
+                await cognito.send(new ForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email }));
+            } catch (error) {
+                try { console.error('CRITICAL FORGOT_PASSWORD ERROR:', error); } catch(_) { console.error('CRITICAL FORGOT_PASSWORD ERROR (string):', String(error)); }
+                throw error;
+            }
             try {
                 await sendEmail({
                     to: email,
