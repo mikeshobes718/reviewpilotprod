@@ -34,6 +34,9 @@
                   <label for="password">Password</label>
                   <input id="password" class="input" type="password" name="password" placeholder="Create a password" required>
                   <div class="password-helper-text">Minimum 8 characters, including uppercase, lowercase, number, and symbol.</div>
+                  <% if (typeof passwordError !== 'undefined' && passwordError) { %>
+                    <div class="error"><%= passwordError %></div>
+                  <% } %>
                 </div>
                 <div class="form-field button-container"><button class="btn-primary primary-action" type="submit">Create account</button></div>
             </form>

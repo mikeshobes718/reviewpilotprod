@@ -612,7 +612,15 @@
                 console.error('❌ Cognito signup error ($metadata):', JSON.stringify(error.$metadata));
             }
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            return res.status(400).render('signup', { csrfToken: token, error: 'Signup failed. Try a different email.' });
+            let userMsg = 'Signup failed. Try a different email.';
+            let passwordMsg = null;
+            const errName = (error && (error.name || error.code)) || '';
+            const errText = (error && (error.message || '')) || '';
+            if (errName === 'InvalidPasswordException' || /Password.*symbol|Password.*requirements|conform with policy|complex/i.test(errText)) {
+                passwordMsg = 'Password must include at least one symbol (!@#$%).';
+                userMsg = null; // focus on field-level error
+            }
+            return res.status(400).render('signup', { csrfToken: token, error: userMsg, passwordError: passwordMsg });
         }
     });
 
