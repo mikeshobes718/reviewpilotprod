@@ -549,10 +549,13 @@
     app.post('/signup', async (req, res) => {
         try {
             const { businessName, email, password } = req.body || {};
+            console.log(`[Signup] Starting signup for email="${email || ''}" businessName="${businessName || ''}"`);
             if (!businessName || !email || !password) {
+                console.warn('[Signup] Missing required fields', { hasBusinessName: !!businessName, hasEmail: !!email, hasPassword: !!password });
                 const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
                 return res.status(400).render('signup', { csrfToken: token, error: 'Missing fields' });
             }
+            console.log('[Signup] Attempting Cognito SignUp...');
             const signUpRes = await cognito.send(new SignUpCommand({
                 ClientId: COGNITO_CLIENT_ID,
                 Username: email,
@@ -562,35 +565,41 @@
                     { Name: 'name', Value: businessName }
                 ]
             }));
+            try { console.log('[Signup] Cognito SignUp response UserSub:', signUpRes && signUpRes.UserSub); } catch(_) {}
             const userSub = signUpRes?.UserSub;
+            console.log('[Signup] Creating Stripe customer...');
             const customer = await stripe.customers.create({ email, name: businessName });
+            console.log('[Signup] Stripe customer created:', customer && customer.id);
             if (userSub) {
+                console.log('[Signup] Writing Firestore business document for userSub:', userSub);
                 await db.collection('businesses').doc(userSub).set({
                 businessName, email, googlePlaceId: null,
                 stripeCustomerId: customer.id, subscriptionStatus: 'incomplete',
                 createdAt: new Date().toISOString(),
             });
+                console.log('[Signup] Business document write successful');
                 const base = (businessName || 'merchant').replace(/[^A-Za-z0-9]/g, '').slice(0,6).toUpperCase();
                 const rand = Math.random().toString(36).slice(2,5).toUpperCase();
+                console.log('[Signup] Setting shortSlug...');
                 await db.collection('businesses').doc(userSub).set({ shortSlug: `${base}${rand}` }, { merge: true });
+                console.log('[Signup] shortSlug set successfully');
                 // Trigger: After successful registration (send verification)
                 try {
                     const verificationUrl = `${(process.env.APP_BASE_URL || '')}/confirm?email=${encodeURIComponent(email)}`;
+                    console.log('[Signup] Attempting to send verification email to:', email);
                     await sendEmail({
                         to: email,
                         template: 'Email Address Verification',
                         data: { businessName, verificationUrl }
                     });
+                    console.log('[Signup] Verification email send successful');
                 } catch (e) { console.warn('postmark verification send failed', e?.message || e); }
             }
             console.log(`✅ Cognito signup initiated for: ${email}`);
-            const redirectUrl = `/confirm?email=${encodeURIComponent(email)}`;
-            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json')) || (req.headers['content-type'] && req.headers['content-type'].includes('application/json'));
-            if (isAjax) {
-                return res.status(200).json({ ok: true, redirect: redirectUrl });
-            }
-            return res.redirect(303, redirectUrl);
+            console.log('[Signup] Sending success redirect to /confirm with email');
+            return res.redirect(`/confirm?email=${encodeURIComponent(email)}`);
         } catch (error) {
+            console.error('CRITICAL SIGNUP ERROR:', error);
             try {
                 console.error('❌ Cognito signup error (full object):', JSON.stringify(error, Object.getOwnPropertyNames(error || {})));
             } catch (_) {
@@ -601,10 +610,6 @@
             console.error('❌ Cognito signup error (stack):', error?.stack);
             if (error && error.$metadata) {
                 console.error('❌ Cognito signup error ($metadata):', JSON.stringify(error.$metadata));
-            }
-            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json')) || (req.headers['content-type'] && req.headers['content-type'].includes('application/json'));
-            if (isAjax) {
-                return res.status(400).json({ ok: false, error: 'signup_failed' });
             }
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
             return res.status(400).render('signup', { csrfToken: token, error: 'Signup failed. Try a different email.' });
