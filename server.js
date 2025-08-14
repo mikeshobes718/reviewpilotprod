@@ -16,6 +16,7 @@
     const morgan = require('morgan');
     const { z } = require('zod');
     const nodemailer = require('nodemailer');
+    const { sendEmail } = require('./services/email');
     const crypto = require('crypto');
     const QRCode = require('qrcode');
     const PDFDocument = require('pdfkit');
@@ -395,12 +396,51 @@
                     if (uid) {
                         await db.collection('businesses').doc(uid).update({ subscriptionStatus: 'active', stripeCustomerId: customerId });
                         console.log('✅ Subscription activated via webhook (by uid):', uid);
+                        try {
+                            const bizSnap = await db.collection('businesses').doc(uid).get();
+                            const b = bizSnap.data() || {};
+                            const email = b.email || '';
+                            if (email) {
+                                const receipt = {
+                                    orderNumber: sessionObj.id,
+                                    date: new Date().toISOString(),
+                                    description: 'Reviews & Marketing - Pro Plan (Billed Monthly)',
+                                    amount: '$49.00',
+                                    totalPaid: '$49.00',
+                                    paidWith: (b.card && b.card.last4) ? `Card ending in ${b.card.last4}` : 'Card on file'
+                                };
+                                await sendEmail({
+                                    to: email,
+                                    template: 'Pro Plan Subscription & Receipt',
+                                    data: { businessName: b.businessName || '', receipt, loginUrl: `${(process.env.APP_BASE_URL||'')}/dashboard` }
+                                });
+                            }
+                        } catch (e) { console.warn('postmark pro receipt failed', e?.message || e); }
                     } else {
                     const snap = await db.collection('businesses').where('stripeCustomerId', '==', customerId).limit(1).get();
                     if (!snap.empty) {
                         const docRef = snap.docs[0].ref;
                         await docRef.update({ subscriptionStatus: 'active' });
                         console.log('✅ Subscription activated via webhook for customer:', customerId);
+                        try {
+                            const b = (await docRef.get()).data() || {};
+                            const email = b.email || '';
+                            if (email) {
+                                const receipt = {
+                                    orderNumber: sessionObj.id,
+                                    date: new Date().toISOString(),
+                                    description: 'Reviews & Marketing - Pro Plan (Billed Monthly)',
+                                    amount: '$49.00',
+                                    totalPaid: '$49.00',
+                                    paidWith: (b.card && b.card.last4) ? `Card ending in ${b.card.last4}` : 'Card on file'
+                                };
+                                await sendEmail({
+                                    to: email,
+                                    template: 'Pro Plan Subscription & Receipt',
+                                    data: { businessName: b.businessName || '', receipt, loginUrl: `${(process.env.APP_BASE_URL||'')}/dashboard` }
+                                });
+                            }
+                        } catch (e) { console.warn('postmark pro receipt (no uid) failed', e?.message || e); }
                         }
                     }
                     break;
@@ -533,6 +573,15 @@
                 const base = (businessName || 'merchant').replace(/[^A-Za-z0-9]/g, '').slice(0,6).toUpperCase();
                 const rand = Math.random().toString(36).slice(2,5).toUpperCase();
                 await db.collection('businesses').doc(userSub).set({ shortSlug: `${base}${rand}` }, { merge: true });
+                // Trigger: After successful registration (send verification)
+                try {
+                    const verificationUrl = `${(process.env.APP_BASE_URL || '')}/confirm?email=${encodeURIComponent(email)}`;
+                    await sendEmail({
+                        to: email,
+                        template: 'Email Address Verification',
+                        data: { businessName, verificationUrl }
+                    });
+                } catch (e) { console.warn('postmark verification send failed', e?.message || e); }
             }
             console.log(`✅ Cognito signup initiated for: ${email}`);
             return res.redirect(`/confirm?email=${encodeURIComponent(email)}`);
@@ -608,6 +657,42 @@
             } catch (_) { /* non-fatal */ }
             req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
             console.log(`✅ Cognito login session created for: ${email}`);
+            // Send Welcome email on first verified login (once)
+            try {
+                const ref = db.collection('businesses').doc(sub);
+                const doc = await ref.get();
+                const b = doc.exists ? doc.data() : {};
+                if (!b || !b.welcomeSent) {
+                    await sendEmail({
+                        to: attrs.email || email,
+                        template: 'Welcome / Account Creation',
+                        data: { businessName: attrs.name || '', loginUrl: `${(process.env.APP_BASE_URL||'')}/dashboard` }
+                    });
+                    await ref.set({ welcomeSent: true }, { merge: true });
+                }
+            } catch (e) { console.warn('postmark welcome send failed', e?.message || e); }
+            // Optional: New device login alert (basic heuristic: check user-agent hash vs last)
+            try {
+                const ua = (req.headers['user-agent'] || '').slice(0,200);
+                const uaHash = require('crypto').createHash('sha256').update(ua).digest('hex');
+                const ref = db.collection('businesses').doc(sub);
+                const snap = await ref.get();
+                const prev = snap.exists ? (snap.data().lastUaHash || null) : null;
+                if (uaHash && uaHash !== prev) {
+                    await sendEmail({
+                        to: attrs.email || email,
+                        template: 'New Device Login Alert',
+                        data: {
+                            businessName: attrs.name || '',
+                            loginTime: new Date().toISOString(),
+                            loginLocation: 'Unknown',
+                            loginDevice: ua || 'Unknown',
+                            resetUrl: `${(process.env.APP_BASE_URL || '')}/reset-password`
+                        }
+                    });
+                    await ref.set({ lastUaHash: uaHash }, { merge: true });
+                }
+            } catch (e) { console.warn('postmark device alert failed', e?.message || e); }
             return res.redirect('/dashboard');
         } catch (error) {
             const errMsg = (error && (error.name || error.code || error.message)) || '';
@@ -676,6 +761,13 @@
             const { email } = req.body || {};
             // Prefer branded email: generate password reset link with continue URL to our handler
             await cognito.send(new ForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email }));
+            try {
+                await sendEmail({
+                    to: email,
+                    template: 'Password Reset Request',
+                    data: { businessName: '', resetUrl: `${(process.env.APP_BASE_URL || '')}/reset-password` }
+                });
+            } catch (e) { console.warn('postmark reset send failed', e?.message || e); }
             return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null, email });
         } catch (e) {
             console.error('Reset exception:', e);
@@ -717,6 +809,15 @@
                 const msg = (cjson && cjson.error && cjson.error.message) || 'Could not reset password.';
                 return res.status(400).render('action', { csrfToken: req.csrfToken(), oobCode, email: '', error: msg });
             }
+            try {
+                // Send confirmation email
+                const email = cjson && cjson.email ? cjson.email : '';
+                await sendEmail({
+                    to: email,
+                    template: 'Password Changed Confirmation',
+                    data: { businessName: '', loginUrl: `${(process.env.APP_BASE_URL||'')}/login`, changedAt: new Date().toISOString() }
+                });
+            } catch (e) { console.warn('postmark password changed failed', e?.message || e); }
             return res.redirect('/login');
         } catch (e) { console.error('action post error', e); return res.status(500).send('Server error'); }
     });
@@ -965,6 +1066,16 @@
                 trialStart: now.toISOString(),
                 trialEndsAt: ends.toISOString(),
             });
+                try {
+                    const b = (await ref.get()).data() || {};
+                    if (b.email) {
+                        await sendEmail({
+                            to: b.email,
+                            template: 'Free Trial Started Confirmation',
+                            data: { businessName: b.businessName || '', trialEndsAt: ends.toISOString(), loginUrl: `${(process.env.APP_BASE_URL||'')}/dashboard` }
+                        });
+                    }
+                } catch (e) { console.warn('postmark trial started failed', e?.message || e); }
             return res.redirect('/dashboard?trial=1');
         } catch (e) {
             console.error('❌ Error starting free trial:', e);
