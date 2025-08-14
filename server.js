@@ -1117,6 +1117,30 @@
         }
     });
 
+    // Diagnostics: temporary Postmark test endpoint secured by secret
+    app.get('/api/test-email', async (req, res) => {
+        try {
+            const provided = (req.query && req.query.k) || req.get('x-test-secret') || '';
+            const expected = process.env.POSTMARK_TEST_SECRET || '';
+            if (!expected || provided !== expected) {
+                return res.status(403).send('Forbidden');
+            }
+            const to = process.env.POSTMARK_TEST_TO || process.env.ADMIN_EMAIL || '';
+            if (!to) return res.status(400).send('No test recipient configured');
+            console.log('[Diag] Triggering Postmark test email to:', to);
+            const result = await sendEmail({
+                to,
+                template: 'Welcome / Account Creation',
+                data: { businessName: 'Integration Test', loginUrl: `${appUrl}/login` }
+            });
+            try { console.log('[Diag] Postmark send result:', JSON.stringify(result)); } catch(_) { console.log('[Diag] Postmark send result (non-JSON)'); }
+            return res.json({ ok: true, result });
+        } catch (e) {
+            console.error('[Diag] Postmark send error:', e && (e.stack || e.message || e));
+            return res.status(500).json({ ok: false, error: e && (e.message || String(e)) });
+        }
+    });
+
     // Stripe Billing Portal (POST)
     app.post('/billing-portal', requireLogin, csrfProtection, async (req, res) => {
         try {
