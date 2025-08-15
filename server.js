@@ -660,7 +660,7 @@
                                     email: (email || '').toLowerCase(),
                                     googlePlaceId: null,
                                     stripeCustomerId: null,
-                                    subscriptionStatus: 'trial',
+                                    subscriptionStatus: 'none',
                                     createdAt: new Date().toISOString(),
                                 });
                             }
