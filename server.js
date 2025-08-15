@@ -344,6 +344,26 @@
         }
     }));
 
+    // Hydrate session from API cookie if present
+    app.use(async (req, res, next) => {
+        try {
+            if (!req.session.user) {
+                const raw = req.cookies && req.cookies.session;
+                if (raw) {
+                    try {
+                        const jwt = require('jsonwebtoken');
+                        const decoded = jwt.decode(raw);
+                        if (decoded && decoded.sub) {
+                            req.session.user = { uid: decoded.sub, email: null, displayName: null };
+                        }
+                    } catch(_) {}
+                }
+            }
+        } catch(_) {}
+        res.locals.user = req.session.user || null;
+        next();
+    });
+
     // Attach user access info (trial/active) for header visibility
     app.use(async (req, res, next) => {
         try {
@@ -598,7 +618,7 @@
                 body: JSON.stringify({ email, password }),
                 redirect: 'manual'
             });
-            const setCookie = r.headers.get('set-cookie'); if (setCookie) res.setHeader('Set-Cookie', setCookie);
+            const setCookie = r.headers.get('set-cookie');
             if (r.ok) {
                 // Bridge session for current app until full migration: decode JWT 'session' cookie to set req.session.user
                 try {
