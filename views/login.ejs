@@ -20,6 +20,8 @@
           <% if (typeof error !== 'undefined' && error) { %>
             <% if (error === 'EMAIL_NOT_VERIFIED') { %>
               <div class="noticeBanner" style="margin-top:8px">Please verify your email. We’ve sent a verification link to your inbox.</div>
+            <% } else if (error === 'UNAUTHORIZED') { %>
+              <div class="noticeBanner" style="margin-top:8px">Incorrect email or password.</div>
             <% } else { %>
               <div class="error"><%= error %></div>
             <% } %>
