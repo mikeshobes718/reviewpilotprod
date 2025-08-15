@@ -144,6 +144,39 @@
         const SQUARE_REDIRECT_URL = process.env.SQUARE_REDIRECT_URL || (appUrl ? appUrl + '/api/square/callback' : '');
         const SQUARE_SCOPES = process.env.SQUARE_SCOPES || 'PAYMENTS_READ,ORDERS_READ,CUSTOMERS_READ';
 
+        // Signed state helpers for OAuth (avoid reliance on volatile server sessions)
+        const OAUTH_STATE_SECRET = process.env.OAUTH_STATE_SECRET || process.env.SESSION_SECRET || 'dev-oauth-state';
+        function createSignedState(data) {
+            try {
+                const payload = Buffer.from(JSON.stringify(data), 'utf8').toString('base64url');
+                const sig = crypto.createHmac('sha256', OAUTH_STATE_SECRET).update(payload).digest('base64url');
+                return `${payload}.${sig}`;
+            } catch (_) { return null; }
+        }
+        function verifySignedState(state) {
+            try {
+                const parts = String(state || '').split('.');
+                if (parts.length !== 2) return null;
+                const [payload, sig] = parts;
+                const exp = crypto.createHmac('sha256', OAUTH_STATE_SECRET).update(payload).digest('base64url');
+                if (sig !== exp) return null;
+                const json = Buffer.from(payload, 'base64url').toString('utf8');
+                return JSON.parse(json);
+            } catch (_) { return null; }
+        }
+        function getUserIdFromRequest(req) {
+            try { if (req.session && req.session.user && req.session.user.uid) return req.session.user.uid; } catch(_) {}
+            try {
+                const raw = req.cookies && req.cookies.session;
+                if (raw) {
+                    const jwt = require('jsonwebtoken');
+                    const d = jwt.decode(raw);
+                    if (d && d.sub) return d.sub;
+                }
+            } catch(_) {}
+            return null;
+        }
+
         // --- Auth guards (define before routes use them) ---
         const requireLogin = (req, res, next) => {
             try {
@@ -183,13 +216,9 @@
         // POS OAuth (Square) - Initiate via POST (AJAX) or GET fallback
         app.post('/auth/pos/square/connect', async (req, res) => {
             try {
-                // Ensure session.user via JWT cookie if missing
-                if (!(req.session && req.session.user)) {
-                    try { const raw = req.cookies && req.cookies.session; if (raw) { const jwt = require('jsonwebtoken'); const d = jwt.decode(raw); if (d && d.sub) { req.session.user = { uid: d.sub, email: null, displayName: null }; } } } catch(_) {}
-                }
-                if (!(req.session && req.session.user)) return res.status(401).json({ error: 'unauthorized' });
-                const state = crypto.randomBytes(16).toString('hex');
-                req.session.square_oauth_state = state;
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ error: 'unauthorized' });
+                const state = createSignedState({ uid, nonce: crypto.randomBytes(12).toString('hex'), iat: Date.now() });
                 const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
                 return res.json({ url: authUrl });
             } catch (e) {
@@ -199,10 +228,9 @@
         });
         // GET fallback alias
         app.get('/auth/pos/square/connect', (req, res) => {
-            try { if (!(req.session && req.session.user)) { const raw = req.cookies && req.cookies.session; if (raw) { const jwt = require('jsonwebtoken'); const d = jwt.decode(raw); if (d && d.sub) { req.session.user = { uid: d.sub, email: null, displayName: null }; } } } } catch(_) {}
-            if (!(req.session && req.session.user)) return res.redirect('/login');
-            const state = crypto.randomBytes(16).toString('hex');
-            req.session.square_oauth_state = state;
+            const uid = getUserIdFromRequest(req);
+            if (!uid) return res.redirect('/login');
+            const state = createSignedState({ uid, nonce: crypto.randomBytes(12).toString('hex'), iat: Date.now() });
             const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
             res.redirect(authUrl);
         });
@@ -213,11 +241,13 @@
             res.redirect(authUrl);
         });
 
-        app.get('/api/square/callback', requireLogin, async (req, res) => {
+        app.get('/api/square/callback', async (req, res) => {
             try {
                 const { code, state } = req.query || {};
-                if (!code || !state || state !== req.session.square_oauth_state) return res.status(400).send('invalid_state');
-                delete req.session.square_oauth_state;
+                if (!code || !state) return res.status(400).send('invalid_state');
+                const parsed = verifySignedState(state);
+                const ownerUid = parsed && parsed.uid ? parsed.uid : getUserIdFromRequest(req);
+                if (!ownerUid) return res.status(400).send('invalid_state');
                 // Exchange code
                 const tokenResp = await fetch('https://connect.squareup.com/oauth2/token', {
                     method: 'POST',
@@ -238,7 +268,7 @@
                 const tokenJson = await tokenResp.json();
                 const encAccess = await encryptString(tokenJson.access_token);
                 const encRefresh = tokenJson.refresh_token ? await encryptString(tokenJson.refresh_token) : null;
-                await db.collection('businesses').doc(req.session.user.uid).set({
+                await db.collection('businesses').doc(ownerUid).set({
                     square: {
                         merchantId: tokenJson.merchant_id || null,
                         access: encAccess,
@@ -248,7 +278,7 @@
                     }
                 }, { merge: true });
                 // Mark connection metadata for UI
-                await db.collection('businesses').doc(req.session.user.uid).set({
+                await db.collection('businesses').doc(ownerUid).set({
                     posConnection: {
                         isConnected: true,
                         provider: 'square',
@@ -264,11 +294,13 @@
             }
         });
         // Callback alias (if Square dashboard uses this URL)
-        app.get('/auth/pos/square/callback', requireLogin, async (req, res) => {
+        app.get('/auth/pos/square/callback', async (req, res) => {
             try {
                 const { code, state } = req.query || {};
-                if (!code || !state || state !== req.session.square_oauth_state) return res.status(400).send('invalid_state');
-                delete req.session.square_oauth_state;
+                if (!code || !state) return res.status(400).send('invalid_state');
+                const parsed = verifySignedState(state);
+                const ownerUid = parsed && parsed.uid ? parsed.uid : getUserIdFromRequest(req);
+                if (!ownerUid) return res.status(400).send('invalid_state');
                 const tokenResp = await fetch('https://connect.squareup.com/oauth2/token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -288,7 +320,7 @@
                 const tokenJson = await tokenResp.json();
                 const encAccess = await encryptString(tokenJson.access_token);
                 const encRefresh = tokenJson.refresh_token ? await encryptString(tokenJson.refresh_token) : null;
-                await db.collection('businesses').doc(req.session.user.uid).set({
+                await db.collection('businesses').doc(ownerUid).set({
                     square: {
                         merchantId: tokenJson.merchant_id || null,
                         access: encAccess,
@@ -297,7 +329,7 @@
                         scope: tokenJson.scope || SQUARE_SCOPES
                     }
                 }, { merge: true });
-                await db.collection('businesses').doc(req.session.user.uid).set({
+                await db.collection('businesses').doc(ownerUid).set({
                     posConnection: {
                         isConnected: true,
                         provider: 'square',
