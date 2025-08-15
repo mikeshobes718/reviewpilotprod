@@ -11,9 +11,7 @@
     <a href="/pricing" class="btn">Pricing</a>
     <a href="/#how-it-works" class="btn">How It Works</a>
     <% if (typeof user !== 'undefined' && user) { %>
-      <% if (typeof userHasAccess !== 'undefined' && userHasAccess) { %>
-        <a href="/dashboard" class="btn">Dashboard</a>
-      <% } %>
+      <a href="/dashboard" class="btn">Dashboard</a>
       <span class="btn" style="cursor:default;opacity:.85;">Signed in: <%= user.email %></span>
       <form action="/auth/logout" method="POST" style="display:inline">
         <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">

@@ -623,8 +623,8 @@
             });
                                 }
                             } catch (_) { /* non-fatal */ }
-                            req.session.user = { uid: sub, email: email || null, displayName: null };
-                            return req.session.save(() => res.redirect('/dashboard'));
+                            req.session.user = { uid: sub, email: (email || '').toLowerCase(), displayName: null };
+                            return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); return res.redirect('/dashboard'); });
                         }
                     }
                 } catch (_) { /* ignore bridge errors */ }
