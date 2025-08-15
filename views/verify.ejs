@@ -24,17 +24,11 @@
     <main class="main-content">
       <div class="base-card card">
         <h1>Verify your email</h1>
-        <% if (typeof email !== 'undefined' && email) { %>
-          <p>We sent a 6‑digit code to <span class="email-highlight"><%= email %></span>. Enter it below to activate your account.</p>
-        <% } else { %>
-          <p>We sent a 6‑digit code to your email. Enter it below to activate your account.</p>
+        <p>If you clicked an older email that asks for a 6‑digit code, please ignore it. We just sent a new email titled <strong>“Verify your email”</strong> with a magic link. Click that link to finish verification automatically.</p>
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="error" style="margin-top:10px"><%= error %></div>
         <% } %>
-        <div id="verifyMsg" style="display:none"></div>
-        <form id="verifyForm">
-          <input type="hidden" name="email" value="<%= email || '' %>">
-          <input type="text" name="verificationCode" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter 6‑digit code" required>
-          <button class="btn-primary" type="submit">Verify Account</button>
-        </form>
+        <div class="success" style="display:block;margin-top:10px">Need a new link? Go to <a href="/login">Log in</a> → “Forgot password” to get a fresh email.</div>
       </div>
     </main>
     <%- include('partials/footer') %>

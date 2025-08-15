@@ -672,7 +672,10 @@
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         const q = req.query || {};
-        const hint = q.registered ? 'Account created. Please log in.' : (q.reset ? 'Password updated. Please log in.' : null);
+        let hint = null;
+        if (q.registered) hint = 'Account created! We\'ve emailed a verification link. Open it to verify your email, then log in.';
+        else if (q.verified) hint = 'Your email is verified. You can now log in.';
+        else if (q.reset) hint = 'Your password was updated. Please log in.';
         res.render('login', { csrfToken: token, error: null, hint, user: req.session.user || null });
     });
     app.get('/forgot-password', csrfProtection, (req, res) => {
@@ -693,6 +696,22 @@
         res.render('reset-password', { csrfToken: token, token: tokenParam, user: req.session.user || null });
     });
     app.get('/dashboard', requireLogin, (req, res, next) => { next(); });
+    // Verify email (custom auth) - GET handler to consume token & email
+    app.get('/verify', csrfProtection, async (req, res) => {
+        try {
+            const tokenPlain = (req.query && req.query.token) || '';
+            const email = (req.query && req.query.email) || '';
+            if (!tokenPlain || !email) return res.status(400).render('verify', { csrfToken: req.csrfToken(), email, error: 'Invalid link.', user: req.session.user || null });
+            // Forward to API
+            const base = process.env.API_GATEWAY_BASE_URL || process.env.AUTH_API_BASE || '';
+            const url = (base || 'https://becb9v5qw8.execute-api.us-east-1.amazonaws.com/prod') + '/verify-email';
+            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ token: tokenPlain, email }) });
+            if (r.ok) return res.redirect('/login?verified=1');
+            return res.status(400).render('verify', { csrfToken: req.csrfToken(), email, error: 'Verification failed. Request a new link from Login → Forgot password.', user: req.session.user || null });
+        } catch (e) {
+            return res.status(500).render('verify', { csrfToken: req.csrfToken(), email: (req.query && req.query.email) || '', error: 'Server error. Try again.', user: req.session.user || null });
+        }
+    });
     app.post('/signup', async (req, res) => {
         try {
             const { businessName, email, password } = req.body || {};
