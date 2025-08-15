@@ -562,7 +562,7 @@
         try {
             const { businessName, email, password, confirmPassword } = req.body || {};
             if (!businessName || !email || !password || !confirmPassword) {
-                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
                 return res.status(400).render('signup', { csrfToken: token, error: 'All fields are required.', user: req.session.user || null });
             }
             if (password !== confirmPassword) {
@@ -600,6 +600,34 @@
             });
             const setCookie = r.headers.get('set-cookie'); if (setCookie) res.setHeader('Set-Cookie', setCookie);
             if (r.ok) {
+                // Bridge session for current app until full migration: decode JWT 'session' cookie to set req.session.user
+                try {
+                    const m = setCookie && setCookie.match(/session=([^;]+)/);
+                    if (m && m[1]) {
+                        const jwt = require('jsonwebtoken');
+                        const decoded = jwt.decode(m[1]);
+                        const sub = decoded && decoded.sub ? decoded.sub : null;
+                        if (sub) {
+                            // Ensure a minimal business doc exists for this UID so dashboard can load
+                            try {
+                                const ref = db.collection('businesses').doc(sub);
+                                const snap = await ref.get();
+                                if (!snap.exists) {
+                                    await ref.set({
+                                        businessName: '',
+                                        email: (email || '').toLowerCase(),
+                                        googlePlaceId: null,
+                                        stripeCustomerId: null,
+                                        subscriptionStatus: 'trial',
+                createdAt: new Date().toISOString(),
+            });
+                                }
+                            } catch (_) { /* non-fatal */ }
+                            req.session.user = { uid: sub, email: email || null, displayName: null };
+                            return req.session.save(() => res.redirect('/dashboard'));
+                        }
+                    }
+                } catch (_) { /* ignore bridge errors */ }
                 return res.redirect('/dashboard');
             }
             let msg = 'Invalid email or password.';
