@@ -26,6 +26,8 @@
     // --- 2. INITIALIZE THE APP ---
     ;(async () => {
     const app = express();
+    // Behind ALB/NGINX on EB; trust proxy so secure cookies and req.secure work
+    app.set('trust proxy', 1);
     const PORT = process.env.PORT || 3000;
     const HOST = '0.0.0.0'; // Necessary for some hosting platforms
         const isProduction = process.env.NODE_ENV === 'production';
@@ -649,19 +651,19 @@
         return res.redirect('/login');
     });
     // Phase 4.1: Auth view routes (GET)
-    app.get('/signup', (req, res) => {
+    app.get('/signup', csrfProtection, (req, res) => {
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('signup', { csrfToken: token, error: null, user: req.session.user || null });
     });
-    app.get('/login', (req, res) => {
+    app.get('/login', csrfProtection, (req, res) => {
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('login', { csrfToken: token, error: null, user: req.session.user || null });
     });
-    app.get('/forgot-password', (req, res) => {
+    app.get('/forgot-password', csrfProtection, (req, res) => {
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('forgot-password', { csrfToken: token, user: req.session.user || null });
     });
-    app.get('/reset-password', (req, res) => {
+    app.get('/reset-password', csrfProtection, (req, res) => {
         const tokenParam = req.query && req.query.token;
         if (!tokenParam) return res.status(400).send('Invalid or missing reset token.');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
