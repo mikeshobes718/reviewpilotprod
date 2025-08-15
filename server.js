@@ -476,8 +476,8 @@
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // CSRF protection (opt-in per route) — use cookie-based secret for stability behind ALB
-    const csrfProtection = csurf({ cookie: { httpOnly: true, sameSite: 'lax', secure: isProduction } });
+    // CSRF protection (opt-in per route) — cookie-based secret for stability
+    const csrfProtection = csurf({ cookie: { key: '_csrf', httpOnly: true, sameSite: 'lax', secure: isProduction } });
     // Friendly CSRF error handler
     app.use((err, req, res, next) => {
         if (err && err.code === 'EBADCSRFTOKEN') {
