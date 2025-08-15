@@ -18,7 +18,11 @@
           <h2>Log in</h2>
           <p class="sub-headline">Access your dashboard</p>
           <% if (typeof error !== 'undefined' && error) { %>
-            <div class="error"><%= error %></div>
+            <% if (error === 'EMAIL_NOT_VERIFIED') { %>
+              <div class="noticeBanner" style="margin-top:8px">Please verify your email. We’ve sent a verification link to your inbox.</div>
+            <% } else { %>
+              <div class="error"><%= error %></div>
+            <% } %>
             <% if (typeof resendLink !== 'undefined' && resendLink) { %>
               <div class="row" style="margin-top:8px"><a class="link-accent" href="<%= resendLink %>">Resend verification email</a></div>
             <% } %>
