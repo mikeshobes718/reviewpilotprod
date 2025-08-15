@@ -262,8 +262,11 @@
             var receipt = document.getElementById('kitReceiptText');
             if (shortBox && data.shortLink) shortBox.textContent = data.shortLink;
             if (qrImg && data.qrCodePngUrl) { qrImg.src = data.qrCodePngUrl; qrImg.classList.remove('qr-placeholder'); }
-            if (signA && data.signPdfUrl) { signA.href = data.signPdfUrl; }
-            if (stickerA && data.stickerPdfUrl) { stickerA.href = data.stickerPdfUrl; }
+            if (signA) { if (data.signPdfUrl) { signA.href = data.signPdfUrl; signA.removeAttribute('aria-disabled'); } else { signA.href = '#'; signA.setAttribute('aria-disabled','true'); } }
+            if (stickerA) { if (data.stickerPdfUrl) { stickerA.href = data.stickerPdfUrl; stickerA.removeAttribute('aria-disabled'); } else { stickerA.href = '#'; stickerA.setAttribute('aria-disabled','true'); } }
+            if (shortBox && data.needsPlaceId) {
+              shortBox.textContent = 'Add your Google Place ID in Settings to generate your public link';
+            }
             if (receipt) {
               const link = data.shortLink || '';
               receipt.value = `Thanks for your purchase! If we made your day, please leave us a quick 5-star review here: ${link}`;

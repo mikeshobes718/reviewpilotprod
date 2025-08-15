@@ -1807,59 +1807,72 @@
             const snap = await ref.get();
             if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
             const data = snap.data() || {};
-            const slug = data.shortSlug || 'MERCHANT';
+            const googlePlaceId = data.googlePlaceId || null;
+            const slug = data.shortSlug || (googlePlaceId ? googlePlaceId : 'SETUP');
             const shortLink = `${shortDomain}/${slug}`;
+            const needsPlaceId = !data.shortSlug && !googlePlaceId;
 
             // Prepare output directory
             const outDir = path.join(__dirname, 'public', 'assets', merchantId);
             fs.mkdirSync(outDir, { recursive: true });
 
-            // Generate QR as PNG and SVG
-            const qrPngPath = path.join(outDir, 'qr.png');
-            const qrSvgPath = path.join(outDir, 'qr.svg');
-            await QRCode.toFile(qrPngPath, `https://${shortLink}`, { scale: 8, margin: 1 });
-            const svgStr = await QRCode.toString(`https://${shortLink}`, { type: 'svg', margin: 1 });
-            fs.writeFileSync(qrSvgPath, svgStr, 'utf8');
+            // Generate QR only when link is ready
+            let qrPngPath = null;
+            let qrSvgPath = null;
+            if (!needsPlaceId) {
+                qrPngPath = path.join(outDir, 'qr.png');
+                qrSvgPath = path.join(outDir, 'qr.svg');
+                await QRCode.toFile(qrPngPath, `https://${shortLink}`, { scale: 8, margin: 1 });
+                const svgStr = await QRCode.toString(`https://${shortLink}`, { type: 'svg', margin: 1 });
+                fs.writeFileSync(qrSvgPath, svgStr, 'utf8');
+            }
 
             // Countertop sign PDF (5x7 inches)
-            const signPdfPath = path.join(outDir, 'sign.pdf');
-            await new Promise((resolve) => {
-                const doc = new PDFDocument({ size: [360, 504] }); // 72 DPI * (5x7)
-                doc.pipe(fs.createWriteStream(signPdfPath)).on('finish', resolve);
-                doc.fontSize(22).text('Leave us a 5‑star review', { align: 'center', margin: 24 });
-                const png = fs.readFileSync(qrPngPath);
-                doc.image(png, (360-200)/2, 120, { width: 200, height: 200 });
-                doc.moveDown(2);
-                doc.fontSize(12).text(shortLink, { align: 'center' });
-                doc.end();
-            });
+            let signPdfPath = null;
+            if (!needsPlaceId && qrPngPath) {
+                signPdfPath = path.join(outDir, 'sign.pdf');
+                await new Promise((resolve) => {
+                    const doc = new PDFDocument({ size: [360, 504] }); // 72 DPI * (5x7)
+                    doc.pipe(fs.createWriteStream(signPdfPath)).on('finish', resolve);
+                    doc.fontSize(22).text('Leave us a 5‑star review', { align: 'center', margin: 24 });
+                    const png = fs.readFileSync(qrPngPath);
+                    doc.image(png, (360-200)/2, 120, { width: 200, height: 200 });
+                    doc.moveDown(2);
+                    doc.fontSize(12).text(shortLink, { align: 'center' });
+                    doc.end();
+                });
+            }
 
             // Sticker sheet PDF (US Letter with multiple QR codes)
-            const stickerPdfPath = path.join(outDir, 'stickers.pdf');
-            await new Promise((resolve) => {
-                const doc = new PDFDocument({ size: 'LETTER', margins: { top: 36, left: 36, right: 36, bottom: 36 } });
-                doc.pipe(fs.createWriteStream(stickerPdfPath)).on('finish', resolve);
-                const png = fs.readFileSync(qrPngPath);
-                const cols = 3, rows = 8; // 24 stickers
-                const cellW = (612 - 72) / cols; // page width - margins
-                const cellH = (792 - 72) / rows; // page height - margins
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        const x = 36 + c * cellW + (cellW - 120) / 2;
-                        const y = 36 + r * cellH + (cellH - 120) / 2;
-                        doc.image(png, x, y, { width: 120, height: 120 });
+            let stickerPdfPath = null;
+            if (!needsPlaceId && qrPngPath) {
+                stickerPdfPath = path.join(outDir, 'stickers.pdf');
+                await new Promise((resolve) => {
+                    const doc = new PDFDocument({ size: 'LETTER', margins: { top: 36, left: 36, right: 36, bottom: 36 } });
+                    doc.pipe(fs.createWriteStream(stickerPdfPath)).on('finish', resolve);
+                    const png = fs.readFileSync(qrPngPath);
+                    const cols = 3, rows = 8; // 24 stickers
+                    const cellW = (612 - 72) / cols; // page width - margins
+                    const cellH = (792 - 72) / rows; // page height - margins
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            const x = 36 + c * cellW + (cellW - 120) / 2;
+                            const y = 36 + r * cellH + (cellH - 120) / 2;
+                            doc.image(png, x, y, { width: 120, height: 120 });
+                        }
                     }
-                }
-                doc.end();
-            });
+                    doc.end();
+                });
+            }
 
             const base = `${appUrl}/assets/${merchantId}`;
             return res.json({
                 shortLink: shortLink,
-                qrCodePngUrl: `${base}/qr.png`,
-                qrCodeSvgUrl: `${base}/qr.svg`,
-                signPdfUrl: `${base}/sign.pdf`,
-                stickerPdfUrl: `${base}/stickers.pdf`
+                needsPlaceId: needsPlaceId,
+                qrCodePngUrl: qrPngPath ? `${base}/qr.png` : null,
+                qrCodeSvgUrl: qrSvgPath ? `${base}/qr.svg` : null,
+                signPdfUrl: signPdfPath ? `${base}/sign.pdf` : null,
+                stickerPdfUrl: stickerPdfPath ? `${base}/stickers.pdf` : null
             });
         } catch (e) {
             console.error('assets api error', e);
