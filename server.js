@@ -671,14 +671,17 @@
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('login', { csrfToken: token, error: null, user: req.session.user || null });
+        const q = req.query || {};
+        const hint = q.registered ? 'Account created. Please log in.' : (q.reset ? 'Password updated. Please log in.' : null);
+        res.render('login', { csrfToken: token, error: null, hint, user: req.session.user || null });
     });
     app.get('/forgot-password', csrfProtection, (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('forgot-password', { csrfToken: token, user: req.session.user || null });
+        const sent = !!(req.query && req.query.sent);
+        res.render('forgot-password', { csrfToken: token, sent, user: req.session.user || null });
     });
     app.get('/reset-password', csrfProtection, (req, res) => {
         const tokenParam = req.query && req.query.token;
@@ -741,8 +744,8 @@
                     googlePlaceId: null,
                     stripeCustomerId: customer.id,
                     subscriptionStatus: 'incomplete',
-                    createdAt: new Date().toISOString(),
-                });
+                createdAt: new Date().toISOString(),
+            });
                 const base = (nameClean || 'merchant').replace(/[^A-Za-z0-9]/g, '').slice(0,6).toUpperCase();
                 const rand = Math.random().toString(36).slice(2,5).toUpperCase();
                 await db.collection('businesses').doc(userSub).set({ shortSlug: `${base}${rand}` }, { merge: true });
@@ -784,7 +787,7 @@
 
     // New confirmation landing route (legacy alias)
     app.get('/confirm', (req, res) => {
-        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         const email = (req.query && req.query.email) || '';
         return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
     });
@@ -908,7 +911,7 @@
             } catch (e) { console.warn('postmark device alert failed', e?.message || e); }
             return req.session.save((err) => {
                 if (err) console.warn('session save error (login):', err);
-                return res.redirect('/dashboard');
+            return res.redirect('/dashboard');
             });
         } catch (error) {
             const errMsg = (error && (error.name || error.code || error.message)) || '';
