@@ -443,7 +443,7 @@ main > section, body > section{margin-bottom:48px}
 .feature-compare tbody tr:nth-child(odd){background:#FCFCFC}
 
 /* Brand in header */
-.brand-mark{height:36px;width:auto;display:inline-block;vertical-align:middle}
+.brand-mark{height:72px;width:auto;display:inline-block;vertical-align:middle}
 .brand-text{margin-left:8px;font-weight:600;font-size:18px}
 @media (max-width: 560px){
   .brand-text{display:none}
@@ -571,5 +571,5 @@ main > section, body > section{margin-bottom:48px}
 @media (min-width: 769px){
   .logo{display:flex;align-items:center;gap:12px}
   .brand-text{display:none !important}
-  .brand-mark{height:40px;width:auto}
+  .brand-mark{height:80px;width:auto}
 }
