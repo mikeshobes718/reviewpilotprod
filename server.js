@@ -540,7 +540,114 @@
     });
     app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • Reviews & Marketing', user: req.session.user || null }));
 
-    // Phase 4.1: BFF will expose /auth/* POST routes in the next phase
+    // Phase 4.2: BFF auth POST routes → API Gateway (custom auth backend)
+    const AUTH_API_BASE = process.env.API_GATEWAY_BASE_URL || process.env.AUTH_API_BASE || '';
+    function getAuthApiBase(){
+        if (AUTH_API_BASE) return AUTH_API_BASE.replace(/\/$/, '');
+        // Fallback to known default used during setup (best-effort)
+        return 'https://becb9v5qw8.execute-api.us-east-1.amazonaws.com/prod';
+    }
+    
+    app.post('/auth/signup', csrfProtection, async (req, res) => {
+        try {
+            const { businessName, email, password, confirmPassword } = req.body || {};
+            if (!businessName || !email || !password || !confirmPassword) {
+                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(400).render('signup', { csrfToken: token, error: 'All fields are required.', user: req.session.user || null });
+            }
+            if (password !== confirmPassword) {
+                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(400).render('signup', { csrfToken: token, error: 'Passwords do not match.', user: req.session.user || null });
+            }
+            const r = await fetch(getAuthApiBase() + '/register', {
+                method: 'POST', headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+                body: JSON.stringify({ businessName, email, password })
+            });
+            if (r.ok) {
+                return res.redirect('/login?registered=1');
+            }
+            let msg = 'Could not create account.';
+            try { const j = await r.json(); if (j && j.error) msg = String(j.error); } catch(_){ }
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            return res.status(r.status || 400).render('signup', { csrfToken: token, error: msg, user: req.session.user || null });
+        } catch (e) {
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            return res.status(500).render('signup', { csrfToken: token, error: 'Unexpected error. Try again.', user: req.session.user || null });
+        }
+    });
+    
+    app.post('/auth/login', csrfProtection, async (req, res) => {
+        try {
+            const { email, password } = req.body || {};
+            if (!email || !password) {
+                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(400).render('login', { csrfToken: token, error: 'Missing email or password.', user: req.session.user || null });
+            }
+            const r = await fetch(getAuthApiBase() + '/login', {
+                method: 'POST', headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+                body: JSON.stringify({ email, password }),
+                redirect: 'manual'
+            });
+            const setCookie = r.headers.get('set-cookie'); if (setCookie) res.setHeader('Set-Cookie', setCookie);
+            if (r.ok) {
+                return res.redirect('/dashboard');
+            }
+            let msg = 'Invalid email or password.';
+            try { const j = await r.json(); if (j && j.error) msg = String(j.error); } catch(_){ }
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            return res.status(200).render('login', { csrfToken: token, error: msg, user: req.session.user || null });
+        } catch (e) {
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            return res.status(500).render('login', { csrfToken: token, error: 'Unexpected error. Try again.', user: req.session.user || null });
+        }
+    });
+    
+    app.post('/auth/forgot-password', csrfProtection, async (req, res) => {
+        try {
+            const { email } = req.body || {};
+            if (!email) {
+                const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(400).render('forgot-password', { csrfToken: token, user: req.session.user || null });
+            }
+            await fetch(getAuthApiBase() + '/forgot-password', {
+                method: 'POST', headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+                body: JSON.stringify({ email })
+            }).catch(()=>{});
+            return res.redirect('/forgot-password?sent=1');
+        } catch (_) {
+            return res.redirect('/forgot-password?sent=1');
+        }
+    });
+    
+    app.post('/auth/reset-password', csrfProtection, async (req, res) => {
+        try {
+            const { token: resetToken, newPassword, confirmNewPassword, email } = req.body || {};
+            if (!resetToken || !newPassword || !confirmNewPassword) return res.status(400).send('Missing fields');
+            if (newPassword !== confirmNewPassword) {
+                const viewToken = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+                return res.status(400).render('reset-password', { csrfToken: viewToken, token: resetToken, email: email || '', user: req.session.user || null });
+            }
+            const payload = email ? { token: resetToken, newPassword, email } : { token: resetToken, newPassword };
+            const r = await fetch(getAuthApiBase() + '/reset-password', {
+                method: 'POST', headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (r.ok) return res.redirect('/login?reset=1');
+            const viewToken = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            let msg = 'Could not reset password.';
+            try { const j = await r.json(); if (j && j.error) msg = String(j.error); } catch(_){ }
+            return res.status(400).render('reset-password', { csrfToken: viewToken, token: resetToken, email: email || '', error: msg, user: req.session.user || null });
+        } catch (e) {
+            const viewToken = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            return res.status(500).render('reset-password', { csrfToken: viewToken, token: (req.body && req.body.token) || '', email: (req.body && req.body.email) || '', error: 'Unexpected error. Try again.', user: req.session.user || null });
+        }
+    });
+    
+    app.post('/auth/logout', csrfProtection, (req, res) => {
+        try { if (req.session) req.session.destroy(()=>{}); } catch(_){ }
+        res.setHeader('Set-Cookie', 'session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax');
+        return res.redirect('/login');
+    });
     // Phase 4.1: Auth view routes (GET)
     app.get('/signup', (req, res) => {
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';

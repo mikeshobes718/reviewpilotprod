@@ -23,6 +23,10 @@
             <form action="/auth/signup" method="POST" class="form-grid">
               <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                 <div class="form-field">
+                  <label for="businessName">Business Name</label>
+                  <input id="businessName" class="input" type="text" name="businessName" placeholder="Acme Dental" required>
+                </div>
+                <div class="form-field">
                   <label for="email">Email</label>
                   <input id="email" class="input" type="email" name="email" placeholder="you@business.com" required>
                 </div>
