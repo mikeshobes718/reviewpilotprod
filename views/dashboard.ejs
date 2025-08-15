@@ -413,15 +413,10 @@
 
         const sqBtn = document.getElementById('btnSquareConnect');
         if (sqBtn){
-          sqBtn.addEventListener('click', async function(){
-            try{
-              sqBtn.disabled = true; sqBtn.textContent = 'Connecting…';
-              const r = await fetch('/auth/pos/square/connect', { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest', 'Content-Type':'application/x-www-form-urlencoded' }, body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>', credentials:'same-origin' });
-              const j = await r.json();
-              if (j && j.url) { window.location = j.url; return; }
-              alert('Could not start Square OAuth.');
-            }catch(e){ alert('Error connecting to Square'); }
-            finally{ sqBtn.disabled = false; sqBtn.textContent = 'Connect to Square'; }
+          sqBtn.addEventListener('click', function(){
+            try{ sqBtn.disabled = true; sqBtn.textContent = 'Connecting…'; }catch(_){}
+            // Simplest, most reliable: server sets state and redirects
+            window.location.href = '/auth/pos/square/connect';
           });
         }
 
