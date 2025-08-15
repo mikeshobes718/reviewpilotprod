@@ -859,6 +859,32 @@
         }
     });
 
+    // Link-based password update page (inside app lifecycle)
+    app.get('/update-password', csrfProtection, (req, res) => {
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        const email = (req.query && req.query.email) || '';
+        const code = (req.query && req.query.code) || '';
+        return res.render('update-password', { csrfToken: token, email, code, error: null, user: req.session.user || null });
+    });
+    app.post('/update-password', csrfProtection, async (req, res) => {
+        try {
+            const { email, code, newPassword, confirmPassword } = req.body || {};
+            if (!email || !code || !newPassword || newPassword !== confirmPassword) {
+                return res.status(400).render('update-password', { csrfToken: req.csrfToken(), email, code, error: 'Please enter matching passwords.' });
+            }
+            try {
+                await cognito.send(new ConfirmForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email, ConfirmationCode: code, Password: newPassword }));
+            } catch (error) {
+                console.error('CRITICAL CONFIRM_FORGOT_PASSWORD ERROR:', error);
+                return res.status(400).render('update-password', { csrfToken: req.csrfToken(), email, code, error: 'Could not update password. Check your link and try again.' });
+            }
+            return res.redirect('/login');
+        } catch (e) {
+            console.error('update-password server error:', e);
+            return res.status(500).render('update-password', { csrfToken: req.csrfToken(), email: (req.body && req.body.email) || '', code: (req.body && req.body.code) || '', error: 'Unexpected error. Try again.' });
+        }
+    });
+
     // Firebase Action handler (password reset)
     app.get('/auth/action', csrfProtection, async (req, res) => {
         try {
@@ -1445,30 +1471,4 @@
     })().catch((err) => {
         console.error('❌ Fatal startup error', err);
         process.exit(1);
-    });
-    
-    // Link-based password update page
-    app.get('/update-password', csrfProtection, (req, res) => {
-        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        const email = (req.query && req.query.email) || '';
-        const code = (req.query && req.query.code) || '';
-        return res.render('update-password', { csrfToken: token, email, code, error: null, user: req.session.user || null });
-    });
-    app.post('/update-password', csrfProtection, async (req, res) => {
-        try {
-            const { email, code, newPassword, confirmPassword } = req.body || {};
-            if (!email || !code || !newPassword || newPassword !== confirmPassword) {
-                return res.status(400).render('update-password', { csrfToken: req.csrfToken(), email, code, error: 'Please enter matching passwords.' });
-            }
-            try {
-                await cognito.send(new ConfirmForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email, ConfirmationCode: code, Password: newPassword }));
-            } catch (error) {
-                console.error('CRITICAL CONFIRM_FORGOT_PASSWORD ERROR:', error);
-                return res.status(400).render('update-password', { csrfToken: req.csrfToken(), email, code, error: 'Could not update password. Check your link and try again.' });
-            }
-            return res.redirect('/login');
-        } catch (e) {
-            console.error('update-password server error:', e);
-            return res.status(500).render('update-password', { csrfToken: req.csrfToken(), email: (req.body && req.body.email) || '', code: (req.body && req.body.code) || '', error: 'Unexpected error. Try again.' });
-        }
     });
