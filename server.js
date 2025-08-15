@@ -757,12 +757,13 @@
     });
     app.get('/reset-password', csrfProtection, (req, res) => {
         const tokenParam = req.query && req.query.token;
+        const emailParam = req.query && req.query.email;
         if (!tokenParam) return res.status(400).send('Invalid or missing reset token.');
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('reset-password', { csrfToken: token, token: tokenParam, user: req.session.user || null });
+        res.render('reset-password', { csrfToken: token, token: tokenParam, email: emailParam || '', user: req.session.user || null });
     });
     app.get('/dashboard', requireLogin, (req, res, next) => { next(); });
     // Verify email (custom auth) - GET handler to consume token & email
