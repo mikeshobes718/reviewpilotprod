@@ -701,6 +701,9 @@
         try {
             const tokenPlain = (req.query && req.query.token) || '';
             const email = (req.query && req.query.email) || '';
+            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.set('Pragma', 'no-cache');
+            res.set('Expires', '0');
             if (!tokenPlain || !email) return res.status(400).render('verify', { csrfToken: req.csrfToken(), email, error: 'Invalid link.', user: req.session.user || null });
             // Forward to API
             const base = process.env.API_GATEWAY_BASE_URL || process.env.AUTH_API_BASE || '';
@@ -811,12 +814,7 @@
         return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
     });
 
-    // Explicit verify page
-    app.get('/verify', (req, res) => {
-        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        const email = (req.query && req.query.email) || '';
-        return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
-    });
+    // (legacy explicit verify page removed)
 
     // Verify email endpoint (confirm signup with code)
     app.post('/verify-email', csrfProtection, async (req, res) => {
