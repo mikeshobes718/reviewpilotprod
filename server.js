@@ -180,6 +180,18 @@
             } catch (_) { return res.redirect(302, '/pricing'); }
         };
 
+        // POS OAuth (Square) - Initiate via POST (AJAX) or GET fallback
+        app.post('/auth/pos/square/connect', requireLogin, async (req, res) => {
+            try {
+                const state = crypto.randomBytes(16).toString('hex');
+                req.session.square_oauth_state = state;
+                const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
+                return res.json({ url: authUrl });
+            } catch (e) {
+                console.error('square connect error', e);
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
         app.get('/api/square/connect', requireLogin, (req, res) => {
             const state = crypto.randomBytes(16).toString('hex');
             req.session.square_oauth_state = state;
@@ -221,10 +233,42 @@
                         scope: tokenJson.scope || SQUARE_SCOPES
                     }
                 }, { merge: true });
+                // Mark connection metadata for UI
+                await db.collection('businesses').doc(req.session.user.uid).set({
+                    posConnection: {
+                        isConnected: true,
+                        provider: 'square',
+                        connectedAt: new Date().toISOString(),
+                        scopesGranted: (tokenJson.scope || '').split(',').map(s => s.trim()).filter(Boolean)
+                    }
+                }, { merge: true });
+                // For server flow, redirect back to dashboard
                 res.redirect('/dashboard');
             } catch (e) {
                 console.error('square callback error', e);
                 res.status(500).send('server_error');
+            }
+        });
+
+        // Connection status for UI single source of truth
+        app.get('/api/pos/connection-status', requireLogin, async (req, res) => {
+            try {
+                const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+                const d = doc.exists ? (doc.data() || {}) : {};
+                const squareMeta = d.square || {};
+                const posMeta = d.posConnection || {};
+                const payload = {
+                    posConnection: {
+                        isConnected: !!(squareMeta.access || posMeta.isConnected),
+                        provider: squareMeta.merchantId ? 'square' : (posMeta.provider || null),
+                        connectedAt: posMeta.connectedAt || null,
+                        scopesGranted: (posMeta.scopesGranted && Array.isArray(posMeta.scopesGranted)) ? posMeta.scopesGranted : ((squareMeta.scope || '').split(',').map(s => s.trim()).filter(Boolean))
+                    }
+                };
+                return res.json(payload);
+            } catch (e) {
+                console.error('connection-status error', e);
+                return res.status(500).json({ posConnection: { isConnected: false } });
             }
         });
 
@@ -691,8 +735,8 @@
                                     googlePlaceId: null,
                                     stripeCustomerId: null,
                                     subscriptionStatus: 'none',
-                                    createdAt: new Date().toISOString(),
-                                });
+                createdAt: new Date().toISOString(),
+            });
                             }
                         } catch (_) { /* non-fatal */ }
                         req.session.user = { uid: bridgedUserId, email: (email || '').toLowerCase(), displayName: null };

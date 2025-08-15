@@ -199,6 +199,16 @@
                     <span>Free trial active — ends <strong><%= new Date(business.trialEndsAt).toLocaleDateString() %></strong></span>
                   </div>
                 <% } %>
+                <!-- POS Integration Status -->
+                <div class="card base-card" style="margin-top:16px">
+                  <h2 style="margin:0 0 12px;border-bottom:1px solid var(--border);padding-bottom:10px">Point of Sale Integrations</h2>
+                  <div id="posStatus" class="notice-banner" style="display:none; margin-bottom:12px"></div>
+                  <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+                    <button id="btnSquareConnect" class="btn btn-secondary">Connect to Square</button>
+                    <button id="btnSquareDisconnect" class="btn btn-secondary" style="display:none">Disconnect</button>
+                  </div>
+                </div>
+
                 <!-- Show upgrade CTA when not on Pro -->
                 <div class="plan-cols">
                   <div class="plan-col" style="border:2px solid #10B981; border-radius:12px">
@@ -377,6 +387,48 @@
             });
           }
         }
+        // POS connection UI logic
+        async function refreshPosStatus(){
+          try{
+            const s = document.getElementById('posStatus');
+            const c = document.getElementById('btnSquareConnect');
+            const d = document.getElementById('btnSquareDisconnect');
+            if (!s || !c || !d) return;
+            const resp = await fetch('/api/pos/connection-status', { credentials:'same-origin' });
+            const j = await resp.json().catch(()=>({ posConnection:{ isConnected:false } }));
+            const pc = j.posConnection || { isConnected:false };
+            if (pc.isConnected){
+              s.style.display = 'block';
+              s.textContent = `Successfully connected to ${pc.provider || 'POS'}${pc.connectedAt ? ' on ' + new Date(pc.connectedAt).toLocaleString() : ''}.`;
+              c.style.display = 'none';
+              d.style.display = '';
+            } else {
+              s.style.display = 'none';
+              c.style.display = '';
+              d.style.display = 'none';
+            }
+          }catch(_){ }
+        }
+        refreshPosStatus();
+
+        const sqBtn = document.getElementById('btnSquareConnect');
+        if (sqBtn){
+          sqBtn.addEventListener('click', async function(){
+            try{
+              sqBtn.disabled = true; sqBtn.textContent = 'Connecting…';
+              const r = await fetch('/auth/pos/square/connect', { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest', 'Content-Type':'application/x-www-form-urlencoded' }, body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>', credentials:'same-origin' });
+              const j = await r.json();
+              if (j && j.url) { window.location = j.url; return; }
+              alert('Could not start Square OAuth.');
+            }catch(e){ alert('Error connecting to Square'); }
+            finally{ sqBtn.disabled = false; sqBtn.textContent = 'Connect to Square'; }
+          });
+        }
+
+        // Placeholder disconnect action (will clear tokens server-side when implemented)
+        const sqDisc = document.getElementById('btnSquareDisconnect');
+        if (sqDisc){ sqDisc.addEventListener('click', function(){ alert('Disconnect coming soon'); }); }
+
         if (!upgradeBtn) return;
         var publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>';
         var stripe = (window.Stripe && publishableKey) ? Stripe(publishableKey) : null;
