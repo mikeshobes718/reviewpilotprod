@@ -144,7 +144,7 @@
         const SQUARE_REDIRECT_URL = process.env.SQUARE_REDIRECT_URL || (appUrl ? appUrl + '/api/square/callback' : '');
         const SQUARE_SCOPES = process.env.SQUARE_SCOPES || 'PAYMENTS_READ,ORDERS_READ,CUSTOMERS_READ';
 
-        // --- Auth guard (define before routes use it) ---
+        // --- Auth guards (define before routes use them) ---
         const requireLogin = (req, res, next) => {
             try {
                 if (!(req.session && req.session.user)) {
@@ -157,6 +157,19 @@
             if (req.session && req.session.user) return next();
             try { console.warn('requireLogin redirect: no session.user; cookies:', Object.keys(req.cookies||{})); } catch(_) {}
             return res.redirect(302, '/login');
+        };
+        const requireAccess = async (req, res, next) => {
+            try {
+                if (!req.session || !req.session.user) return res.redirect(302, '/login');
+                let status = null;
+                try {
+                    const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+                    if (doc.exists) status = doc.data().subscriptionStatus || null;
+                } catch (_) {}
+                const hasAccess = status === 'active' || status === 'trial';
+                if (!hasAccess) return res.redirect(302, '/pricing');
+                return next();
+            } catch (_) { return res.redirect(302, '/pricing'); }
         };
 
         app.get('/api/square/connect', requireLogin, (req, res) => {
@@ -765,7 +778,7 @@
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('reset-password', { csrfToken: token, token: tokenParam, email: emailParam || '', user: req.session.user || null });
     });
-    app.get('/dashboard', requireLogin, (req, res, next) => { next(); });
+    app.get('/dashboard', requireAccess, (req, res, next) => { next(); });
     // Verify email (custom auth) - GET handler to consume token & email
     app.get('/verify', csrfProtection, async (req, res) => {
         try {
@@ -1166,7 +1179,7 @@
     });
 
     // DASHBOARD & SETTINGS ROUTES
-    app.get('/dashboard', requireLogin, csrfProtection, async (req, res) => {
+    app.get('/dashboard', requireAccess, csrfProtection, async (req, res) => {
         try {
             const businessDoc = await db.collection('businesses').doc(req.session.user.uid).get();
             if (!businessDoc.exists) throw new Error('No business data found.');
