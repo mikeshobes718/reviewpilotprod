@@ -181,8 +181,13 @@
         };
 
         // POS OAuth (Square) - Initiate via POST (AJAX) or GET fallback
-        app.post('/auth/pos/square/connect', requireLogin, async (req, res) => {
+        app.post('/auth/pos/square/connect', async (req, res) => {
             try {
+                // Ensure session.user via JWT cookie if missing
+                if (!(req.session && req.session.user)) {
+                    try { const raw = req.cookies && req.cookies.session; if (raw) { const jwt = require('jsonwebtoken'); const d = jwt.decode(raw); if (d && d.sub) { req.session.user = { uid: d.sub, email: null, displayName: null }; } } } catch(_) {}
+                }
+                if (!(req.session && req.session.user)) return res.status(401).json({ error: 'unauthorized' });
                 const state = crypto.randomBytes(16).toString('hex');
                 req.session.square_oauth_state = state;
                 const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
@@ -193,7 +198,9 @@
             }
         });
         // GET fallback alias
-        app.get('/auth/pos/square/connect', requireLogin, (req, res) => {
+        app.get('/auth/pos/square/connect', (req, res) => {
+            try { if (!(req.session && req.session.user)) { const raw = req.cookies && req.cookies.session; if (raw) { const jwt = require('jsonwebtoken'); const d = jwt.decode(raw); if (d && d.sub) { req.session.user = { uid: d.sub, email: null, displayName: null }; } } } } catch(_) {}
+            if (!(req.session && req.session.user)) return res.redirect('/login');
             const state = crypto.randomBytes(16).toString('hex');
             req.session.square_oauth_state = state;
             const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
@@ -756,13 +763,19 @@
                 body: JSON.stringify({ email, password }),
                 redirect: 'manual'
             });
-            const setCookie = r.headers.get('set-cookie');
-            if (setCookie) {
+            const rawSetCookie = r.headers.get('set-cookie');
+            if (rawSetCookie) {
                 try {
-                    // Ensure attributes for cross-origin correctness
-                    let val = setCookie;
-                    if (!/Path=\//i.test(val)) val += '; Path=/';
-                    if (!/SameSite=/i.test(val)) val += '; SameSite=Lax';
+                    // Re-issue cookie for our domain: strip any Domain attr, enforce security attrs
+                    const sanitize = (val) => {
+                        const parts = String(val).split(';').map(s => s.trim()).filter(Boolean).filter(p => !/^Domain=/i.test(p));
+                        if (!parts.some(p => /^Path=/i.test(p))) parts.push('Path=/');
+                        if (!parts.some(p => /^SameSite=/i.test(p))) parts.push('SameSite=Lax');
+                        if (!parts.some(p => /^HttpOnly$/i.test(p))) parts.push('HttpOnly');
+                        if (process.env.NODE_ENV === 'production' && !parts.some(p => /^Secure$/i.test(p))) parts.push('Secure');
+                        return parts.join('; ');
+                    };
+                    const val = sanitize(rawSetCookie);
                     res.setHeader('Set-Cookie', val);
                 } catch(_) {}
             }
@@ -771,7 +784,7 @@
                 let bridgedUserId = null;
                 try { const data = await r.clone().json(); if (data && data.userId) bridgedUserId = data.userId; } catch(_) {}
                 try {
-                    const m = setCookie && setCookie.match(/session=([^;]+)/);
+                    const m = rawSetCookie && rawSetCookie.match(/session=([^;]+)/);
                     if (!bridgedUserId && m && m[1]) {
                         const jwt = require('jsonwebtoken');
                         const decoded = jwt.decode(m[1]);
