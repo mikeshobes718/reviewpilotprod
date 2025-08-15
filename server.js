@@ -1231,8 +1231,23 @@
                 pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
             });
         } catch (error) {
-            console.error("❌ Error fetching dashboard data:", error);
-            res.redirect('/login');
+            console.error("❌ Error fetching dashboard data (temporary fallback shown):", error);
+            // Render dashboard shell with placeholders while Firestore index builds
+            try {
+                const placeholderAnalytics = { total: 0, avg: '0.00', counts: { 1:0, 2:0, 3:0, 4:0, 5:0 }, conversions: 0 };
+                return res.render('dashboard', {
+                    business: { businessName: '', email: (req.session.user && req.session.user.email) || '', subscriptionStatus: 'trial' },
+                    user: req.session.user,
+                    feedback: [],
+                    appUrl: appUrl,
+                    csrfToken: req.csrfToken(),
+                    analytics: placeholderAnalytics,
+                    billing: null,
+                    pageError: 'Loading data…'
+                });
+            } catch (_) {
+                return res.redirect('/login');
+            }
         }
     });
 
