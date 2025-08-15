@@ -716,6 +716,10 @@
             const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken }));
             const sub = me?.Username;
             const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
+            if (attrs && String(attrs.email_verified) !== 'true') {
+                // Enforce verification: block login until verified
+                return res.redirect(`/verify?email=${encodeURIComponent(attrs.email || email)}`);
+            }
 
             // On first Cognito login, if this merchant previously existed (Firebase UID),
             // clone their business doc by matching email so they keep their data.
@@ -797,6 +801,9 @@
                         if (accessToken2) {
                             const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken2 }));
                             const sub = me?.Username; const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
+                            if (attrs && String(attrs.email_verified) !== 'true') {
+                                return res.redirect(`/verify?email=${encodeURIComponent(attrs.email || email)}`);
+                            }
                             req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
                             return req.session.save((err) => {
                                 if (err) console.warn('session save error (fallback login):', err);
