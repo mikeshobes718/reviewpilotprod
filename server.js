@@ -476,17 +476,25 @@
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // CSRF protection (opt-in per route)
-    const csrfProtection = csurf();
+    // CSRF protection (opt-in per route) — use cookie-based secret for stability behind ALB
+    const csrfProtection = csurf({ cookie: { httpOnly: true, sameSite: 'lax', secure: isProduction } });
     // Friendly CSRF error handler
     app.use((err, req, res, next) => {
         if (err && err.code === 'EBADCSRFTOKEN') {
-            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            if (req.path.startsWith('/login')) {
-                return res.status(403).render('login', { csrfToken: token, error: 'Security check failed. Please try again.' });
+            const token = (typeof req.csrfToken === 'function') ? (function(){ try { return req.csrfToken(); } catch(_) { return ''; } })() : '';
+            const path = req.path || '';
+            if (path.startsWith('/login') || path.startsWith('/auth/login')) {
+                return res.status(403).render('login', { csrfToken: token, error: 'Security check failed. Please try again.', user: req.session.user || null });
             }
-            if (req.path.startsWith('/signup')) {
-                return res.status(403).render('signup', { csrfToken: token, error: 'Security check failed. Please try again.' });
+            if (path.startsWith('/signup') || path.startsWith('/auth/signup')) {
+                return res.status(403).render('signup', { csrfToken: token, error: 'Security check failed. Please try again.', user: req.session.user || null });
+            }
+            if (path.startsWith('/forgot-password') || path.startsWith('/auth/forgot-password')) {
+                return res.status(403).render('forgot-password', { csrfToken: token, user: req.session.user || null });
+            }
+            if (path.startsWith('/reset-password') || path.startsWith('/auth/reset-password')) {
+                const t = req.body && req.body.token ? req.body.token : (req.query && req.query.token ? req.query.token : '');
+                return res.status(403).render('reset-password', { csrfToken: token, token: t, error: 'Security check failed. Please try again.', user: req.session.user || null });
             }
             return res.status(403).send('Form expired. Refresh and try again.');
         }
@@ -652,20 +660,32 @@
     });
     // Phase 4.1: Auth view routes (GET)
     app.get('/signup', csrfProtection, (req, res) => {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('signup', { csrfToken: token, error: null, user: req.session.user || null });
     });
     app.get('/login', csrfProtection, (req, res) => {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('login', { csrfToken: token, error: null, user: req.session.user || null });
     });
     app.get('/forgot-password', csrfProtection, (req, res) => {
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('forgot-password', { csrfToken: token, user: req.session.user || null });
     });
     app.get('/reset-password', csrfProtection, (req, res) => {
         const tokenParam = req.query && req.query.token;
         if (!tokenParam) return res.status(400).send('Invalid or missing reset token.');
+        res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.set('Pragma', 'no-cache');
+        res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('reset-password', { csrfToken: token, token: tokenParam, user: req.session.user || null });
     });
