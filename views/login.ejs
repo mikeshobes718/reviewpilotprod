@@ -26,7 +26,7 @@
           <% if (typeof hint !== 'undefined' && hint) { %>
             <div class="noticeBanner" style="margin-top:8px"><%= hint %></div>
           <% } %>
-          <form id="login-form" action="/login" method="POST">
+          <form action="/auth/login" method="POST">
             <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
             <div class="form-field">
               <label for="email">Email</label>
@@ -36,9 +36,9 @@
               <label for="password">Password</label>
               <input id="password" class="input" type="password" name="password" placeholder="••••••••" required>
             </div>
-            <div class="form-field button-container"><button id="login-btn" class="btn-primary primary-action" type="submit">Log in</button></div>
+            <div class="form-field button-container"><button class="btn-primary primary-action" type="submit">Log in</button></div>
           </form>
-          <div class="form-footer-link"><a class="link-accent" href="/reset-password">Forgot password?</a> • <a class="link-accent" href="/signup">Create an account</a></div>
+          <div class="form-footer-link"><a class="link-accent" href="/forgot-password">Forgot password?</a> • <a class="link-accent" href="/signup">Create an account</a></div>
         </div>
         </div>
       </div>

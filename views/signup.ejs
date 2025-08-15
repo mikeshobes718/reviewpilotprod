@@ -20,25 +20,21 @@
           <% if (typeof error !== 'undefined' && error) { %>
               <div class="error"><%= error %></div>
           <% } %>
-            <form action="/signup" method="POST" class="form-grid">
+            <form action="/auth/signup" method="POST" class="form-grid">
               <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                 <div class="form-field">
-                  <label for="businessName">Business name</label>
-                  <input id="businessName" class="input" type="text" name="businessName" placeholder="Acme Dental" required>
-                </div>
-                <div class="form-field">
                   <label for="email">Email</label>
-                  <input id="email" class="input" type="email" name="email" placeholder="owner@acme.com" required>
+                  <input id="email" class="input" type="email" name="email" placeholder="you@business.com" required>
                 </div>
                 <div class="form-field">
                   <label for="password">Password</label>
-                  <input id="password" class="input" type="password" name="password" placeholder="Create a password" required>
-                  <div class="password-helper-text">Minimum 8 characters, including uppercase, lowercase, number, and symbol.</div>
-                  <% if (typeof passwordError !== 'undefined' && passwordError) { %>
-                    <div class="error"><%= passwordError %></div>
-                  <% } %>
+                  <input id="password" class="input" type="password" name="password" placeholder="••••••••" required>
                 </div>
-                <div class="form-field button-container"><button class="btn-primary primary-action" type="submit">Create account</button></div>
+                <div class="form-field">
+                  <label for="confirmPassword">Confirm Password</label>
+                  <input id="confirmPassword" class="input" type="password" name="confirmPassword" placeholder="••••••••" required>
+                </div>
+                <div class="form-field button-container"><button class="btn-primary primary-action" type="submit">Sign Up</button></div>
             </form>
           <div class="form-footer-link"><span>Already have an account?</span> <a class="link-accent" href="/login">Log in</a></div>
         </div>
