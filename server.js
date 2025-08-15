@@ -192,6 +192,13 @@
                 return res.status(500).json({ error: 'server_error' });
             }
         });
+        // GET fallback alias
+        app.get('/auth/pos/square/connect', requireLogin, (req, res) => {
+            const state = crypto.randomBytes(16).toString('hex');
+            req.session.square_oauth_state = state;
+            const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
+            res.redirect(authUrl);
+        });
         app.get('/api/square/connect', requireLogin, (req, res) => {
             const state = crypto.randomBytes(16).toString('hex');
             req.session.square_oauth_state = state;
@@ -246,6 +253,54 @@
                 res.redirect('/dashboard');
             } catch (e) {
                 console.error('square callback error', e);
+                res.status(500).send('server_error');
+            }
+        });
+        // Callback alias (if Square dashboard uses this URL)
+        app.get('/auth/pos/square/callback', requireLogin, async (req, res) => {
+            try {
+                const { code, state } = req.query || {};
+                if (!code || !state || state !== req.session.square_oauth_state) return res.status(400).send('invalid_state');
+                delete req.session.square_oauth_state;
+                const tokenResp = await fetch('https://connect.squareup.com/oauth2/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_id: SQUARE_APP_ID,
+                        client_secret: SQUARE_APP_SECRET,
+                        code,
+                        grant_type: 'authorization_code',
+                        redirect_uri: SQUARE_REDIRECT_URL
+                    })
+                });
+                if (!tokenResp.ok) {
+                    const t = await tokenResp.text();
+                    console.error('square token error (alias)', t);
+                    return res.status(400).send('oauth_error');
+                }
+                const tokenJson = await tokenResp.json();
+                const encAccess = await encryptString(tokenJson.access_token);
+                const encRefresh = tokenJson.refresh_token ? await encryptString(tokenJson.refresh_token) : null;
+                await db.collection('businesses').doc(req.session.user.uid).set({
+                    square: {
+                        merchantId: tokenJson.merchant_id || null,
+                        access: encAccess,
+                        refresh: encRefresh,
+                        expiresAt: tokenJson.expires_at || null,
+                        scope: tokenJson.scope || SQUARE_SCOPES
+                    }
+                }, { merge: true });
+                await db.collection('businesses').doc(req.session.user.uid).set({
+                    posConnection: {
+                        isConnected: true,
+                        provider: 'square',
+                        connectedAt: new Date().toISOString(),
+                        scopesGranted: (tokenJson.scope || '').split(',').map(s => s.trim()).filter(Boolean)
+                    }
+                }, { merge: true });
+                res.redirect('/dashboard');
+            } catch (e) {
+                console.error('square callback error (alias)', e);
                 res.status(500).send('server_error');
             }
         });
