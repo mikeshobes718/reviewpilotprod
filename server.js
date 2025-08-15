@@ -217,6 +217,7 @@
         app.post('/auth/pos/square/connect', async (req, res) => {
             try {
                 const uid = getUserIdFromRequest(req);
+                try { console.log('Square connect POST: cookies=', Object.keys(req.cookies||{}), 'hasSessionCookie=', !!(req.cookies&&req.cookies.session), 'uid=', uid); } catch(_) {}
                 if (!uid) return res.status(401).json({ error: 'unauthorized' });
                 const state = createSignedState({ uid, nonce: crypto.randomBytes(12).toString('hex'), iat: Date.now() });
                 const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
@@ -229,6 +230,7 @@
         // GET fallback alias
         app.get('/auth/pos/square/connect', (req, res) => {
             const uid = getUserIdFromRequest(req);
+            try { console.log('Square connect GET: cookies=', Object.keys(req.cookies||{}), 'hasSessionCookie=', !!(req.cookies&&req.cookies.session), 'uid=', uid); } catch(_) {}
             if (!uid) return res.redirect('/login');
             const state = createSignedState({ uid, nonce: crypto.randomBytes(12).toString('hex'), iat: Date.now() });
             const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
