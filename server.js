@@ -503,6 +503,7 @@
     app.use(compression());
     app.use(morgan('dev'));
     app.use(cookieParser());
+    const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined;
     app.use(session({
         secret: process.env.SESSION_SECRET || 'a-super-secret-key-that-you-should-change',
         resave: false,
@@ -511,6 +512,7 @@
             secure: process.env.NODE_ENV === 'production',
             httpOnly: true,
             sameSite: 'lax',
+            domain: COOKIE_DOMAIN
         }
     }));
 
@@ -807,6 +809,7 @@
                         if (!parts.some(p => /^SameSite=/i.test(p))) parts.push('SameSite=Lax');
                         if (!parts.some(p => /^HttpOnly$/i.test(p))) parts.push('HttpOnly');
                         if (process.env.NODE_ENV === 'production' && !parts.some(p => /^Secure$/i.test(p))) parts.push('Secure');
+                        if (process.env.COOKIE_DOMAIN) parts.push(`Domain=${process.env.COOKIE_DOMAIN}`);
                         return parts.join('; ');
                     };
                     const val = sanitize(rawSetCookie);
