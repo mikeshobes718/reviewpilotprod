@@ -162,11 +162,19 @@
             try {
                 if (!req.session || !req.session.user) return res.redirect(302, '/login');
                 let status = null;
+                let trialEndsAt = null;
                 try {
                     const doc = await db.collection('businesses').doc(req.session.user.uid).get();
-                    if (doc.exists) status = doc.data().subscriptionStatus || null;
+                    if (doc.exists) {
+                        const data = doc.data() || {};
+                        status = data.subscriptionStatus || null;
+                        trialEndsAt = data.trialEndsAt || null;
+                    }
                 } catch (_) {}
-                const hasAccess = status === 'active' || status === 'trial';
+                const now = new Date();
+                const isActive = status === 'active';
+                const isTrial = status === 'trial' && trialEndsAt && (new Date(trialEndsAt) > now);
+                const hasAccess = isActive || isTrial;
                 if (!hasAccess) return res.redirect(302, '/pricing');
                 return next();
             } catch (_) { return res.redirect(302, '/pricing'); }
