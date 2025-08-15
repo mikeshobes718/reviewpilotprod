@@ -632,31 +632,34 @@
             }
             if (r.ok) {
                 // Bridge session for current app until full migration: decode JWT 'session' cookie to set req.session.user
+                let bridgedUserId = null;
+                try { const data = await r.clone().json(); if (data && data.userId) bridgedUserId = data.userId; } catch(_) {}
                 try {
                     const m = setCookie && setCookie.match(/session=([^;]+)/);
-                    if (m && m[1]) {
+                    if (!bridgedUserId && m && m[1]) {
                         const jwt = require('jsonwebtoken');
                         const decoded = jwt.decode(m[1]);
                         const sub = decoded && decoded.sub ? decoded.sub : null;
-                        if (sub) {
-                            // Ensure a minimal business doc exists for this UID so dashboard can load
-                            try {
-                                const ref = db.collection('businesses').doc(sub);
-                                const snap = await ref.get();
-                                if (!snap.exists) {
-                                    await ref.set({
-                                        businessName: '',
-                                        email: (email || '').toLowerCase(),
-                                        googlePlaceId: null,
-                                        stripeCustomerId: null,
-                                        subscriptionStatus: 'trial',
-                createdAt: new Date().toISOString(),
-            });
-                                }
-                            } catch (_) { /* non-fatal */ }
-                            req.session.user = { uid: sub, email: (email || '').toLowerCase(), displayName: null };
-                            return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); return res.redirect('/dashboard'); });
-                        }
+                        bridgedUserId = sub || bridgedUserId;
+                    }
+                    if (bridgedUserId) {
+                        // Ensure a minimal business doc exists for this UID so dashboard can load
+                        try {
+                            const ref = db.collection('businesses').doc(bridgedUserId);
+                            const snap = await ref.get();
+                            if (!snap.exists) {
+                                await ref.set({
+                                    businessName: '',
+                                    email: (email || '').toLowerCase(),
+                                    googlePlaceId: null,
+                                    stripeCustomerId: null,
+                                    subscriptionStatus: 'trial',
+                                    createdAt: new Date().toISOString(),
+                                });
+                            }
+                        } catch (_) { /* non-fatal */ }
+                        req.session.user = { uid: bridgedUserId, email: (email || '').toLowerCase(), displayName: null };
+                        return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); return res.redirect('/dashboard'); });
                     }
                 } catch (_) { /* ignore bridge errors */ }
                 return res.redirect('/dashboard');
