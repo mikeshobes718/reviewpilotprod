@@ -590,13 +590,22 @@
     app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • Reviews & Marketing', user: req.session.user || null }));
     app.get('/pricing', csrfProtection, async (req, res) => {
         let subscriptionStatus = null;
+        let trialEndsAt = null;
+        let isActive = false;
+        let validTrial = false;
         try {
             if (req.session.user) {
                 const doc = await db.collection('businesses').doc(req.session.user.uid).get();
-                if (doc.exists) subscriptionStatus = doc.data().subscriptionStatus || null;
+                if (doc.exists) {
+                    const data = doc.data() || {};
+                    subscriptionStatus = data.subscriptionStatus || null;
+                    trialEndsAt = data.trialEndsAt || null;
+                    isActive = subscriptionStatus === 'active';
+                    validTrial = subscriptionStatus === 'trial' && trialEndsAt && (new Date(trialEndsAt) > new Date());
+                }
             }
         } catch (_) { /* ignore */ }
-        res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • Reviews & Marketing', user: req.session.user || null, subscriptionStatus });
+        res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • Reviews & Marketing', user: req.session.user || null, subscriptionStatus, isActive, validTrial, trialEndsAt });
     });
     app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • Reviews & Marketing', user: req.session.user || null }));
 
@@ -1258,7 +1267,7 @@
             try {
                 const placeholderAnalytics = { total: 0, avg: '0.00', counts: { 1:0, 2:0, 3:0, 4:0, 5:0 }, conversions: 0 };
                 return res.render('dashboard', {
-                    business: { businessName: '', email: (req.session.user && req.session.user.email) || '', subscriptionStatus: 'trial' },
+                    business: { businessName: '', email: (req.session.user && req.session.user.email) || '', subscriptionStatus: 'none' },
                     user: req.session.user,
                     feedback: [],
                     appUrl: appUrl,
