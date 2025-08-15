@@ -146,6 +146,14 @@
 
         // --- Auth guard (define before routes use it) ---
         const requireLogin = (req, res, next) => {
+            try {
+                if (!(req.session && req.session.user)) {
+                    const raw = req.cookies && req.cookies.session;
+                    if (raw) {
+                        try { const jwt = require('jsonwebtoken'); const decoded = jwt.decode(raw); if (decoded && decoded.sub) { req.session.user = { uid: decoded.sub, email: null, displayName: null }; } } catch(_) {}
+                    }
+                }
+            } catch(_) {}
             if (req.session && req.session.user) return next();
             return res.redirect(302, '/login');
         };
@@ -619,6 +627,9 @@
                 redirect: 'manual'
             });
             const setCookie = r.headers.get('set-cookie');
+            if (setCookie) {
+                try { res.setHeader('Set-Cookie', setCookie); } catch(_) {}
+            }
             if (r.ok) {
                 // Bridge session for current app until full migration: decode JWT 'session' cookie to set req.session.user
                 try {
