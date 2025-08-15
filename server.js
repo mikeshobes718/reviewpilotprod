@@ -539,6 +539,36 @@
         res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • Reviews & Marketing', user: req.session.user || null, subscriptionStatus });
     });
     app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • Reviews & Marketing', user: req.session.user || null }));
+
+    // Phase 4: lightweight proxy endpoints to our custom serverless API
+    const API_BASE = process.env.AUTH_API_BASE || 'https://becb9v5qw8.execute-api.us-east-1.amazonaws.com/prod';
+    app.post('/register', express.json(), async (req, res) => {
+        try {
+            const r = await fetch(API_BASE + '/register', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(req.body), credentials:'include' });
+            const txt = await r.text();
+            res.status(r.status).type('application/json').send(txt);
+        } catch (e) { res.status(500).json({ error: 'SERVER_ERROR' }); }
+    });
+    app.post('/login', express.json(), async (req, res) => {
+        try {
+            const r = await fetch(API_BASE + '/login', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(req.body) });
+            // Forward Set-Cookie header to client
+            const setCookie = r.headers.get('set-cookie'); if (setCookie) res.setHeader('Set-Cookie', setCookie);
+            const txt = await r.text(); res.status(r.status).type('application/json').send(txt);
+        } catch (e) { res.status(500).json({ error: 'SERVER_ERROR' }); }
+    });
+    app.post('/forgot-password', express.json(), async (req, res) => {
+        try {
+            const r = await fetch(API_BASE + '/forgot-password', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(req.body) });
+            const txt = await r.text(); res.status(r.status).type('application/json').send(txt);
+        } catch (e) { res.status(200).json({ ok: true }); }
+    });
+    app.post('/reset-password', express.json(), async (req, res) => {
+        try {
+            const r = await fetch(API_BASE + '/reset-password', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(req.body) });
+            const txt = await r.text(); res.status(r.status).type('application/json').send(txt);
+        } catch (e) { res.status(500).json({ error: 'SERVER_ERROR' }); }
+    });
     app.get('/signup', (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
