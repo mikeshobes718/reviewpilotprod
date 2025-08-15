@@ -155,6 +155,7 @@
                 }
             } catch(_) {}
             if (req.session && req.session.user) return next();
+            try { console.warn('requireLogin redirect: no session.user; cookies:', Object.keys(req.cookies||{})); } catch(_) {}
             return res.redirect(302, '/login');
         };
 
@@ -628,7 +629,13 @@
             });
             const setCookie = r.headers.get('set-cookie');
             if (setCookie) {
-                try { res.setHeader('Set-Cookie', setCookie); } catch(_) {}
+                try {
+                    // Ensure attributes for cross-origin correctness
+                    let val = setCookie;
+                    if (!/Path=\//i.test(val)) val += '; Path=/';
+                    if (!/SameSite=/i.test(val)) val += '; SameSite=Lax';
+                    res.setHeader('Set-Cookie', val);
+                } catch(_) {}
             }
             if (r.ok) {
                 // Bridge session for current app until full migration: decode JWT 'session' cookie to set req.session.user
