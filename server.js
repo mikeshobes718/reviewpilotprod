@@ -368,9 +368,11 @@
         });
 
         // Connection status for UI single source of truth
-        app.get('/api/pos/connection-status', requireLogin, async (req, res) => {
+        app.get('/api/pos/connection-status', async (req, res) => {
             try {
-                const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ posConnection: { isConnected: false } });
+                const doc = await db.collection('businesses').doc(uid).get();
                 const d = doc.exists ? (doc.data() || {}) : {};
                 const squareMeta = d.square || {};
                 const posMeta = d.posConnection || {};
@@ -390,9 +392,11 @@
         });
 
         // POS: repair status if tokens exist but status not set (safety net)
-        app.post('/api/pos/repair-status', requireLogin, async (req, res) => {
+        app.post('/api/pos/repair-status', async (req, res) => {
             try {
-                const ref = db.collection('businesses').doc(req.session.user.uid);
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ ok: false, reason: 'unauthorized' });
+                const ref = db.collection('businesses').doc(uid);
                 const snap = await ref.get();
                 if (!snap.exists) return res.json({ ok: false, reason: 'no_business' });
                 const d = snap.data() || {};
