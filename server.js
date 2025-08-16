@@ -93,18 +93,19 @@
             const redisConnection = new IORedis(process.env.REDIS_URL);
             reviewQueue = new Queue('review-requests', { connection: redisConnection });
             new QueueScheduler('review-requests', { connection: redisConnection });
-            new Worker('review-requests', async (job) => {
-                const { channel, customer, merchantId, shortLink } = job.data || {};
+            async function processSendJob(data){
+                const { channel, customer, merchantUid, shortLink } = data || {};
                 if (isQuietHours()) {
                     const next8am = new Date();
                     if (next8am.getHours() >= 21) next8am.setDate(next8am.getDate() + 1);
                     next8am.setHours(8,0,0,0);
                     const delay = next8am.getTime() - Date.now();
-                    await reviewQueue.add('sendReviewRequest', job.data, { delay, attempts: 1 });
+                    await reviewQueue.add('sendReviewRequest', data, { delay, attempts: 1 });
                     return;
                 }
-                console.log(`Would send ${channel} to ${customer?.email || customer?.phone} → ${shortLink} (merchant ${merchantId})`);
-            }, { connection: redisConnection });
+                await sendReviewRequest({ merchantUid, customer, channel, shortLink });
+            }
+            new Worker('review-requests', async (job) => { await processSendJob(job.data || {}); }, { connection: redisConnection });
         } else {
             console.warn('REDIS_URL not set; review-requests queue disabled');
         }
@@ -113,6 +114,57 @@
             // Basic quiet hours 21:00-08:00 in server time
             const hour = date.getHours();
             return (hour >= 21 || hour < 8);
+        }
+
+        // --- 3b.1 Helpers for sending and logging review requests ---
+        async function isOptedOut(merchantUid, contact){
+            try {
+                const key = Buffer.from((contact||'').toLowerCase()).toString('base64');
+                const snap = await db.collection('businesses').doc(merchantUid).collection('optouts').doc(key).get();
+                return snap.exists;
+            } catch(_) { return false; }
+        }
+        async function logEvent(merchantUid, type, payload){
+            try {
+                await db.collection('businesses').doc(merchantUid).collection('events').add({ type, payload: payload||{}, ts: new Date().toISOString() });
+            } catch(_) {}
+        }
+        async function sendReviewRequest({ merchantUid, customer, channel, shortLink }){
+            try {
+                const email = (customer && customer.email) ? String(customer.email).trim() : null;
+                const phone = (customer && customer.phone) ? String(customer.phone).trim() : null;
+                const preferred = (channel === 'sms' && phone) ? 'sms' : (email ? 'email' : null);
+                if (!preferred) { await logEvent(merchantUid, 'send_skipped', { reason: 'no_contact' }); return; }
+                if (email && await isOptedOut(merchantUid, email)) { await logEvent(merchantUid, 'send_skipped', { reason: 'optout_email' }); return; }
+                if (phone && await isOptedOut(merchantUid, phone)) { await logEvent(merchantUid, 'send_skipped', { reason: 'optout_phone' }); return; }
+                // TODO: throttling per-customer window; simple check of last 7 days
+                try {
+                    const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+                    const snap = await db.collection('businesses').doc(merchantUid).collection('events')
+                        .where('type','==','send_email')
+                        .orderBy('ts','desc').limit(20).get();
+                    const sentRecently = snap.docs.some(d => {
+                        const e = d.data();
+                        return (e && e.payload && e.payload.email && email && e.payload.email.toLowerCase() === email.toLowerCase() && e.ts >= sevenDaysAgo);
+                    });
+                    if (sentRecently) { await logEvent(merchantUid, 'send_skipped', { reason: 'throttled' }); return; }
+                } catch(_){ }
+                if (preferred === 'email') {
+                    await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                    await logEvent(merchantUid, 'send_email', { email, shortLink });
+                } else {
+                    // SMS not configured → fall back to email if available
+                    if (email) {
+                        await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                        await logEvent(merchantUid, 'send_email', { email, shortLink, fallbackFrom: 'sms' });
+                    } else {
+                        await logEvent(merchantUid, 'send_skipped', { reason: 'sms_unavailable' });
+                    }
+                }
+            } catch (e) {
+                console.error('sendReviewRequest error', e);
+                await logEvent(merchantUid, 'send_error', { message: String(e && e.message || e) });
+            }
         }
 
         

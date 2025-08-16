@@ -140,6 +140,18 @@ function buildEmailHtml(templateName, params = {}) {
             ].join('');
             return { subject, html: wrap(subject, pre, inner) };
         }
+        case 'Review Request': {
+            const subject = 'Quick favor — would you review your visit?';
+            const pre = 'It takes 30 seconds and helps us a ton.';
+            const inner = [
+                h2('Thanks for your visit!'),
+                p('If we made your day, would you mind leaving us a quick 5‑star review? It takes about 30 seconds.'),
+                `<tr><td align="center" style="padding:24px 32px 0 32px;">${button('Leave a Review', params.reviewUrl || '#')}</td></tr>`,
+                p(`Or copy this link: <a href="${params.reviewUrl || '#'}" style="color:${brand}; text-decoration:underline;">${params.reviewUrl || '#'}</a>`),
+                p('Thank you!')
+            ].join('');
+            return { subject, html: wrap(subject, pre, inner) };
+        }
         default:
             return { subject: 'Message from Reviews & Marketing', html: wrap('Message', '', p('')) };
     }
