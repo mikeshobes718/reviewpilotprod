@@ -389,6 +389,32 @@
             }
         });
 
+        // POS: repair status if tokens exist but status not set (safety net)
+        app.post('/api/pos/repair-status', requireLogin, async (req, res) => {
+            try {
+                const ref = db.collection('businesses').doc(req.session.user.uid);
+                const snap = await ref.get();
+                if (!snap.exists) return res.json({ ok: false, reason: 'no_business' });
+                const d = snap.data() || {};
+                const squareMeta = d.square || {};
+                if (squareMeta && squareMeta.access) {
+                    await ref.set({
+                        posConnection: {
+                            isConnected: true,
+                            provider: 'square',
+                            connectedAt: new Date().toISOString(),
+                            scopesGranted: (squareMeta.scope || '').split(',').map(s => s.trim()).filter(Boolean)
+                        }
+                    }, { merge: true });
+                    return res.json({ ok: true, repaired: true });
+                }
+                return res.json({ ok: false, reason: 'no_tokens' });
+            } catch (e) {
+                console.error('repair-status error', e);
+                return res.status(500).json({ ok: false, reason: 'server' });
+            }
+        });
+
         // Save Square automation settings
         app.post('/integrations/square/settings', requireLogin, async (req, res) => {
             try {

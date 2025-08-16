@@ -406,6 +406,19 @@
               c.style.display = 'none';
               d.style.display = '';
             } else {
+              // try automatic repair if tokens were saved
+              try{ await fetch('/api/pos/repair-status', { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest', 'Content-Type':'application/x-www-form-urlencoded' }, body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>', credentials:'same-origin' }); }catch(_){ }
+              try{
+                const r2 = await fetch('/api/pos/connection-status', { credentials:'same-origin' });
+                const j2 = await r2.json();
+                if (j2 && j2.posConnection && j2.posConnection.isConnected){
+                  s.style.display = 'block';
+                  s.textContent = `Successfully connected to ${j2.posConnection.provider || 'POS'}${j2.posConnection.connectedAt ? ' on ' + new Date(j2.posConnection.connectedAt).toLocaleString() : ''}.`;
+                  c.style.display = 'none';
+                  d.style.display = '';
+                  return;
+                }
+              }catch(_){ }
               s.style.display = 'none';
               c.style.display = '';
               d.style.display = 'none';
