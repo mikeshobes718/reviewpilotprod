@@ -412,6 +412,14 @@
             }
           }catch(_){ }
         }
+        // Auto-show success if redirected from callback
+        try {
+          const qp = new URLSearchParams(window.location.search);
+          if (qp.get('pos') === 'square_connected') {
+            const s = document.getElementById('posStatus');
+            if (s) { s.style.display='block'; s.textContent = 'Successfully connected to Square.'; }
+          }
+        } catch(_){}
         refreshPosStatus();
 
         const sqBtn = document.getElementById('btnSquareConnect');

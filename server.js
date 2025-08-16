@@ -309,8 +309,8 @@
                         scopesGranted: (tokenJson.scope || '').split(',').map(s => s.trim()).filter(Boolean)
                     }
                 }, { merge: true });
-                // For server flow, redirect back to dashboard
-                res.redirect('/dashboard');
+                // For server flow, redirect back to dashboard with success flag
+                res.redirect('/dashboard?pos=square_connected');
             } catch (e) {
                 console.error('square callback error', e);
                 res.status(500).send('server_error');
@@ -360,7 +360,7 @@
                         scopesGranted: (tokenJson.scope || '').split(',').map(s => s.trim()).filter(Boolean)
                     }
                 }, { merge: true });
-                res.redirect('/dashboard');
+                res.redirect('/dashboard?pos=square_connected');
             } catch (e) {
                 console.error('square callback error (alias)', e);
                 res.status(500).send('server_error');
