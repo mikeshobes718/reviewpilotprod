@@ -207,6 +207,11 @@
                     <button id="btnSquareConnect" class="btn btn-secondary">Connect to Square</button>
                     <button id="btnSquareDisconnect" class="btn btn-secondary" style="display:none">Disconnect</button>
                   </div>
+                  <% if (!(business && business.googlePlaceId)) { %>
+                  <div style="margin-top:12px; color: var(--muted); font-size:13px">
+                    Tip: add your Google Place ID in <a href="#settings-link" style="color:var(--accent); text-decoration:underline">Settings</a> so your review link and QR are generated.
+                  </div>
+                  <% } %>
                 </div>
 
                 <!-- Show upgrade CTA when not on Pro -->
@@ -265,7 +270,24 @@
             if (signA) { if (data.signPdfUrl) { signA.href = data.signPdfUrl; signA.removeAttribute('aria-disabled'); } else { signA.href = '#'; signA.setAttribute('aria-disabled','true'); } }
             if (stickerA) { if (data.stickerPdfUrl) { stickerA.href = data.stickerPdfUrl; stickerA.removeAttribute('aria-disabled'); } else { stickerA.href = '#'; stickerA.setAttribute('aria-disabled','true'); } }
             if (shortBox && data.needsPlaceId) {
-              shortBox.textContent = 'Add your Google Place ID in Settings to generate your public link';
+              shortBox.innerHTML = 'Add your Google Place ID in <a href="#settings-link" id="goPlaceIdLink" style="color:var(--accent);text-decoration:underline">Settings</a> to generate your public link';
+              try{
+                const go = document.getElementById('goPlaceIdLink');
+                if (go) {
+                  go.addEventListener('click', function(e){
+                    e.preventDefault();
+                    var placeInput = document.getElementById('googlePlaceId');
+                    if (placeInput) {
+                      placeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      var prev = placeInput.style.boxShadow;
+                      placeInput.style.boxShadow = '0 0 0 4px rgba(16,185,129,.35)';
+                      setTimeout(function(){ placeInput.style.boxShadow = prev; placeInput.focus(); }, 2200);
+                    } else {
+                      window.location.hash = 'settings-link';
+                    }
+                  });
+                }
+              }catch(_){ }
             }
             if (receipt) {
               const link = data.shortLink || '';
