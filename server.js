@@ -61,7 +61,7 @@
       projectId: 'review-saas-prod',
     });
     const db = getFirestore();
-        const shortDomain = process.env.SHORT_LINK_DOMAIN || 'reviewpilot.link';
+        const shortDomain = process.env.SHORT_LINK_DOMAIN || 'reviewsandmarketing.com';
 
         // --- 3a. Cognito (end-user auth) ---
         const {

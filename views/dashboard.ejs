@@ -160,7 +160,12 @@
               <form action="/update-settings" method="POST">
                 <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                 <label for="googlePlaceId">Your Google Place ID:</label>
-                <input type="text" id="googlePlaceId" name="googlePlaceId" value="<%= business.googlePlaceId || '' %>" placeholder="Enter your Google Place ID here" required>
+                <input type="text" id="googlePlaceId" name="googlePlaceId" value="<%= business.googlePlaceId || '' %>" placeholder="Enter your Google Place ID here" <%= (business && business.googlePlaceId) ? 'readonly style="background:#F9FAFB;color:#6B7280"' : '' %> required>
+                <% if (business && business.googlePlaceId) { %>
+                  <div style="margin-top:8px">
+                    <button type="button" id="btnEditPlaceId" class="btn btn-secondary">Change ID</button>
+                  </div>
+                <% } %>
                 <div style="font-size:12px; color: var(--muted); margin-top:4px">
                   <a href="https://developers.google.com/maps/documentation/places/web-service/place-id#find-id" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline">Where do I find this?</a>
                 </div>
@@ -341,6 +346,19 @@
           } catch(e) { console.error('kit load error', e); }
         }
         fetchKit();
+        // Enable editing Place ID if already set
+        try{
+          var editBtn = document.getElementById('btnEditPlaceId');
+          var pid = document.getElementById('googlePlaceId');
+          if (editBtn && pid){
+            editBtn.addEventListener('click', function(){
+              pid.removeAttribute('readonly');
+              pid.style.background='';
+              pid.style.color='';
+              pid.focus();
+            });
+          }
+        }catch(_){ }
 
         // Copy helpers
         async function copyText2(str){
