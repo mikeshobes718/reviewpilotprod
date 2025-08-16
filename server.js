@@ -710,6 +710,136 @@
             } catch (e) { console.error('square webhook error', e); res.status(200).send('ok'); }
         });
 
+        // Square payments backfill and daily sync
+        async function fetchSquarePayments(accessToken, params){
+            const query = new URLSearchParams(params).toString();
+            let url = `https://connect.squareup.com/v2/payments?${query}`;
+            let items = [];
+            for (let i=0; i<20; i++) { // hard cap pages
+                const r = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type':'application/json' } });
+                if (!r.ok) { const t = await r.text().catch(()=>r.statusText); throw new Error(`square_payments_http_${r.status}: ${t}`); }
+                const j = await r.json();
+                if (Array.isArray(j.payments)) items = items.concat(j.payments);
+                if (j.cursor) { url = `https://connect.squareup.com/v2/payments?cursor=${encodeURIComponent(j.cursor)}`; } else { break; }
+            }
+            return items;
+        }
+
+        async function processSquarePayment({ businessRef, businessData, payment, accessToken }){
+            try {
+                if (!payment || payment.status !== 'COMPLETED') return false;
+                const paymentId = payment.id;
+                const syncedRef = businessRef.collection('syncedPayments').doc(paymentId);
+                const exists = await syncedRef.get();
+                if (exists.exists) return false; // idempotent
+
+                // Fetch customer contact
+                let customer = {};
+                const customerId = payment.customer_id;
+                if (customerId) {
+                    try {
+                        const cResp = await fetch(`https://connect.squareup.com/v2/customers/${customerId}`, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type':'application/json' } });
+                        if (cResp.ok) {
+                            const cj = await cResp.json();
+                            const c = cj?.customer || {};
+                            customer = { email: c.email_address || null, phone: c.phone_number || null };
+                        }
+                    } catch(_) { /* ignore */ }
+                }
+
+                // Short link
+                const googlePlaceId = businessData.googlePlaceId || null;
+                const slug = businessData.shortSlug || (googlePlaceId ? googlePlaceId : 'SETUP');
+                const shortLink = `${shortDomain}/${slug}`;
+
+                // Auto-send settings
+                const settings = businessData.squareSettings || { autoSend: false, delayMinutes: 0, channel: 'email' };
+
+                // Mark synced first to avoid double work in concurrent calls
+                await syncedRef.set({ ts: new Date().toISOString(), amount: payment.amount_money?.amount || null, currency: payment.amount_money?.currency || null, customerId: customerId || null });
+
+                // Enqueue send if enabled
+                if (settings.autoSend) {
+                    const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
+                    if (reviewQueue) {
+                        await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantUid: (businessData.uid || businessRef.id), shortLink }, { delay: delayMs, attempts: 1 });
+                    } else {
+                        setTimeout(() => { sendReviewRequest({ merchantUid: (businessData.uid || businessRef.id), customer, channel: settings.channel || 'email', shortLink }); }, delayMs);
+                    }
+                    try { await businessRef.collection('events').add({ type: 'enqueue_send', ts: new Date().toISOString(), payload: { paymentId, shortLink, channel: settings.channel || 'email' } }); } catch(_) {}
+                }
+
+                // Update last sync
+                try { await businessRef.set({ posLastSyncAt: new Date().toISOString() }, { merge: true }); } catch(_) {}
+                return true;
+            } catch (e) {
+                console.error('processSquarePayment error', e && (e.stack || e.message || e));
+                return false;
+            }
+        }
+
+        const requireMerchantAuth = (req, res, next) => {
+            if (!req.session || !req.session.user) return res.status(401).json({ error: 'unauthorized' });
+            next();
+        };
+
+        // Backfill recent payments (default 30 days; up to 90)
+        app.post('/integrations/square/backfill', requireMerchantAuth, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const businessRef = db.collection('businesses').doc(uid);
+                const snap = await businessRef.get();
+                if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
+                const biz = { uid, ...(snap.data() || {}) };
+                const tokenCipher = biz?.square?.access;
+                if (!tokenCipher) return res.status(400).json({ error: 'not_connected' });
+                const accessToken = await decryptString(tokenCipher);
+                const days = Math.max(1, Math.min(90, parseInt((req.body && req.body.days) || (req.query && req.query.days) || '30', 10)));
+                const end = new Date();
+                const begin = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+                const params = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
+
+                let processed = 0;
+                const payments = await fetchSquarePayments(accessToken, params);
+                for (const p of payments) {
+                    const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
+                    if (ok) processed++;
+                }
+                return res.json({ ok: true, scanned: payments.length, processed });
+            } catch (e) {
+                console.error('square backfill error', e && (e.stack || e.message || e));
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
+        // Daily incremental sync (last 24h)
+        app.post('/integrations/square/sync-daily', requireMerchantAuth, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const businessRef = db.collection('businesses').doc(uid);
+                const snap = await businessRef.get();
+                if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
+                const biz = { uid, ...(snap.data() || {}) };
+                const tokenCipher = biz?.square?.access;
+                if (!tokenCipher) return res.status(400).json({ error: 'not_connected' });
+                const accessToken = await decryptString(tokenCipher);
+                const end = new Date();
+                const begin = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                const params = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
+
+                let processed = 0;
+                const payments = await fetchSquarePayments(accessToken, params);
+                for (const p of payments) {
+                    const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
+                    if (ok) processed++;
+                }
+                return res.json({ ok: true, scanned: payments.length, processed });
+            } catch (e) {
+                console.error('square daily sync error', e && (e.stack || e.message || e));
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
         // --- Square historical backfill and incremental sync ---
         async function fetchSquarePaymentsPaged(accessToken, beginIso, endIso) {
             const payments = [];
