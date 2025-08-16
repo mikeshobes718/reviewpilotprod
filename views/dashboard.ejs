@@ -88,6 +88,17 @@
           <% if (analytics && analytics.planTier === 'free') { %>
             <div class="notice-banner" style="margin:8px 0 12px">Showing last 30 days. Upgrade to Pro for full history, filters, and exports.</div>
           <% } %>
+          <% if (analytics && analytics.planTier === 'pro') { %>
+            <form method="GET" action="/dashboard" style="margin:8px 0 0">
+              <label for="range" style="font-size:12px;color:var(--muted);margin-right:8px">Date range</label>
+              <select id="range" name="range" onchange="this.form.submit()" class="btn btn-secondary" style="padding:8px 10px">
+                <option value="all" <%= (typeof selectedRange !== 'undefined' && selectedRange==='all') ? 'selected' : '' %>>All time</option>
+                <option value="7d" <%= (typeof selectedRange !== 'undefined' && selectedRange==='7d') ? 'selected' : '' %>>Last 7 days</option>
+                <option value="30d" <%= (typeof selectedRange !== 'undefined' && selectedRange==='30d') ? 'selected' : '' %>>Last 30 days</option>
+                <option value="90d" <%= (typeof selectedRange !== 'undefined' && selectedRange==='90d') ? 'selected' : '' %>>Last 90 days</option>
+              </select>
+            </form>
+          <% } %>
           <div class="kpis">
             <div class="kpi"><div class="label">Total feedback</div><div class="value"><%= analytics.total %></div></div>
             <div class="kpi"><div class="label">Average rating</div><div class="value"><%= analytics.avg %></div></div>
@@ -241,7 +252,7 @@
                 <% if (typeof business !== 'undefined' && business.subscriptionStatus === 'trial' && business.trialEndsAt) { %>
                   <div class="notice-banner" style="margin-bottom:12px">
                     <span aria-hidden="true">✅</span>
-                    <span>Free trial active — ends <strong><%= new Date(business.trialEndsAt).toLocaleDateString() %></strong></span>
+                    <span>Free trial active — <strong><%= (typeof trialDaysLeft !== 'undefined' && trialDaysLeft != null) ? (trialDaysLeft + ' days left') : ('ends ' + new Date(business.trialEndsAt).toLocaleDateString()) %></strong></span>
                   </div>
                 <% } %>
                 <!-- POS Integration Status -->

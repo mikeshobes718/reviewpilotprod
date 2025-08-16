@@ -1604,14 +1604,23 @@
             const isPro = (businessDoc.data().subscriptionStatus === 'active');
             const now = Date.now();
             const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
-            // basic fetch: we may filter client-side for last 30 days for Free
+            const requestedRange = (req.query && req.query.range) ? String(req.query.range) : '';
+            let cutoffMs = null;
+            if (isPro) {
+                if (requestedRange === '7d') cutoffMs = now - (7 * 24 * 60 * 60 * 1000);
+                else if (requestedRange === '30d') cutoffMs = now - (30 * 24 * 60 * 60 * 1000);
+                else if (requestedRange === '90d') cutoffMs = now - (90 * 24 * 60 * 60 * 1000);
+                else if (requestedRange === 'all' || requestedRange === '') cutoffMs = null;
+            } else {
+                cutoffMs = thirtyDaysAgo; // Free always 30 days
+            }
+            const selectedRange = isPro ? (requestedRange || 'all') : '30d';
+            // basic fetch: we may filter client-side after fetch
             const businessRef = db.collection('businesses').doc(req.session.user.uid);
             const feedbackSnapshot = await businessRef.collection('feedback').orderBy('createdAt', 'desc').get();
             let feedback = feedbackSnapshot.docs.map(doc => doc.data());
-            if (!isPro) {
-                feedback = feedback.filter(f => {
-                    try { return (new Date(f.createdAt).getTime()) >= thirtyDaysAgo; } catch(_) { return false; }
-                });
+            if (cutoffMs) {
+                feedback = feedback.filter(f => { try { return (new Date(f.createdAt).getTime()) >= cutoffMs; } catch(_) { return false; } });
             }
 
             // Basic analytics
@@ -1701,6 +1710,7 @@
                 billing,
                 onboarding,
                 trialDaysLeft,
+                selectedRange,
                 pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
             });
         } catch (error) {
