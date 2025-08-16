@@ -74,6 +74,13 @@
         #settings-link{ scroll-margin-top: 88px }
         .anchor-pulse{ animation: anchorPulse 1.2s ease-in-out 2; box-shadow: 0 0 0 4px rgba(16,185,129,.35), 0 0 0 10px rgba(16,185,129,.12) }
         @keyframes anchorPulse{ 0%{ box-shadow: 0 0 0 0 rgba(16,185,129,0) } 40%{ box-shadow: 0 0 0 8px rgba(16,185,129,.35) } 70%{ box-shadow: 0 0 0 3px rgba(16,185,129,.18) } 100%{ box-shadow: 0 0 0 0 rgba(16,185,129,0) } }
+        /* Settings highlight animation */
+        .is-highlighted{ animation: settingsHighlight 2.5s ease-in-out 1; }
+        @keyframes settingsHighlight{
+          0% { background:#e8f5e9; }
+          40% { background:#e8f5e9; }
+          100% { background: var(--card); }
+        }
     </style>
 </head>
 <body>
@@ -657,7 +664,13 @@
         if (firstReq){
           firstReq.addEventListener('click', function(){
             var settingsCard = document.getElementById('settingsCard');
-            if (settingsCard) settingsCard.scrollIntoView({ behavior:'smooth', block:'center' });
+            if (!settingsCard) return;
+            settingsCard.scrollIntoView({ behavior:'smooth', block:'center' });
+            // After a short delay, apply highlight animation
+            setTimeout(function(){
+              settingsCard.classList.add('is-highlighted');
+              setTimeout(function(){ settingsCard.classList.remove('is-highlighted'); }, 2500);
+            }, 450);
           });
         }
 
