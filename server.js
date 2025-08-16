@@ -88,11 +88,10 @@
         // --- 3b. Queue for automated sends ---
         let reviewQueue = null;
         if (process.env.REDIS_URL) {
-            const { Queue, Worker, QueueScheduler } = require('bullmq');
+            const { Queue, Worker } = require('bullmq');
             const IORedis = require('ioredis');
-            const redisConnection = new IORedis(process.env.REDIS_URL);
+            const redisConnection = new IORedis(process.env.REDIS_URL, { tls: {} });
             reviewQueue = new Queue('review-requests', { connection: redisConnection });
-            new QueueScheduler('review-requests', { connection: redisConnection });
             async function processSendJob(data){
                 const { channel, customer, merchantUid, shortLink } = data || {};
                 if (isQuietHours()) {
