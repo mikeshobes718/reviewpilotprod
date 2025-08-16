@@ -595,16 +595,25 @@
             var placeIdInput = document.getElementById('googlePlaceId');
             var result = document.getElementById('placeSearchResult');
             if (!input || !placeIdInput) return;
-            var ac = new google.maps.places.Autocomplete(input, { fields: ['place_id','name','formatted_address','geometry'] });
-            ac.addListener('place_changed', function(){
-              var p = ac.getPlace();
-              if (p && p.place_id){
-                placeIdInput.value = p.place_id;
-                if (result){
+            // Use our server proxy for search to avoid leaving the page
+            var debTimer = null;
+            input.addEventListener('input', function(){
+              clearTimeout(debTimer);
+              var q = input.value.trim();
+              if (!q){ if (result){ result.style.display='none'; result.innerHTML=''; } return; }
+              debTimer = setTimeout(async function(){
+                try{
+                  const resp = await fetch('/api/places/search?q=' + encodeURIComponent(q));
+                  const j = await resp.json();
+                  const list = (j.places||[]);
+                  if (!list.length){ result.style.display='none'; result.innerHTML=''; return; }
                   result.style.display='block';
-                  result.textContent = 'Selected: ' + (p.name||'') + (p.formatted_address? ' — ' + p.formatted_address : '') + ' (Place ID copied below)';
-                }
-              }
+                  result.innerHTML = list.map(p=>`<div class="placeres" data-id="${p.id}">${p.name} — <span style="color:#6B7280">${p.address||''}</span></div>`).join('');
+                  Array.from(result.querySelectorAll('.placeres')).forEach(el=>{
+                    el.addEventListener('click', function(){ placeIdInput.value = this.getAttribute('data-id'); result.style.display='none'; });
+                  });
+                }catch(_){ }
+              }, 250);
             });
           }
           // Load Maps JS API if not present

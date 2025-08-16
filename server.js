@@ -167,6 +167,51 @@
             }
         }
 
+        // Weekly reports scheduler (optional; set ENABLE_WEEKLY_REPORT_CRON=1)
+        async function runWeeklyReports(){
+            try {
+                const q = await db.collection('businesses').where('reportSettings.enabled','==', true).limit(50).get();
+                for (const d of q.docs){
+                    const b = d.data() || {};
+                    if (b.subscriptionStatus !== 'active') continue;
+                    const email = (b.reportSettings && b.reportSettings.email) || b.email || null;
+                    if (!email) continue;
+                    const sinceMs = Date.now() - 7*24*60*60*1000;
+                    const fsnap = await db.collection('businesses').doc(d.id).collection('feedback').orderBy('createdAt','desc').limit(500).get();
+                    const rows = fsnap.docs.map(x=>x.data()).filter(x => { try { return new Date(x.createdAt).getTime() >= sinceMs; } catch(_){ return false; } });
+                    let total = rows.length, sum = 0, conversions = 0; const counts = {1:0,2:0,3:0,4:0,5:0};
+                    rows.forEach(f=>{ const r = Number(f.rating)||0; if (r>=1&&r<=5){ counts[r]++; sum+=r; } if (r===5 && (f.type==='positive'||f.type==='contact')) conversions++; });
+                    const avg = total ? (sum/total).toFixed(2) : '0.00';
+                    await sendEmail({ to: email, template: 'Weekly Analytics Report', data: { total, avg, conversions, loginUrl: `${appUrl}/dashboard` } });
+                }
+            } catch (e) { console.error('weekly reports error', e); }
+        }
+        if (process.env.ENABLE_WEEKLY_REPORT_CRON === '1') {
+            setInterval(runWeeklyReports, 24*60*60*1000);
+        }
+
+        // --- 3b.2 Google Places server-side search (keep users on dashboard)
+        app.get('/api/places/search', async (req, res) => {
+            try {
+                const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY || '';
+                const q = (req.query.q || '').toString().trim();
+                if (!apiKey || !q) return res.json({ places: [] });
+                const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Goog-Api-Key': apiKey,
+                        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress'
+                    },
+                    body: JSON.stringify({ textQuery: q })
+                });
+                if (!r.ok) return res.json({ places: [] });
+                const j = await r.json().catch(()=>({ places: [] }));
+                const out = (j.places||[]).slice(0,8).map(p => ({ id: p.id, name: (p.displayName && p.displayName.text) || '', address: p.formattedAddress || '' }));
+                res.json({ places: out });
+            } catch (e) { console.error('places search error', e); res.json({ places: [] }); }
+        });
+
         
 
         // --- 3c. KMS helpers for encrypting tokens ---
