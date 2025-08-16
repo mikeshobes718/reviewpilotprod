@@ -1611,6 +1611,13 @@
         } catch (e) { console.error('admin portal', e); res.status(500).send('Server error'); }
     });
 
+    // Terms of Service
+    app.get('/terms', (req, res) => {
+        try {
+            res.render('terms');
+        } catch (e) { res.status(500).send('Server error'); }
+    });
+
     app.post('/admin/refund', express.urlencoded({extended:true}), async (req, res) => {
         try {
             if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
@@ -1624,9 +1631,10 @@
     app.post('/update-settings', requireLogin, csrfProtection, async (req, res) => {
         try {
             const { googlePlaceId } = req.body;
-            await db.collection('businesses').doc(req.session.user.uid).update({
-                googlePlaceId: googlePlaceId
-            });
+            const clean = (googlePlaceId || '').trim() || null; // allow clearing
+            await db.collection('businesses').doc(req.session.user.uid).set({
+                googlePlaceId: clean
+            }, { merge: true });
             console.log(`✅ Settings updated for user: ${req.session.user.uid}`);
             res.redirect('/dashboard');
         } catch (error) {

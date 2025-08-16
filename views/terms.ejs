@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service</title>
+  <%- include('partials/head') %>
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main class="main-content">
+    <div class="container">
+      <h1 class="page-heading">Terms of Service</h1>
+      <div class="card base-card">
+        <p>These Terms of Service ("Terms") govern your use of the Reviews &amp; Marketing website and services. By using the service, you agree to these Terms.</p>
+        <h2>Use of Service</h2>
+        <p>You must use the service in compliance with all applicable laws. You are responsible for content you submit or send using our platform.</p>
+        <h2>Accounts</h2>
+        <p>You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</p>
+        <h2>Payments</h2>
+        <p>Paid subscriptions are billed according to the plan selected. You may cancel at any time; service remains active through the end of the billing period.</p>
+        <h2>Acceptable Use</h2>
+        <p>No spam, harassment, or unlawful use. Respect recipients’ opt-out preferences and applicable regulations.</p>
+        <h2>Data & Privacy</h2>
+        <p>See our <a href="/privacy">Privacy Policy</a> for how we collect, use, and protect personal data.</p>
+        <h2>Termination</h2>
+        <p>We may suspend or terminate accounts that violate these Terms.</p>
+        <h2>Changes</h2>
+        <p>We may update these Terms from time to time. Continued use constitutes acceptance of updated Terms.</p>
+        <p style="color:var(--muted);font-size:12px;margin-top:16px">Last updated: <%= new Date().toISOString().slice(0,10) %></p>
+      </div>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>
+
+
