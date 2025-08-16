@@ -1,0 +1,427 @@
+Retrieving logs...
+============= i-0c53a7c01fe1d3a80 ==============
+----------------------------------------
+/var/log/web.stdout.log
+----------------------------------------
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: }
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: Reset exception: InvalidParameterException: Cannot reset password for the user as there is no registered/verified email or phone_number
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at de_InvalidParameterExceptionRes (/var/app/current/node_modules/@aws-sdk/client-cognito-identity-provider/dist-cjs/index.js:4720:21)
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at de_CommandError (/var/app/current/node_modules/@aws-sdk/client-cognito-identity-provider/dist-cjs/index.js:4416:19)
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at async /var/app/current/node_modules/@smithy/middleware-serde/dist-cjs/index.js:36:20
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at async /var/app/current/node_modules/@smithy/core/dist-cjs/index.js:193:18
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at async /var/app/current/node_modules/@smithy/middleware-retry/dist-cjs/index.js:320:38
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at async /var/app/current/node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js:33:22
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    at async /var/app/current/server.js:843:17 {
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:  '$fault': 'client',
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:  '$metadata': {
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    httpStatusCode: 400,
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    requestId: '83ccffe8-7c64-44ee-a26a-0aeaad69b094',
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    extendedRequestId: undefined,
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    cfId: undefined,
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    attempts: 1,
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:    totalRetryDelay: 0
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:  },
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:  reasonCode: undefined,
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]:  __type: 'InvalidParameterException'
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: }
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: #033[0mPOST /reset-password #033[31m500#033[0m 110.368 ms - -#033[0m
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.922 ms - -#033[0m
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 3.048 ms - -#033[0m
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.891 ms - -#033[0m
+Aug 15 01:05:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 3.299 ms - -#033[0m
+Aug 15 01:05:37 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.262 ms - -#033[0m
+Aug 15 01:05:37 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.094 ms - -#033[0m
+Aug 15 01:05:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.952 ms - -#033[0m
+Aug 15 01:05:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.200 ms - -#033[0m
+Aug 15 01:05:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.681 ms - -#033[0m
+Aug 15 01:05:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.819 ms - -#033[0m
+Aug 15 01:05:52 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 4.281 ms - -#033[0m
+Aug 15 01:05:52 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.154 ms - -#033[0m
+Aug 15 01:05:58 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.894 ms - -#033[0m
+Aug 15 01:06:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.121 ms - -#033[0m
+Aug 15 01:06:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 8.069 ms - -#033[0m
+Aug 15 01:06:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.923 ms - -#033[0m
+Aug 15 01:06:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.014 ms - -#033[0m
+Aug 15 01:06:07 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.798 ms - -#033[0m
+Aug 15 01:06:07 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.086 ms - -#033[0m
+Aug 15 01:06:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.890 ms - -#033[0m
+Aug 15 01:06:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.141 ms - -#033[0m
+Aug 15 01:06:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.629 ms - -#033[0m
+Aug 15 01:06:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.820 ms - -#033[0m
+Aug 15 01:06:22 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.997 ms - -#033[0m
+Aug 15 01:06:22 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.069 ms - -#033[0m
+Aug 15 01:06:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.121 ms - -#033[0m
+Aug 15 01:06:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.776 ms - -#033[0m
+Aug 15 01:06:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.960 ms - -#033[0m
+Aug 15 01:06:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.896 ms - -#033[0m
+Aug 15 01:06:37 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.275 ms - -#033[0m
+Aug 15 01:06:37 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.824 ms - -#033[0m
+Aug 15 01:06:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.992 ms - -#033[0m
+Aug 15 01:06:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.693 ms - -#033[0m
+Aug 15 01:06:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.979 ms - -#033[0m
+Aug 15 01:06:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.680 ms - -#033[0m
+Aug 15 01:06:52 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.830 ms - -#033[0m
+Aug 15 01:06:52 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.166 ms - -#033[0m
+Aug 15 01:06:59 ip-172-31-14-230 web[40802]: #033[0mGET /_fragment?_path=what%3D-1%26_controller%3Dphpinfo&_hash=EsjFcD85w12vA2aUMh%2FlB01yWIdjnzfvSCpIjG7QlDU%3D #033[33m404#033[0m 0.560 ms - 148#033[0m
+Aug 15 01:07:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.817 ms - -#033[0m
+Aug 15 01:07:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.015 ms - -#033[0m
+Aug 15 01:07:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.609 ms - -#033[0m
+Aug 15 01:07:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.014 ms - -#033[0m
+Aug 15 01:07:07 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.926 ms - -#033[0m
+Aug 15 01:07:07 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.107 ms - -#033[0m
+Aug 15 01:07:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.732 ms - -#033[0m
+Aug 15 01:07:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.162 ms - -#033[0m
+Aug 15 01:07:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.765 ms - -#033[0m
+Aug 15 01:07:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.825 ms - -#033[0m
+Aug 15 01:07:22 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.109 ms - -#033[0m
+Aug 15 01:07:22 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.755 ms - -#033[0m
+Aug 15 01:07:35 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.728 ms - -#033[0m
+Aug 15 01:07:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.239 ms - -#033[0m
+Aug 15 01:07:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.186 ms - -#033[0m
+Aug 15 01:07:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.580 ms - -#033[0m
+Aug 15 01:07:36 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.022 ms - -#033[0m
+Aug 15 01:07:37 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.982 ms - -#033[0m
+Aug 15 01:07:37 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.146 ms - -#033[0m
+Aug 15 01:07:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.828 ms - -#033[0m
+Aug 15 01:07:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.056 ms - -#033[0m
+Aug 15 01:07:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.933 ms - -#033[0m
+Aug 15 01:07:51 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 1.858 ms - -#033[0m
+Aug 15 01:07:52 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.219 ms - -#033[0m
+Aug 15 01:07:52 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.715 ms - -#033[0m
+Aug 15 01:08:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.064 ms - -#033[0m
+Aug 15 01:08:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.751 ms - -#033[0m
+Aug 15 01:08:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.015 ms - -#033[0m
+Aug 15 01:08:06 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.882 ms - -#033[0m
+Aug 15 01:08:07 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.167 ms - -#033[0m
+Aug 15 01:08:07 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 3.052 ms - -#033[0m
+Aug 15 01:08:16 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.083 ms - -#033[0m
+Aug 15 01:08:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.182 ms - -#033[0m
+Aug 15 01:08:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.118 ms - -#033[0m
+Aug 15 01:08:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.051 ms - -#033[0m
+Aug 15 01:08:21 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.725 ms - -#033[0m
+Aug 15 01:08:22 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.024 ms - -#033[0m
+Aug 15 01:08:22 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.635 ms - -#033[0m
+Aug 15 01:08:29 ip-172-31-14-230 web[40802]: #033[0mGET / #033[32m200#033[0m 2.178 ms - -#033[0m
+
+
+----------------------------------------
+/var/log/eb-engine.log
+----------------------------------------
+2025/08/14 22:39:55.095355 [WARN] stopProcess Warning: process xray is not registered 
+2025/08/14 22:39:55.095382 [INFO] Running command: systemctl stop xray.service
+2025/08/14 22:39:55.109868 [INFO] Executing instruction: stop proxy
+2025/08/14 22:39:55.109901 [INFO] Running command: systemctl show -p PartOf httpd.service
+2025/08/14 22:39:55.124808 [WARN] deregisterProcess Warning: process httpd is not registered, skipping...
+
+2025/08/14 22:39:55.124839 [INFO] Running command: systemctl show -p PartOf nginx.service
+2025/08/14 22:39:55.136897 [INFO] Running command: systemctl is-active nginx.service
+2025/08/14 22:39:55.144658 [INFO] Running command: systemctl show -p PartOf nginx.service
+2025/08/14 22:39:55.153711 [INFO] Running command: systemctl stop nginx.service
+2025/08/14 22:39:55.351077 [INFO] Running command: systemctl disable nginx.service
+2025/08/14 22:39:55.628175 [INFO] Running command: systemctl daemon-reload
+2025/08/14 22:39:55.894790 [INFO] Running command: systemctl reset-failed
+2025/08/14 22:39:55.904176 [INFO] Executing instruction: FlipApplication
+2025/08/14 22:39:55.904202 [INFO] Fetching environment variables...
+2025/08/14 22:39:55.904227 [INFO] setting default port 8080 to application
+2025/08/14 22:39:55.904427 [INFO] Purge old process...
+2025/08/14 22:39:55.904446 [INFO] Running command: systemctl stop eb-app.target
+2025/08/14 22:39:55.914576 [INFO] Running command: systemctl show -p ConsistsOf eb-app.target | cut -d= -f2
+2025/08/14 22:39:55.951715 [INFO] web.service
+
+2025/08/14 22:39:55.951737 [INFO] deregistering process: web
+2025/08/14 22:39:55.951746 [INFO] Running command: systemctl show -p PartOf web.service
+2025/08/14 22:39:56.004066 [INFO] Running command: systemctl is-active web.service
+2025/08/14 22:39:56.012246 [INFO] Running command: systemctl disable web.service
+2025/08/14 22:39:56.314141 [INFO] Removed "/etc/systemd/system/multi-user.target.wants/web.service".
+
+2025/08/14 22:39:56.314898 [INFO] Running command: systemctl daemon-reload
+2025/08/14 22:39:56.562675 [INFO] Running command: systemctl reset-failed
+2025/08/14 22:39:56.570096 [INFO] Running command: systemctl is-active web.service
+2025/08/14 22:39:56.578502 [INFO] Process web has been fully terminated
+2025/08/14 22:39:56.578524 [INFO] All processes have been fully terminated
+2025/08/14 22:39:56.578536 [INFO] Removing /var/app/current/ if it exists
+2025/08/14 22:39:57.691895 [INFO] Renaming /var/app/staging/ to /var/app/current/
+2025/08/14 22:39:57.692030 [INFO] Register application processes...
+2025/08/14 22:39:57.692037 [INFO] Registering the proc: web
+
+2025/08/14 22:39:57.692048 [INFO] Running command: systemctl show -p PartOf web.service
+2025/08/14 22:39:57.712812 [INFO] Running command: systemctl daemon-reload
+2025/08/14 22:39:57.934638 [INFO] Running command: systemctl reset-failed
+2025/08/14 22:39:57.942601 [INFO] Running command: systemctl is-enabled eb-app.target
+2025/08/14 22:39:57.950861 [INFO] Running command: systemctl enable eb-app.target
+2025/08/14 22:39:58.206456 [INFO] Running command: systemctl start eb-app.target
+2025/08/14 22:39:58.214456 [INFO] Running command: systemctl enable web.service
+2025/08/14 22:39:58.454641 [INFO] Created symlink /etc/systemd/system/multi-user.target.wants/web.service → /etc/systemd/system/web.service.
+
+2025/08/14 22:39:58.454675 [INFO] Running command: systemctl show -p PartOf web.service
+2025/08/14 22:39:58.465742 [INFO] Running command: systemctl is-active web.service
+2025/08/14 22:39:58.473120 [INFO] Running command: systemctl start web.service
+2025/08/14 22:39:58.542500 [INFO] Executing instruction: start X-Ray
+2025/08/14 22:39:58.542523 [INFO] X-Ray is not enabled.
+2025/08/14 22:39:58.542527 [INFO] Executing instruction: start proxy with new configuration
+2025/08/14 22:39:58.542553 [INFO] Running command: /usr/sbin/nginx -t -c /var/proxy/staging/nginx/nginx.conf
+2025/08/14 22:39:58.581484 [INFO] nginx: [warn] could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+nginx: the configuration file /var/proxy/staging/nginx/nginx.conf syntax is ok
+nginx: configuration file /var/proxy/staging/nginx/nginx.conf test is successful
+
+2025/08/14 22:39:58.581725 [INFO] Running command: cp -rp /var/proxy/staging/nginx/* /etc/nginx
+2025/08/14 22:39:58.589959 [INFO] Running command: systemctl show -p PartOf nginx.service
+2025/08/14 22:39:58.609752 [INFO] Running command: systemctl daemon-reload
+2025/08/14 22:39:58.947487 [INFO] Running command: systemctl reset-failed
+2025/08/14 22:39:58.957419 [INFO] Running command: systemctl show -p PartOf nginx.service
+2025/08/14 22:39:58.972546 [INFO] Running command: systemctl is-active nginx.service
+2025/08/14 22:39:58.984497 [INFO] Running command: systemctl start nginx.service
+2025/08/14 22:39:59.108249 [INFO] Executing instruction: configureSqsd
+2025/08/14 22:39:59.108268 [INFO] This is a web server environment instance, skip configure sqsd daemon ...
+2025/08/14 22:39:59.108272 [INFO] Executing instruction: startSqsd
+2025/08/14 22:39:59.108275 [INFO] This is a web server environment instance, skip start sqsd daemon ...
+2025/08/14 22:39:59.108280 [INFO] Executing instruction: Track pids in healthd
+2025/08/14 22:39:59.108283 [INFO] This is an enhanced health env...
+2025/08/14 22:39:59.108301 [INFO] Running command: systemctl show -p ConsistsOf aws-eb.target | cut -d= -f2
+2025/08/14 22:39:59.121993 [INFO] cfn-hup.service nginx.service healthd.service
+
+2025/08/14 22:39:59.122021 [INFO] Running command: systemctl show -p ConsistsOf eb-app.target | cut -d= -f2
+2025/08/14 22:39:59.134899 [INFO] web.service
+
+2025/08/14 22:39:59.135253 [INFO] Executing instruction: RunAppDeployPostDeployHooks
+2025/08/14 22:39:59.135313 [INFO] Executing platform hooks in .platform/hooks/postdeploy/
+2025/08/14 22:39:59.135334 [INFO] The dir .platform/hooks/postdeploy/ does not exist
+2025/08/14 22:39:59.135338 [INFO] Finished running scripts in /var/app/current/.platform/hooks/postdeploy
+2025/08/14 22:39:59.135343 [INFO] Executing cleanup logic
+2025/08/14 22:39:59.136337 [INFO] CommandService Response: {"status":"SUCCESS","api_version":"1.0","results":[{"status":"SUCCESS","msg":"Engine execution has succeeded.","returncode":0,"events":[{"msg":"Instance deployment: The deployment used the default Node.js version for your platform version instead of the Node.js version included in your 'package.json'.","timestamp":1755211180419,"severity":"WARN"},{"msg":"Instance deployment completed successfully.","timestamp":1755211199135,"severity":"INFO"}]}]}
+
+2025/08/14 22:39:59.136661 [INFO] Platform Engine finished execution on command: app-deploy
+
+2025/08/15 01:08:33.372500 [INFO] Starting...
+2025/08/15 01:08:33.372554 [INFO] Starting EBPlatform-PlatformEngine
+2025/08/15 01:08:33.372574 [INFO] reading event message file
+2025/08/15 01:08:33.378709 [INFO] Engine received EB command cfn-hup-exec
+
+2025/08/15 01:08:33.540965 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:us-east-1:519848832340:stack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9 -r AWSEBAutoScalingGroup --region us-east-1
+2025/08/15 01:08:33.834591 [INFO] Running command: /opt/aws/bin/cfn-get-metadata -s arn:aws:cloudformation:us-east-1:519848832340:stack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9 -r AWSEBBeanstalkMetadata --region us-east-1
+2025/08/15 01:08:34.125223 [INFO] checking whether command tail-log is applicable to this instance...
+2025/08/15 01:08:34.125239 [INFO] this command is applicable to the instance, thus instance should execute command
+2025/08/15 01:08:34.125243 [INFO] Engine command: (tail-log)
+
+2025/08/15 01:08:34.126555 [INFO] Executing instruction: GetTailLogs
+2025/08/15 01:08:34.126569 [INFO] Tail Logs...
+2025/08/15 01:08:34.128879 [INFO] Running command: tail -n 100 /var/log/web.stdout.log
+2025/08/15 01:08:34.130999 [INFO] Running command: tail -n 100 /var/log/eb-engine.log
+
+
+----------------------------------------
+/var/log/eb-hooks.log
+----------------------------------------
+
+
+----------------------------------------
+/var/log/nginx/access.log
+----------------------------------------
+172.31.55.156 - - [15/Aug/2025:01:05:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:05:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:05:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:05:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:05:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:05:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:05:26 +0000] "POST /signup HTTP/1.1" 409 36 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:27 +0000] "POST /signup HTTP/1.1" 409 36 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:30 +0000] "GET /login HTTP/1.1" 200 1755 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:31 +0000] "GET /app.js HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:31 +0000] "GET /logos/main-logo.png HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:31 +0000] "GET /styles.css HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:31 +0000] "GET /images/hero-customer.jpg HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:34 +0000] "GET /reset-password HTTP/1.1" 200 1716 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:34 +0000] "GET /logos/main-logo.png HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:34 +0000] "GET /app.js HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:34 +0000] "GET /styles.css HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:34 +0000] "GET /images/hero-customer.jpg HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:36 +0000] "POST /reset-password HTTP/1.1" 500 1751 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.55.156 - - [15/Aug/2025:01:05:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:05:36 +0000] "GET /logos/main-logo.png HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:36 +0000] "GET /app.js HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:36 +0000] "GET /styles.css HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.85.125 - - [15/Aug/2025:01:05:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:05:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:05:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:05:36 +0000] "GET /images/hero-customer.jpg HTTP/1.1" 304 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15" "181.136.119.121"
+172.31.20.8 - - [15/Aug/2025:01:05:37 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:05:37 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:05:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:05:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:05:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:05:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:05:52 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:05:52 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:05:58 +0000] "GET / HTTP/1.1" 200 3850 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36" "185.242.226.124"
+172.31.55.156 - - [15/Aug/2025:01:06:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:06:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:06:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:06:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:06:07 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:06:07 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:06:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:06:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:06:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:06:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:06:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:06:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:06:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:06:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:06:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:06:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:06:37 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:06:37 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:06:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:06:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:06:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:06:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:06:52 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:06:52 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:06:59 +0000] "GET /_fragment?_path=what%3D-1%26_controller%3Dphpinfo&_hash=EsjFcD85w12vA2aUMh%2FlB01yWIdjnzfvSCpIjG7QlDU%3D HTTP/1.1" 404 148 "-" "Mozilla/5.0 (SS; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36" "67.220.94.150"
+172.31.55.156 - - [15/Aug/2025:01:07:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:07:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:07:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:07:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:07:07 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:07:07 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:07:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:07:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:07:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:07:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:07:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:07:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:07:35 +0000] "GET / HTTP/1.1" 200 3850 "http://44.193.135.157:80" "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1" "43.157.188.74"
+172.31.55.156 - - [15/Aug/2025:01:07:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:07:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:07:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:07:36 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:07:37 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:07:37 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:07:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:07:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:07:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:07:51 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:07:52 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:07:52 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.55.156 - - [15/Aug/2025:01:08:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:08:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:08:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:08:06 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:08:07 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:08:07 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:08:16 +0000] "GET / HTTP/1.1" 200 3850 "http://44.193.135.157" "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1" "49.51.233.95"
+172.31.55.156 - - [15/Aug/2025:01:08:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.74.164 - - [15/Aug/2025:01:08:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:08:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.7.232 - - [15/Aug/2025:01:08:21 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.20.8 - - [15/Aug/2025:01:08:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.35.56 - - [15/Aug/2025:01:08:22 +0000] "GET / HTTP/1.1" 200 3850 "-" "ELB-HealthChecker/2.0" "-"
+172.31.85.125 - - [15/Aug/2025:01:08:29 +0000] "GET / HTTP/1.1" 200 3850 "http://reviewsandmarketing.com" "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1" "14.215.163.132"
+
+
+----------------------------------------
+/var/log/nginx/error.log
+----------------------------------------
+2025/08/14 16:41:56 [error] 19560#19560: *872 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:41:56 [error] 19560#19560: *874 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:41:56 [error] 19560#19560: *876 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:41:56 [error] 19560#19560: *878 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:41:56 [error] 19560#19560: *880 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:41:57 [error] 19560#19560: *882 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:11 [error] 19560#19560: *884 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:11 [error] 19560#19560: *886 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:11 [error] 19560#19560: *888 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:11 [error] 19560#19560: *890 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:11 [error] 19560#19560: *892 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:12 [error] 19560#19560: *894 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:26 [error] 19560#19560: *896 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:26 [error] 19560#19560: *898 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:26 [error] 19560#19560: *900 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:26 [error] 19559#19559: *902 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:26 [error] 19559#19559: *904 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:27 [error] 19559#19559: *906 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:41 [error] 19559#19559: *908 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:41 [error] 19559#19559: *910 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:41 [error] 19559#19559: *912 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:41 [error] 19559#19559: *914 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:41 [error] 19559#19559: *916 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:42 [error] 19559#19559: *918 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:56 [error] 19559#19559: *920 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:56 [error] 19559#19559: *922 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:56 [error] 19559#19559: *924 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:56 [error] 19559#19559: *926 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:56 [error] 19559#19559: *928 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:42:57 [error] 19559#19559: *930 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:11 [error] 19559#19559: *932 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:11 [error] 19560#19560: *934 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:11 [error] 19560#19560: *936 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:11 [error] 19560#19560: *938 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:11 [error] 19560#19560: *940 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:12 [error] 19560#19560: *942 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:26 [error] 19560#19560: *944 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:26 [error] 19560#19560: *946 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:26 [error] 19560#19560: *948 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:26 [error] 19560#19560: *950 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:26 [error] 19560#19560: *952 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:27 [error] 19560#19560: *954 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:41 [error] 19560#19560: *956 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:41 [error] 19560#19560: *958 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:41 [error] 19560#19560: *960 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:41 [error] 19560#19560: *962 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:41 [error] 19560#19560: *964 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:42 [error] 19559#19559: *966 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:56 [error] 19559#19559: *968 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:56 [error] 19559#19559: *970 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:56 [error] 19559#19559: *972 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:56 [error] 19559#19559: *974 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:56 [error] 19559#19559: *976 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:43:57 [error] 19559#19559: *978 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 16:44:07 [warn] 20969#20969: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 16:44:08 [warn] 21008#21008: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 16:44:08 [warn] 21009#21009: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 16:56:29 [warn] 22050#22050: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 16:56:30 [warn] 22134#22134: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 16:56:30 [warn] 22135#22135: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 16:59:16 [warn] 22137#22137: *139 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/proxy/1/00/0000000001 while reading upstream, client: 172.31.55.156, server: , request: "GET /images/Homepage.png HTTP/1.1", upstream: "http://127.0.0.1:8080/images/Homepage.png", host: "reviewsandmarketing.com"
+2025/08/14 16:59:16 [warn] 22137#22137: *140 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/proxy/2/00/0000000002 while reading upstream, client: 172.31.55.156, server: , request: "GET /images/hero-customer.jpg HTTP/1.1", upstream: "http://127.0.0.1:8080/images/hero-customer.jpg", host: "reviewsandmarketing.com"
+2025/08/14 17:02:14 [warn] 22137#22137: *301 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/proxy/3/00/0000000003 while reading upstream, client: 172.31.7.232, server: , request: "GET /images/Homepage.png HTTP/1.1", upstream: "http://127.0.0.1:8080/images/Homepage.png", host: "reviewsandmarketing.com"
+2025/08/14 17:02:15 [warn] 22138#22138: *305 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/proxy/4/00/0000000004 while reading upstream, client: 172.31.7.232, server: , request: "GET /images/hero-customer.jpg HTTP/1.1", upstream: "http://127.0.0.1:8080/images/hero-customer.jpg", host: "reviewsandmarketing.com"
+2025/08/14 17:05:39 [warn] 23148#23148: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:05:39 [warn] 23187#23187: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:05:39 [warn] 23188#23188: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:46:47 [warn] 25340#25340: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:46:47 [warn] 25379#25379: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:46:47 [warn] 25380#25380: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:49:52 [warn] 26106#26106: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:49:53 [warn] 26145#26145: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 17:49:53 [warn] 26146#26146: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 20:00:17 [warn] 31593#31593: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 20:00:18 [warn] 31632#31632: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 20:00:18 [warn] 31633#31633: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 20:22:58 [warn] 31635#31635: *1132 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/proxy/1/00/0000000001 while reading upstream, client: 172.31.35.56, server: , request: "GET /images/hero-customer.jpg HTTP/1.1", upstream: "http://127.0.0.1:8080/images/hero-customer.jpg", host: "reviewsandmarketing.com"
+2025/08/14 20:22:58 [warn] 31635#31635: *1137 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/proxy/2/00/0000000002 while reading upstream, client: 172.31.35.56, server: , request: "GET /images/Homepage.png HTTP/1.1", upstream: "http://127.0.0.1:8080/images/Homepage.png", host: "reviewsandmarketing.com"
+2025/08/14 20:47:34 [warn] 33941#33941: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 20:47:34 [warn] 33980#33980: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 20:47:34 [warn] 33981#33981: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:22:59 [warn] 35964#35964: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:23:00 [warn] 36003#36003: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:23:00 [warn] 36004#36004: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:23:01 [error] 36006#36006: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET /favicon.ico HTTP/1.1", upstream: "http://127.0.0.1:8080/favicon.ico", host: "184.73.92.170"
+2025/08/14 21:30:26 [warn] 36829#36829: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:30:27 [warn] 36868#36868: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:30:27 [warn] 36869#36869: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:36:43 [warn] 37674#37674: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:36:43 [warn] 37713#37713: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 21:36:43 [warn] 37714#37714: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 22:39:58 [warn] 40806#40806: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 22:39:59 [warn] 40846#40846: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 22:39:59 [warn] 40847#40847: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/14 22:39:59 [error] 40849#40849: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 22:39:59 [error] 40850#40850: *3 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 22:39:59 [error] 40849#40849: *5 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 22:39:59 [error] 40849#40849: *7 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 22:39:59 [error] 40849#40849: *9 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+2025/08/14 22:40:00 [error] 40849#40849: *11 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.14.230"
+
+

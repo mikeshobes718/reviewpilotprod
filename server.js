@@ -88,23 +88,33 @@
         // --- 3b. Queue for automated sends ---
         let reviewQueue = null;
         if (process.env.REDIS_URL) {
-            const { Queue, Worker } = require('bullmq');
-            const IORedis = require('ioredis');
-            const redisConnection = new IORedis(process.env.REDIS_URL, { tls: {} });
-            reviewQueue = new Queue('review-requests', { connection: redisConnection });
-            async function processSendJob(data){
-                const { channel, customer, merchantUid, shortLink } = data || {};
-                if (isQuietHours()) {
-                    const next8am = new Date();
-                    if (next8am.getHours() >= 21) next8am.setDate(next8am.getDate() + 1);
-                    next8am.setHours(8,0,0,0);
-                    const delay = next8am.getTime() - Date.now();
-                    await reviewQueue.add('sendReviewRequest', data, { delay, attempts: 1 });
-                    return;
+            try {
+                const { Queue, Worker } = require('bullmq');
+                const IORedis = require('ioredis');
+                const connectionOptions = {
+                    maxRetriesPerRequest: null,
+                    enableReadyCheck: false
+                };
+                // Enable TLS for ElastiCache Serverless; allow self-signed
+                connectionOptions.tls = { rejectUnauthorized: false };
+                const redisConnection = new IORedis(process.env.REDIS_URL, connectionOptions);
+                reviewQueue = new Queue('review-requests', { connection: redisConnection });
+                async function processSendJob(data){
+                    const { channel, customer, merchantUid, shortLink } = data || {};
+                    if (isQuietHours()) {
+                        const next8am = new Date();
+                        if (next8am.getHours() >= 21) next8am.setDate(next8am.getDate() + 1);
+                        next8am.setHours(8,0,0,0);
+                        const delay = next8am.getTime() - Date.now();
+                        await reviewQueue.add('sendReviewRequest', data, { delay, attempts: 1 });
+                        return;
+                    }
+                    await sendReviewRequest({ merchantUid, customer, channel, shortLink });
                 }
-                await sendReviewRequest({ merchantUid, customer, channel, shortLink });
+                new Worker('review-requests', async (job) => { await processSendJob(job.data || {}); }, { connection: redisConnection });
+            } catch (e) {
+                console.error('BullMQ initialization failed; disabling queue:', e && (e.stack || e.message || e));
             }
-            new Worker('review-requests', async (job) => { await processSendJob(job.data || {}); }, { connection: redisConnection });
         } else {
             console.warn('REDIS_URL not set; review-requests queue disabled');
         }

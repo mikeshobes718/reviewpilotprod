@@ -1,0 +1,333 @@
+2025-08-15 10:51:50,135 [DEBUG] CloudFormation client initialized with endpoint https://cloudformation.us-east-1.amazonaws.com
+2025-08-15 10:51:50,136 [DEBUG] SQS client initialized with endpoint https://sqs.us-east-1.amazonaws.com
+2025-08-15 10:51:50,136 [DEBUG] CloudFormation client initialized with endpoint https://cloudformation.us-east-1.amazonaws.com
+2025-08-15 10:51:50,136 [DEBUG] Enabled single threading mode.
+2025-08-15 10:51:50,137 [DEBUG] Creating /var/lib/cfn-hup/data
+2025-08-15 10:51:50,157 [INFO] No umask value specified in config file. Using the default one: 0o22
+2025-08-15 10:51:50,229 [INFO] Pid: 1755
+2025-08-15 10:51:50,535 [INFO] Refreshing listener credentials
+2025-08-15 10:51:50,655 [INFO] Scheduling next credential refresh in 1800.0 seconds
+2025-08-15 10:56:51,821 [INFO] command processing is alive.
+2025-08-15 11:01:52,255 [INFO] command processing is alive.
+2025-08-15 11:06:52,786 [INFO] command processing is alive.
+2025-08-15 11:11:53,270 [INFO] command processing is alive.
+2025-08-15 11:16:53,767 [INFO] command processing is alive.
+2025-08-15 11:21:50,656 [INFO] Refreshing listener credentials
+2025-08-15 11:21:50,742 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 11:21:54,267 [INFO] command processing is alive.
+2025-08-15 11:26:54,715 [INFO] command processing is alive.
+2025-08-15 11:31:55,156 [INFO] command processing is alive.
+2025-08-15 11:36:55,598 [INFO] command processing is alive.
+2025-08-15 11:41:56,043 [INFO] command processing is alive.
+2025-08-15 11:46:56,487 [INFO] command processing is alive.
+2025-08-15 11:51:49,745 [INFO] Refreshing listener credentials
+2025-08-15 11:51:49,833 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 11:51:57,007 [INFO] command processing is alive.
+2025-08-15 11:56:57,439 [INFO] command processing is alive.
+2025-08-15 12:01:57,873 [INFO] command processing is alive.
+2025-08-15 12:06:58,320 [INFO] command processing is alive.
+2025-08-15 12:11:58,803 [INFO] command processing is alive.
+2025-08-15 12:16:59,301 [INFO] command processing is alive.
+2025-08-15 12:21:48,833 [INFO] Refreshing listener credentials
+2025-08-15 12:21:48,920 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 12:21:59,748 [INFO] command processing is alive.
+2025-08-15 12:27:00,247 [INFO] command processing is alive.
+2025-08-15 12:32:00,693 [INFO] command processing is alive.
+2025-08-15 12:37:01,172 [INFO] command processing is alive.
+2025-08-15 12:42:01,722 [INFO] command processing is alive.
+2025-08-15 12:47:02,283 [INFO] command processing is alive.
+2025-08-15 12:51:47,920 [INFO] Refreshing listener credentials
+2025-08-15 12:51:47,997 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 12:52:02,850 [INFO] command processing is alive.
+2025-08-15 12:56:01,675 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: b083abf4-9caa-42a4-aa2a-6265fd7f37fd)
+2025-08-15 12:56:01,675 [INFO] Running action for aws-eb-command-handler
+2025-08-15 12:56:25,800 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 12:57:05,946 [INFO] command processing is alive.
+2025-08-15 13:02:06,400 [INFO] command processing is alive.
+2025-08-15 13:05:30,916 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 9fb12421-2d7a-4561-978c-798bce64917b)
+2025-08-15 13:05:30,916 [INFO] Running action for aws-eb-command-handler
+2025-08-15 13:05:31,858 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 13:05:42,655 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 7941ffc6-58d2-4852-b8cf-c87322e7847e)
+2025-08-15 13:05:42,655 [INFO] Running action for aws-eb-command-handler
+2025-08-15 13:05:43,410 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 13:07:23,635 [INFO] command processing is alive.
+2025-08-15 13:07:48,295 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 3ac60912-d556-4f80-8cd2-ec69bbe3d062)
+2025-08-15 13:07:48,295 [INFO] Running action for aws-eb-command-handler
+2025-08-15 13:08:10,550 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 13:12:31,092 [INFO] command processing is alive.
+2025-08-15 13:17:31,578 [INFO] command processing is alive.
+2025-08-15 13:21:46,998 [INFO] Refreshing listener credentials
+2025-08-15 13:21:47,082 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 13:22:32,090 [INFO] command processing is alive.
+2025-08-15 13:27:32,548 [INFO] command processing is alive.
+2025-08-15 13:32:33,045 [INFO] command processing is alive.
+2025-08-15 13:37:33,520 [INFO] command processing is alive.
+2025-08-15 13:42:34,035 [INFO] command processing is alive.
+2025-08-15 13:47:34,490 [INFO] command processing is alive.
+2025-08-15 13:51:46,083 [INFO] Refreshing listener credentials
+2025-08-15 13:51:46,181 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 13:52:34,939 [INFO] command processing is alive.
+2025-08-15 13:57:35,376 [INFO] command processing is alive.
+2025-08-15 14:02:35,800 [INFO] command processing is alive.
+2025-08-15 14:07:36,326 [INFO] command processing is alive.
+2025-08-15 14:12:36,782 [INFO] command processing is alive.
+2025-08-15 14:17:37,267 [INFO] command processing is alive.
+2025-08-15 14:21:45,181 [INFO] Refreshing listener credentials
+2025-08-15 14:21:45,273 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 14:22:37,760 [INFO] command processing is alive.
+2025-08-15 14:27:38,217 [INFO] command processing is alive.
+2025-08-15 14:32:38,706 [INFO] command processing is alive.
+2025-08-15 14:37:39,182 [INFO] command processing is alive.
+2025-08-15 14:42:39,655 [INFO] command processing is alive.
+2025-08-15 14:47:40,165 [INFO] command processing is alive.
+2025-08-15 14:51:44,274 [INFO] Refreshing listener credentials
+2025-08-15 14:51:44,352 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 14:52:40,622 [INFO] command processing is alive.
+2025-08-15 14:57:41,080 [INFO] command processing is alive.
+2025-08-15 15:02:41,665 [INFO] command processing is alive.
+2025-08-15 15:03:12,105 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 37dfd341-8fff-4a40-98c3-f5e547055505)
+2025-08-15 15:03:12,105 [INFO] Running action for aws-eb-command-handler
+2025-08-15 15:03:34,782 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 15:06:34,054 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 1a7d64dc-471e-48cc-99af-8935597d1bc9)
+2025-08-15 15:06:34,054 [INFO] Running action for aws-eb-command-handler
+2025-08-15 15:06:55,808 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 15:07:55,975 [INFO] command processing is alive.
+2025-08-15 15:12:56,502 [INFO] command processing is alive.
+2025-08-15 15:17:56,992 [INFO] command processing is alive.
+2025-08-15 15:21:43,352 [INFO] Refreshing listener credentials
+2025-08-15 15:21:43,440 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 15:22:57,445 [INFO] command processing is alive.
+2025-08-15 15:27:57,898 [INFO] command processing is alive.
+2025-08-15 15:30:32,363 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 659eebc6-2016-4945-9726-070fff195e5a)
+2025-08-15 15:30:32,364 [INFO] Running action for aws-eb-command-handler
+2025-08-15 15:30:54,731 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 15:33:15,005 [INFO] command processing is alive.
+2025-08-15 15:38:15,460 [INFO] command processing is alive.
+2025-08-15 15:43:15,979 [INFO] command processing is alive.
+2025-08-15 15:48:16,475 [INFO] command processing is alive.
+2025-08-15 15:51:42,441 [INFO] Refreshing listener credentials
+2025-08-15 15:51:42,526 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 15:53:16,928 [INFO] command processing is alive.
+2025-08-15 15:54:13,541 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 7917ecbe-1dac-47fa-b835-21948b53d28c)
+2025-08-15 15:54:13,541 [INFO] Running action for aws-eb-command-handler
+2025-08-15 15:54:36,995 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 15:58:17,410 [INFO] command processing is alive.
+2025-08-15 16:03:17,863 [INFO] command processing is alive.
+2025-08-15 16:04:39,383 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: a9126ddc-4034-40eb-8f8c-43e60385e4f4)
+2025-08-15 16:04:39,383 [INFO] Running action for aws-eb-command-handler
+2025-08-15 16:05:00,639 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 16:08:21,129 [INFO] command processing is alive.
+2025-08-15 16:13:21,665 [INFO] command processing is alive.
+2025-08-15 16:18:22,308 [INFO] command processing is alive.
+2025-08-15 16:21:41,526 [INFO] Refreshing listener credentials
+2025-08-15 16:21:41,617 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 16:23:22,948 [INFO] command processing is alive.
+2025-08-15 16:28:23,514 [INFO] command processing is alive.
+2025-08-15 16:33:24,199 [INFO] command processing is alive.
+2025-08-15 16:34:05,446 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 811658c9-7d58-404a-b276-ce049e480513)
+2025-08-15 16:34:05,447 [INFO] Running action for aws-eb-command-handler
+2025-08-15 16:34:26,922 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 16:38:27,380 [INFO] command processing is alive.
+2025-08-15 16:43:27,822 [INFO] command processing is alive.
+2025-08-15 16:44:01,404 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: ccf9c550-b42a-42af-9422-315a0b89d59d)
+2025-08-15 16:44:01,404 [INFO] Running action for aws-eb-command-handler
+2025-08-15 16:44:26,292 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 16:48:46,768 [INFO] command processing is alive.
+2025-08-15 16:49:45,937 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: a5798c4f-d466-480b-a44a-fab01f5e8a6f)
+2025-08-15 16:49:45,937 [INFO] Running action for aws-eb-command-handler
+2025-08-15 16:50:10,486 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 16:51:40,618 [INFO] Refreshing listener credentials
+2025-08-15 16:51:40,695 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 16:53:50,896 [INFO] command processing is alive.
+2025-08-15 16:58:51,339 [INFO] command processing is alive.
+2025-08-15 17:00:52,627 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: c9054d58-9555-40c8-9944-3ba6f90935cb)
+2025-08-15 17:00:52,627 [INFO] Running action for aws-eb-command-handler
+2025-08-15 17:01:16,685 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 17:03:57,044 [INFO] command processing is alive.
+2025-08-15 17:08:38,204 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 9ee19d80-3728-4d01-926f-86715f761a37)
+2025-08-15 17:08:38,204 [INFO] Running action for aws-eb-command-handler
+2025-08-15 17:09:00,397 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 17:09:00,487 [INFO] command processing is alive.
+2025-08-15 17:14:00,937 [INFO] command processing is alive.
+2025-08-15 17:19:01,499 [INFO] command processing is alive.
+2025-08-15 17:21:39,696 [INFO] Refreshing listener credentials
+2025-08-15 17:21:39,775 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 17:24:02,210 [INFO] command processing is alive.
+2025-08-15 17:29:02,751 [INFO] command processing is alive.
+2025-08-15 17:34:03,278 [INFO] command processing is alive.
+2025-08-15 17:39:03,877 [INFO] command processing is alive.
+2025-08-15 17:44:04,375 [INFO] command processing is alive.
+2025-08-15 17:49:04,897 [INFO] command processing is alive.
+2025-08-15 17:51:38,776 [INFO] Refreshing listener credentials
+2025-08-15 17:51:38,864 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 17:54:05,352 [INFO] command processing is alive.
+2025-08-15 17:59:05,789 [INFO] command processing is alive.
+2025-08-15 18:04:06,251 [INFO] command processing is alive.
+2025-08-15 18:09:06,714 [INFO] command processing is alive.
+2025-08-15 18:14:07,172 [INFO] command processing is alive.
+2025-08-15 18:19:07,642 [INFO] command processing is alive.
+2025-08-15 18:21:37,864 [INFO] Refreshing listener credentials
+2025-08-15 18:21:38,017 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 18:24:08,104 [INFO] command processing is alive.
+2025-08-15 18:29:08,563 [INFO] command processing is alive.
+2025-08-15 18:34:09,002 [INFO] command processing is alive.
+2025-08-15 18:39:09,434 [INFO] command processing is alive.
+2025-08-15 18:44:09,863 [INFO] command processing is alive.
+2025-08-15 18:48:31,972 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: e93b7e6a-607f-4dc2-990f-044774ef400c)
+2025-08-15 18:48:31,972 [INFO] Running action for aws-eb-command-handler
+2025-08-15 18:48:54,298 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 18:49:14,413 [INFO] command processing is alive.
+2025-08-15 18:51:37,018 [INFO] Refreshing listener credentials
+2025-08-15 18:51:37,113 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 18:54:14,848 [INFO] command processing is alive.
+2025-08-15 18:59:15,265 [INFO] command processing is alive.
+2025-08-15 19:04:15,715 [INFO] command processing is alive.
+2025-08-15 19:09:16,221 [INFO] command processing is alive.
+2025-08-15 19:14:16,678 [INFO] command processing is alive.
+2025-08-15 19:19:17,128 [INFO] command processing is alive.
+2025-08-15 19:21:36,114 [INFO] Refreshing listener credentials
+2025-08-15 19:21:36,199 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 19:24:17,585 [INFO] command processing is alive.
+2025-08-15 19:29:18,068 [INFO] command processing is alive.
+2025-08-15 19:34:18,511 [INFO] command processing is alive.
+2025-08-15 19:39:19,008 [INFO] command processing is alive.
+2025-08-15 19:44:19,459 [INFO] command processing is alive.
+2025-08-15 19:49:19,883 [INFO] command processing is alive.
+2025-08-15 19:51:35,200 [INFO] Refreshing listener credentials
+2025-08-15 19:51:35,289 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 19:53:24,942 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: e0699f37-30be-4c47-8369-5cd17b40fe20)
+2025-08-15 19:53:24,942 [INFO] Running action for aws-eb-command-handler
+2025-08-15 19:53:47,078 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 19:54:27,207 [INFO] command processing is alive.
+2025-08-15 19:58:01,912 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 0548b28a-19a1-4915-bd6f-31f95ef52653)
+2025-08-15 19:58:01,912 [INFO] Running action for aws-eb-command-handler
+2025-08-15 19:58:24,297 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 19:59:44,496 [INFO] command processing is alive.
+2025-08-15 20:04:44,936 [INFO] command processing is alive.
+2025-08-15 20:08:51,059 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 9207c451-ed67-4dc1-add9-e0a61488f8bc)
+2025-08-15 20:08:51,059 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:09:14,443 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:09:54,596 [INFO] command processing is alive.
+2025-08-15 20:14:55,046 [INFO] command processing is alive.
+2025-08-15 20:16:18,257 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: bd0c106d-be1d-43ee-a3be-57ea9756fd9d)
+2025-08-15 20:16:18,257 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:16:40,719 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:20:01,118 [INFO] command processing is alive.
+2025-08-15 20:21:34,290 [INFO] Refreshing listener credentials
+2025-08-15 20:21:34,371 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 20:21:50,341 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: c12de836-c0ce-4781-9c5e-9a95ac9beb01)
+2025-08-15 20:21:50,341 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:22:14,526 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:25:14,866 [INFO] command processing is alive.
+2025-08-15 20:30:15,353 [INFO] command processing is alive.
+2025-08-15 20:30:42,244 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 8a6830b7-3098-45d9-aaaa-e614dcd50aa6)
+2025-08-15 20:30:42,245 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:31:05,605 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:35:26,088 [INFO] command processing is alive.
+2025-08-15 20:40:01,721 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: aa3dce51-18e3-4c2f-acc1-c7f0cfc23bd5)
+2025-08-15 20:40:01,721 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:40:27,234 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:40:27,402 [INFO] command processing is alive.
+2025-08-15 20:42:51,960 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 446f1f14-8b22-4360-976f-7357f512e388)
+2025-08-15 20:42:51,961 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:43:14,140 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:45:34,465 [INFO] command processing is alive.
+2025-08-15 20:49:38,195 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 03059f48-6b7b-417b-b0ff-39ea94a2564b)
+2025-08-15 20:49:38,195 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:49:59,520 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:50:39,665 [INFO] command processing is alive.
+2025-08-15 20:51:33,372 [INFO] Refreshing listener credentials
+2025-08-15 20:51:33,462 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 20:53:22,961 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 35d758d0-b575-4ba3-b5cf-fea83a5d3b75)
+2025-08-15 20:53:22,961 [INFO] Running action for aws-eb-command-handler
+2025-08-15 20:53:44,573 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 20:55:44,835 [INFO] command processing is alive.
+2025-08-15 21:00:45,342 [INFO] command processing is alive.
+2025-08-15 21:02:41,270 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 8f4ab940-e5fb-43bc-9081-795f1f25d711)
+2025-08-15 21:02:41,270 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:02:42,204 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:06:02,677 [INFO] command processing is alive.
+2025-08-15 21:11:03,257 [INFO] command processing is alive.
+2025-08-15 21:11:49,722 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 691e78fa-f622-4c9f-a814-1b901958d281)
+2025-08-15 21:11:49,722 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:12:13,021 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:16:13,455 [INFO] command processing is alive.
+2025-08-15 21:19:39,046 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 2edd83dc-798e-4ea7-a4fd-00c2a212987a)
+2025-08-15 21:19:39,046 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:20:00,724 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:21:20,926 [INFO] command processing is alive.
+2025-08-15 21:21:32,464 [INFO] Refreshing listener credentials
+2025-08-15 21:21:32,542 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 21:24:53,005 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 8308ad3a-4770-4765-bd4d-5b8398f80026)
+2025-08-15 21:24:53,005 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:25:16,326 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:26:36,518 [INFO] command processing is alive.
+2025-08-15 21:31:36,941 [INFO] command processing is alive.
+2025-08-15 21:32:31,968 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 3acb373d-6191-4b20-88ce-22927136b20f)
+2025-08-15 21:32:31,969 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:32:53,601 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:36:54,028 [INFO] command processing is alive.
+2025-08-15 21:41:54,453 [INFO] command processing is alive.
+2025-08-15 21:42:30,289 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 299160c4-c644-4596-ad91-3da0f77602fc)
+2025-08-15 21:42:30,289 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:42:52,268 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:47:12,728 [INFO] command processing is alive.
+2025-08-15 21:51:31,544 [INFO] Refreshing listener credentials
+2025-08-15 21:51:31,635 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 21:52:13,228 [INFO] command processing is alive.
+2025-08-15 21:54:46,337 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 0972a525-e68e-4006-9d80-ea2d20e4236d)
+2025-08-15 21:54:46,337 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:55:10,484 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 21:57:30,815 [INFO] command processing is alive.
+2025-08-15 21:58:27,627 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 154254f3-7305-4cfd-a6a6-01244eb44adf)
+2025-08-15 21:58:27,627 [INFO] Running action for aws-eb-command-handler
+2025-08-15 21:58:49,088 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 22:02:49,548 [INFO] command processing is alive.
+2025-08-15 22:07:49,965 [INFO] command processing is alive.
+2025-08-15 22:12:50,409 [INFO] command processing is alive.
+2025-08-15 22:14:54,021 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: d33ac9ae-02f6-457d-aa0a-9d2388789c24)
+2025-08-15 22:14:54,021 [INFO] Running action for aws-eb-command-handler
+2025-08-15 22:15:19,077 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 22:17:59,391 [INFO] command processing is alive.
+2025-08-15 22:21:19,678 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: dadbec0d-0632-4867-be4f-b6cb50cebaf0)
+2025-08-15 22:21:19,678 [INFO] Running action for aws-eb-command-handler
+2025-08-15 22:21:30,636 [INFO] Refreshing listener credentials
+2025-08-15 22:21:30,765 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 22:21:41,253 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 22:23:01,489 [INFO] command processing is alive.
+2025-08-15 22:28:02,007 [INFO] command processing is alive.
+2025-08-15 22:29:49,307 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 661d226b-891d-467f-9a8e-8e0d5ab1efd0)
+2025-08-15 22:29:49,307 [INFO] Running action for aws-eb-command-handler
+2025-08-15 22:30:13,630 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 22:33:13,992 [INFO] command processing is alive.
+2025-08-15 22:35:57,896 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 2868ec59-58c0-47e0-9781-31b94e435e94)
+2025-08-15 22:35:57,897 [INFO] Running action for aws-eb-command-handler
+2025-08-15 22:36:21,576 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 22:38:21,865 [INFO] command processing is alive.
+2025-08-15 22:42:22,931 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 16b19a6e-7972-4ab1-b726-10095bd01dee)
+2025-08-15 22:42:22,931 [INFO] Running action for aws-eb-command-handler
+2025-08-15 22:42:44,800 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 22:43:24,940 [INFO] command processing is alive.
+2025-08-15 22:48:25,407 [INFO] command processing is alive.
+2025-08-15 22:51:29,766 [INFO] Refreshing listener credentials
+2025-08-15 22:51:29,852 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 22:53:25,875 [INFO] command processing is alive.
+2025-08-15 22:58:26,333 [INFO] command processing is alive.
+2025-08-15 23:03:26,807 [INFO] command processing is alive.
+2025-08-15 23:08:27,228 [INFO] command processing is alive.
+2025-08-15 23:09:14,297 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: f25c7698-3b81-4d52-9d80-30b01f65a7c3)
+2025-08-15 23:09:14,297 [INFO] Running action for aws-eb-command-handler
+2025-08-15 23:09:36,839 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 23:13:37,284 [INFO] command processing is alive.
+2025-08-15 23:18:18,361 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 870209a3-344b-4820-a294-bf814533710c)
+2025-08-15 23:18:18,361 [INFO] Running action for aws-eb-command-handler
+2025-08-15 23:18:40,199 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 23:18:40,267 [INFO] command processing is alive.
+2025-08-15 23:21:04,627 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 1a76fc36-9dc8-49d2-9e16-31e2f0d02e3d)
+2025-08-15 23:21:04,627 [INFO] Running action for aws-eb-command-handler
+2025-08-15 23:21:26,826 [INFO] Action for aws-eb-command-handler succeeded, returning SUCCESS
+2025-08-15 23:21:28,853 [INFO] Refreshing listener credentials
+2025-08-15 23:21:29,011 [INFO] Scheduling next credential refresh in 1799.0 seconds
+2025-08-15 23:23:47,092 [INFO] command processing is alive.
+2025-08-15 23:25:27,609 [INFO] Received command ElasticBeanstalkCommand-AWSEBAutoScalingGroup (invocation id: 5952e6e9-1a56-46b2-96d8-d1e9c75058f9)
+2025-08-15 23:25:27,609 [INFO] Running action for aws-eb-command-handler

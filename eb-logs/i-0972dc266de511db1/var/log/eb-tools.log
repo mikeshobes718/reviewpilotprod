@@ -1,0 +1,35 @@
+2025/08/16 22:13:32.471167 [INFO] Cleaning log publish record...
+2025/08/16 22:13:32.471214 [INFO] Start log publish job.
+2025/08/16 22:13:32.471218 [INFO] Start publish file /tmp/BundleLogs-1755382411959.zip
+2025/08/16 22:13:32.684750 [INFO] Successful upload file /tmp/BundleLogs-1755382411959.zip to s3 resources/environments/logs/bundle/e-aewwgj2dcx/i-0972dc266de511db1/BundleLogs-1755382411959.zip
+2025/08/16 22:13:32.684876 [INFO] Finished log publish job.
+2025/08/16 22:14:12.101929 [INFO] Cleaning log publish record...
+2025/08/16 22:14:12.101980 [INFO] /tmp/BundleLogs-1755382411959.zip exists, no need for clean up
+2025/08/16 22:14:12.101985 [INFO] Start log publish job.
+2025/08/16 22:14:12.101988 [INFO] Start publish file /tmp/BundleLogs-1755382451630.zip
+2025/08/16 22:14:12.226024 [INFO] Successful upload file /tmp/BundleLogs-1755382451630.zip to s3 resources/environments/logs/bundle/e-aewwgj2dcx/i-0972dc266de511db1/BundleLogs-1755382451630.zip
+2025/08/16 22:14:12.226149 [INFO] Finished log publish job.
+2025/08/16 22:18:16.241929 [INFO] Cleaning log publish record...
+2025/08/16 22:18:16.242724 [INFO] /tmp/BundleLogs-1755382411959.zip exists, no need for clean up
+2025/08/16 22:18:16.242734 [INFO] /tmp/BundleLogs-1755382451630.zip exists, no need for clean up
+2025/08/16 22:18:16.242737 [INFO] Start log publish job.
+2025/08/16 22:18:16.242739 [INFO] Start publish file /tmp/BundleLogs-1755382695761.zip
+2025/08/16 22:18:16.391138 [INFO] Successful upload file /tmp/BundleLogs-1755382695761.zip to s3 resources/environments/logs/bundle/e-aewwgj2dcx/i-0972dc266de511db1/BundleLogs-1755382695761.zip
+2025/08/16 22:18:16.391911 [INFO] Finished log publish job.
+2025/08/16 22:19:59.897470 [INFO] Cleaning log publish record...
+2025/08/16 22:19:59.897526 [INFO] /tmp/BundleLogs-1755382411959.zip exists, no need for clean up
+2025/08/16 22:19:59.897533 [INFO] /tmp/BundleLogs-1755382451630.zip exists, no need for clean up
+2025/08/16 22:19:59.897538 [INFO] /tmp/BundleLogs-1755382695761.zip exists, no need for clean up
+2025/08/16 22:19:59.897540 [INFO] Start log publish job.
+2025/08/16 22:19:59.897542 [INFO] Start publish file /tmp/BundleLogs-1755382799424.zip
+2025/08/16 22:20:00.021170 [INFO] Successful upload file /tmp/BundleLogs-1755382799424.zip to s3 resources/environments/logs/bundle/e-aewwgj2dcx/i-0972dc266de511db1/BundleLogs-1755382799424.zip
+2025/08/16 22:20:00.021339 [INFO] Finished log publish job.
+2025/08/16 22:25:23.696191 [INFO] Cleaning log publish record...
+2025/08/16 22:25:23.696246 [INFO] /tmp/BundleLogs-1755382411959.zip exists, no need for clean up
+2025/08/16 22:25:23.696252 [INFO] /tmp/BundleLogs-1755382451630.zip exists, no need for clean up
+2025/08/16 22:25:23.696257 [INFO] /tmp/BundleLogs-1755382695761.zip exists, no need for clean up
+2025/08/16 22:25:23.696261 [INFO] /tmp/BundleLogs-1755382799424.zip exists, no need for clean up
+2025/08/16 22:25:23.696263 [INFO] Start log publish job.
+2025/08/16 22:25:23.696266 [INFO] Start publish file /tmp/BundleLogs-1755383123186.zip
+2025/08/16 22:25:23.828205 [INFO] Successful upload file /tmp/BundleLogs-1755383123186.zip to s3 resources/environments/logs/bundle/e-aewwgj2dcx/i-0972dc266de511db1/BundleLogs-1755383123186.zip
+2025/08/16 22:25:23.828383 [INFO] Finished log publish job.
