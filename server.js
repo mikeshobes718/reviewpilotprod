@@ -1676,6 +1676,55 @@
             res.send(rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n'));
         } catch (e) { console.error('export csv', e); res.status(500).send('server'); }
     });
+
+    app.get('/api/analytics/export.pdf', requireLogin, async (req, res) => {
+        try {
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            const doc = await ref.get();
+            const data = doc.data() || {};
+            if (data.subscriptionStatus !== 'active') return res.status(403).send('upgrade');
+            const snap = await ref.collection('feedback').orderBy('createdAt', 'desc').get();
+            const feedback = snap.docs.map(d => d.data());
+            let total = feedback.length, sum = 0, conversions = 0;
+            const counts = { 1:0,2:0,3:0,4:0,5:0 };
+            feedback.forEach(f => { const r = Number(f.rating)||0; if (r>=1&&r<=5){ counts[r]++; sum+=r; } if (r===5 && (f.type==='positive'||f.type==='contact')) conversions++; });
+            const avg = total ? (sum/total).toFixed(2) : '0.00';
+            res.setHeader('Content-Type','application/pdf');
+            res.setHeader('Content-Disposition','attachment; filename="analytics.pdf"');
+            const docPdf = new PDFDocument({ size:'LETTER', margin:48 });
+            docPdf.pipe(res);
+            docPdf.fontSize(20).text('Analytics Report', { align:'left' });
+            docPdf.moveDown(0.5).fontSize(12).fillColor('#555').text(`Generated: ${new Date().toLocaleString()}`);
+            docPdf.moveDown();
+            docPdf.fillColor('#000').fontSize(14).text('Summary');
+            docPdf.moveDown(0.5).fontSize(12).fillColor('#333')
+              .text(`Total feedback: ${total}`)
+              .text(`Average rating: ${avg}`)
+              .text(`5★ conversions: ${conversions}`);
+            docPdf.moveDown().fontSize(14).fillColor('#000').text('Distribution');
+            Object.keys(counts).sort().forEach(k => { docPdf.fontSize(12).fillColor('#333').text(`${k}★: ${counts[k]}`); });
+            docPdf.end();
+        } catch (e) { console.error('export pdf', e); res.status(500).send('server'); }
+    });
+
+    app.post('/analytics/report-settings', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const { enabled, frequency, email } = req.body || {};
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            await ref.set({ reportSettings: { enabled: !!enabled, frequency: frequency || 'weekly', email: email || null, updatedAt: new Date().toISOString() } }, { merge: true });
+            res.redirect('/dashboard');
+        } catch (e) { console.error('report-settings', e); res.status(500).send('server'); }
+    });
+
+    app.post('/team/invite', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const { email } = req.body || {};
+            if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res.status(400).send('invalid_email');
+            const ref = db.collection('businesses').doc(req.session.user.uid).collection('invites').doc();
+            await ref.set({ email, status: 'pending', invitedAt: new Date().toISOString() });
+            res.redirect('/dashboard');
+        } catch (e) { console.error('team invite', e); res.status(500).send('server'); }
+    });
     app.post('/create-checkout-session', requireLogin, csrfProtection, async (req, res) => {
         try {
             if (!process.env.STRIPE_PRICE_ID) {

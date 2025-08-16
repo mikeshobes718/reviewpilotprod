@@ -100,6 +100,9 @@
                 <form action="/api/analytics/export.csv" method="GET">
                   <button type="submit" class="btn btn-secondary">Export CSV</button>
                 </form>
+                <form action="/api/analytics/export.pdf" method="GET">
+                  <button type="submit" class="btn btn-secondary">Export PDF</button>
+                </form>
               </div>
             <% } %>
           </div>
@@ -159,7 +162,7 @@
                 <label for="googlePlaceId">Your Google Place ID:</label>
                 <input type="text" id="googlePlaceId" name="googlePlaceId" value="<%= business.googlePlaceId || '' %>" placeholder="Enter your Google Place ID here" required>
                 <div style="font-size:12px; color: var(--muted); margin-top:4px">
-                  <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline">Where do I find this?</a>
+                  <a href="https://developers.google.com/maps/documentation/places/web-service/place-id#find-id" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline">Where do I find this?</a>
                 </div>
                 <% if (process.env.GOOGLE_MAPS_API_KEY) { %>
                 <div id="placeIdFinderWrap" style="margin-top:10px">
@@ -170,6 +173,16 @@
                 <% } %>
                 <button type="submit" class="btn-primary">Save Settings</button>
               </form>
+            </div>
+
+            <div class="card base-card">
+              <h2>Onboarding Checklist</h2>
+              <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+                <li>1. Add your Google Place ID <%= business.googlePlaceId ? '✅' : '—' %></li>
+                <li>2. Copy and test your review link ✅</li>
+                <li>3. Connect POS (Square) <span id="chkPos">—</span></li>
+                <li>4. Send your first request ✅</li>
+              </ul>
             </div>
 
             <div class="card base-card">
