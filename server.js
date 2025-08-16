@@ -121,10 +121,29 @@
         const { KMSClient, EncryptCommand, DecryptCommand } = require('@aws-sdk/client-kms');
         const kms = new KMSClient({ region: awsRegion });
         const KMS_KEY_ID = process.env.KMS_KEY_ID || undefined; // use default if absent
+        const KMS_FALLBACK_ARN = process.env.KMS_FALLBACK_ARN || null;
         async function encryptString(plain) {
-            const cmd = new EncryptCommand({ KeyId: KMS_KEY_ID, Plaintext: Buffer.from(plain) });
-            const res = await kms.send(cmd);
-            return Buffer.from(res.CiphertextBlob).toString('base64');
+            try {
+                const keyId = KMS_KEY_ID;
+                const cmd = new EncryptCommand({ KeyId: keyId, Plaintext: Buffer.from(plain) });
+                const res = await kms.send(cmd);
+                return Buffer.from(res.CiphertextBlob).toString('base64');
+            } catch (e) {
+                const msg = (e && (e.message || e.__type || '')) || '';
+                const isAliasMissing = (e && e.__type === 'NotFoundException') || /NotFoundException/i.test(String(e && e.name)) || /alias\//i.test(msg);
+                if (isAliasMissing && KMS_FALLBACK_ARN) {
+                    try {
+                        const cmd2 = new EncryptCommand({ KeyId: KMS_FALLBACK_ARN, Plaintext: Buffer.from(plain) });
+                        const res2 = await kms.send(cmd2);
+                        console.warn('KMS alias missing; used fallback ARN for encryption');
+                        return Buffer.from(res2.CiphertextBlob).toString('base64');
+                    } catch (e2) {
+                        console.error('KMS fallback encryption failed', e2);
+                        throw e2;
+                    }
+                }
+                throw e;
+            }
         }
         async function decryptString(cipherB64) {
             const cmd = new DecryptCommand({ CiphertextBlob: Buffer.from(cipherB64, 'base64') });
