@@ -153,12 +153,26 @@
                     await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
                     await logEvent(merchantUid, 'send_email', { email, shortLink });
                 } else {
-                    // SMS not configured → fall back to email if available
-                    if (email) {
-                        await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
-                        await logEvent(merchantUid, 'send_email', { email, shortLink, fallbackFrom: 'sms' });
-                    } else {
-                        await logEvent(merchantUid, 'send_skipped', { reason: 'sms_unavailable' });
+                    try {
+                        const sid = process.env.TWILIO_ACCOUNT_SID;
+                        const token = process.env.TWILIO_AUTH_TOKEN;
+                        const from = process.env.TWILIO_FROM_SMS;
+                        if (sid && token && from) {
+                            const tw = require('twilio')(sid, token);
+                            await tw.messages.create({ to: phone, from, body: `Thanks for your visit! Would you leave us a quick 5-star review? ${shortLink}` });
+                            await logEvent(merchantUid, 'send_sms', { phone, shortLink });
+                        } else if (email) {
+                            await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                            await logEvent(merchantUid, 'send_email', { email, shortLink, fallbackFrom: 'sms' });
+                        } else {
+                            await logEvent(merchantUid, 'send_skipped', { reason: 'sms_unavailable' });
+                        }
+                    } catch (e) {
+                        await logEvent(merchantUid, 'send_error', { message: 'twilio_fail', detail: String(e && e.message || e) });
+                        if (email) {
+                            await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                            await logEvent(merchantUid, 'send_email', { email, shortLink, fallbackFrom: 'sms' });
+                        }
                     }
                 }
             } catch (e) {
@@ -661,10 +675,15 @@
                     // Compute delay
                     const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
                     if (reviewQueue) {
-                        await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantId: merchantId || '', shortLink }, { delay: delayMs, attempts: 1 });
+                        await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantUid: (biz.uid || biz.id || req.session.user.uid), shortLink }, { delay: delayMs, attempts: 1 });
                     } else {
-                        console.log('Queue not configured; skipping enqueue');
+                        // Fallback: run in-process with timeout (non-durable)
+                        setTimeout(() => {
+                            sendReviewRequest({ merchantUid: (biz.uid || biz.id || req.session.user.uid), customer, channel: settings.channel || 'email', shortLink });
+                        }, delayMs);
                     }
+                    // POS health: last sync timestamp
+                    try { await db.collection('businesses').doc(biz.uid || req.session.user.uid).set({ posLastSyncAt: new Date().toISOString() }, { merge: true }); } catch(_) {}
                 }
                 res.status(200).send('ok');
             } catch (e) { console.error('square webhook error', e); res.status(200).send('ok'); }
