@@ -1529,7 +1529,7 @@
                     csrfToken: req.csrfToken(),
                     analytics: placeholderAnalytics,
                     billing: null,
-                    pageError: 'Loading data…'
+                    pageError: null
                 });
             } catch (_) {
                 return res.redirect('/login');
