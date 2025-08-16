@@ -145,6 +145,13 @@
                 <div style="font-size:12px; color: var(--muted); margin-top:4px">
                   <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline">Where do I find this?</a>
                 </div>
+                <% if (process.env.GOOGLE_MAPS_API_KEY) { %>
+                <div id="placeIdFinderWrap" style="margin-top:10px">
+                  <label for="placeSearch" style="font-weight:600; color: var(--muted)">Find your business (Google)</label>
+                  <input type="text" id="placeSearch" placeholder="Type business name and address" style="padding:12px 14px; border:1px solid var(--border); border-radius:8px; font-size:14px">
+                  <div id="placeSearchResult" style="font-size:12px; color: var(--muted); margin-top:6px; display:none"></div>
+                </div>
+                <% } %>
                 <button type="submit" class="btn-primary">Save Settings</button>
               </form>
             </div>
@@ -533,6 +540,41 @@
         });
       })();
     </script>
+    <% if (process.env.GOOGLE_MAPS_API_KEY) { %>
+    <script>
+      (function(){
+        try {
+          var loaded = false;
+          function initFinder(){
+            if (loaded) return; loaded = true;
+            var input = document.getElementById('placeSearch');
+            var placeIdInput = document.getElementById('googlePlaceId');
+            var result = document.getElementById('placeSearchResult');
+            if (!input || !placeIdInput) return;
+            var ac = new google.maps.places.Autocomplete(input, { fields: ['place_id','name','formatted_address','geometry'] });
+            ac.addListener('place_changed', function(){
+              var p = ac.getPlace();
+              if (p && p.place_id){
+                placeIdInput.value = p.place_id;
+                if (result){
+                  result.style.display='block';
+                  result.textContent = 'Selected: ' + (p.name||'') + (p.formatted_address? ' — ' + p.formatted_address : '') + ' (Place ID copied below)';
+                }
+              }
+            });
+          }
+          // Load Maps JS API if not present
+          if (!(window.google && google.maps && google.maps.places)){
+            var s = document.createElement('script');
+            s.src = 'https://maps.googleapis.com/maps/api/js?key=<%= process.env.GOOGLE_MAPS_API_KEY %>&libraries=places&v=weekly';
+            s.async = true; s.defer = true;
+            s.onload = initFinder;
+            document.head.appendChild(s);
+          } else { initFinder(); }
+        } catch(_) {}
+      })();
+    </script>
+    <% } %>
     <script>
       (function(){
         try{
