@@ -710,6 +710,144 @@
             } catch (e) { console.error('square webhook error', e); res.status(200).send('ok'); }
         });
 
+        // --- Square historical backfill and incremental sync ---
+        async function fetchSquarePaymentsPaged(accessToken, beginIso, endIso) {
+            const payments = [];
+            let cursor = null;
+            const base = 'https://connect.squareup.com/v2/payments';
+            const headers = { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
+            let guard = 0;
+            do {
+                const params = new URLSearchParams();
+                if (beginIso) params.set('begin_time', beginIso);
+                if (endIso) params.set('end_time', endIso);
+                if (cursor) params.set('cursor', cursor);
+                const url = `${base}?${params.toString()}`;
+                const resp = await fetch(url, { headers });
+                const json = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    console.warn('square payments fetch failed', resp.status, json);
+                    break;
+                }
+                const batch = Array.isArray(json.payments) ? json.payments : [];
+                payments.push(...batch);
+                cursor = json.cursor || null;
+                guard += 1;
+            } while (cursor && guard < 50);
+            return payments;
+        }
+
+        async function getSquareCustomerContact(accessToken, customerId, payment) {
+            const contact = { email: null, phone: null };
+            try {
+                if (customerId) {
+                    const cResp = await fetch(`https://connect.squareup.com/v2/customers/${customerId}`,
+                        { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } });
+                    if (cResp.ok) {
+                        const cj = await cResp.json();
+                        const c = cj?.customer || {};
+                        contact.email = c?.email_address || null;
+                        contact.phone = c?.phone_number || null;
+                    }
+                }
+            } catch (_) { /* ignore */ }
+            // Fallbacks from payment resource
+            try { if (!contact.email && payment?.buyer_email_address) contact.email = payment.buyer_email_address; } catch(_){}
+            try { if (!contact.phone && payment?.billing_address?.phone_number) contact.phone = payment.billing_address.phone_number; } catch(_){}
+            return contact;
+        }
+
+        async function importPaymentsAndEnqueue({ uid, accessToken, beginIso, endIso }) {
+            const ref = db.collection('businesses').doc(uid);
+            const merchantSnap = await ref.get();
+            if (!merchantSnap.exists) return { imported: 0, enqueued: 0 };
+            const biz = merchantSnap.data() || {};
+            const settings = biz.squareSettings || { autoSend: false, channel: 'email', delayMinutes: 0 };
+
+            const payments = await fetchSquarePaymentsPaged(accessToken, beginIso, endIso);
+            let imported = 0, enqueued = 0;
+            for (const p of payments) {
+                try {
+                    if (!p || p.status !== 'COMPLETED') continue;
+                    const payId = p.id;
+                    if (!payId) continue;
+                    // Idempotency: store import doc keyed by payment id
+                    const impDoc = ref.collection('imports').doc(`square_${payId}`);
+                    const existing = await impDoc.get();
+                    if (existing.exists) continue;
+
+                    // Write import marker first to avoid duplicate processing
+                    await impDoc.set({ ts: new Date().toISOString(), source: 'square', payment: { id: payId, amount: p.amount_money || null } });
+                    imported += 1;
+
+                    if (!settings.autoSend) continue;
+                    const customerId = p.customer_id || null;
+                    const contact = await getSquareCustomerContact(accessToken, customerId, p);
+                    if (!(contact.email || contact.phone)) continue;
+
+                    // Build short link
+                    const slug = biz.shortSlug || (biz.googlePlaceId ? biz.googlePlaceId : 'SETUP');
+                    const shortLink = `${shortDomain}/${slug}`;
+                    const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
+                    const jobData = { channel: settings.channel || 'email', customer: contact, merchantUid: uid, shortLink };
+                    if (reviewQueue) {
+                        await reviewQueue.add('sendReviewRequest', jobData, { delay: delayMs, attempts: 1 });
+                    } else {
+                        setTimeout(() => { sendReviewRequest(jobData).catch(()=>{}); }, delayMs);
+                    }
+                    enqueued += 1;
+                    await logEvent(uid, 'send_enqueued', { email: contact.email || null, phone: contact.phone || null, shortLink, via: 'backfill' });
+                } catch (e) {
+                    await logEvent(uid, 'import_error', { message: String(e && e.message || e) });
+                }
+            }
+            // Update last sync timestamp
+            try { await ref.set({ posLastSyncAt: new Date().toISOString() }, { merge: true }); } catch(_){}
+            return { imported, enqueued };
+        }
+
+        // Trigger backfill for current merchant (default 30 days, max 90)
+        app.post('/integrations/square/backfill', requireLogin, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const businessSnap = await db.collection('businesses').doc(uid).get();
+                const biz = businessSnap.data() || {};
+                if (!biz.square || !biz.square.access) return res.status(400).json({ error: 'not_connected' });
+                const accessToken = await decryptString(biz.square.access);
+                const days = Math.max(1, Math.min(90, parseInt((req.body && req.body.days) || (req.query && req.query.days) || '30', 10)));
+                const endIso = new Date().toISOString();
+                const beginIso = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+                const result = await importPaymentsAndEnqueue({ uid, accessToken, beginIso, endIso });
+                return res.json({ ok: true, days, ...result });
+            } catch (e) {
+                console.error('square backfill error', e);
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
+        // Incremental sync from last sync time (fallback to 24h)
+        app.post('/integrations/square/sync', requireLogin, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const ref = db.collection('businesses').doc(uid);
+                const snap = await ref.get();
+                const biz = snap.data() || {};
+                if (!biz.square || !biz.square.access) return res.status(400).json({ error: 'not_connected' });
+                const accessToken = await decryptString(biz.square.access);
+                let beginIso = null;
+                try {
+                    const last = biz.posLastSyncAt ? new Date(biz.posLastSyncAt).getTime() : (Date.now() - 24*60*60*1000);
+                    beginIso = new Date(Math.max(0, last - 60*60*1000)).toISOString(); // 1h overlap for safety
+                } catch(_) { beginIso = new Date(Date.now() - 24*60*60*1000).toISOString(); }
+                const endIso = new Date().toISOString();
+                const result = await importPaymentsAndEnqueue({ uid, accessToken, beginIso, endIso });
+                return res.json({ ok: true, ...result });
+            } catch (e) {
+                console.error('square sync error', e);
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
     // --- 4. CONFIGURE THE SERVER (MIDDLEWARE) ---
     app.set('trust proxy', 1); // Trust first proxy for secure cookies in production
     app.set('view engine', 'ejs');
