@@ -26,6 +26,8 @@
     // --- 2. INITIALIZE THE APP ---
     ;(async () => {
     const app = express();
+    // Parse cookies early so downstream middleware (e.g., JWT hydration) can read them
+    app.use(cookieParser());
     // Behind ALB/NGINX on EB; trust proxy so secure cookies and req.secure work
     app.set('trust proxy', 1);
     const PORT = process.env.PORT || 3000;
@@ -502,7 +504,7 @@
     }
     app.use(compression());
     app.use(morgan('dev'));
-    app.use(cookieParser());
+    // cookieParser already mounted above
     const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined;
     app.use(session({
         secret: process.env.SESSION_SECRET || 'a-super-secret-key-that-you-should-change',
