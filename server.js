@@ -1455,8 +1455,18 @@
         try {
             const businessDoc = await db.collection('businesses').doc(req.session.user.uid).get();
             if (!businessDoc.exists) throw new Error('No business data found.');
+            // Inputs for analytics (Pro can filter; Free defaults)
+            const isPro = (businessDoc.data().subscriptionStatus === 'active');
+            const now = Date.now();
+            const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
+            // basic fetch: we may filter client-side for last 30 days for Free
             const feedbackSnapshot = await db.collection('businesses').doc(req.session.user.uid).collection('feedback').orderBy('createdAt', 'desc').get();
-            const feedback = feedbackSnapshot.docs.map(doc => doc.data());
+            let feedback = feedbackSnapshot.docs.map(doc => doc.data());
+            if (!isPro) {
+                feedback = feedback.filter(f => {
+                    try { return (new Date(f.createdAt).getTime()) >= thirtyDaysAgo; } catch(_) { return false; }
+                });
+            }
 
             // Basic analytics
             const total = feedback.length;
@@ -1512,7 +1522,7 @@
                 feedback: feedback,
                 appUrl: appUrl, // Pass the appUrl to the dashboard
                 csrfToken: req.csrfToken(),
-                analytics: { total, avg, counts, conversions },
+                analytics: { total, avg, counts, conversions, planTier: isPro ? 'pro' : 'free' },
                 billing,
                 pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
             });
@@ -1644,6 +1654,28 @@
     });
 
     // PAYMENT ROUTES
+    // Analytics export (Pro only)
+    app.get('/api/analytics/export.csv', requireLogin, async (req, res) => {
+        try {
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            const doc = await ref.get();
+            const data = doc.data() || {};
+            if (data.subscriptionStatus !== 'active') return res.status(403).send('upgrade');
+            const snap = await ref.collection('feedback').orderBy('createdAt', 'desc').get();
+            const rows = [['createdAt','name','email','phone','rating','type','feedback']];
+            snap.docs.forEach(d => {
+                const f = d.data() || {};
+                rows.push([
+                    new Date(f.createdAt || '').toISOString(),
+                    f.name || '', f.email || '', f.phone || '',
+                    String(f.rating || ''), f.type || '', (f.feedback || '').replace(/\n/g,' ')
+                ]);
+            });
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', 'attachment; filename="analytics.csv"');
+            res.send(rows.map(r => r.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\n'));
+        } catch (e) { console.error('export csv', e); res.status(500).send('server'); }
+    });
     app.post('/create-checkout-session', requireLogin, csrfProtection, async (req, res) => {
         try {
             if (!process.env.STRIPE_PRICE_ID) {

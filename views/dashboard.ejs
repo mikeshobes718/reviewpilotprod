@@ -85,6 +85,9 @@
         <h1 class="page-heading">Dashboard</h1>
         <div class="card base-card" style="margin-bottom:16px">
           <h2>Insights</h2>
+          <% if (analytics && analytics.planTier === 'free') { %>
+            <div class="notice-banner" style="margin:8px 0 12px">Showing last 30 days. Upgrade to Pro for full history, filters, and exports.</div>
+          <% } %>
           <div class="kpis">
             <div class="kpi"><div class="label">Total feedback</div><div class="value"><%= analytics.total %></div></div>
             <div class="kpi"><div class="label">Average rating</div><div class="value"><%= analytics.avg %></div></div>
@@ -92,6 +95,13 @@
           </div>
           <div style="margin-top:1rem">
             <div id="distChart" style="display:grid;gap:6px"></div>
+            <% if (analytics && analytics.planTier === 'pro') { %>
+              <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
+                <form action="/api/analytics/export.csv" method="GET">
+                  <button type="submit" class="btn btn-secondary">Export CSV</button>
+                </form>
+              </div>
+            <% } %>
           </div>
         </div>
         <% } %>
