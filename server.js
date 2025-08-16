@@ -93,7 +93,19 @@
                 const IORedis = require('ioredis');
                 const connectionOptions = {
                     maxRetriesPerRequest: null,
-                    enableReadyCheck: false
+                    enableReadyCheck: false,
+                    connectTimeout: 15000,
+                    keepAlive: 1,
+                    noDelay: true,
+                    retryStrategy(times){
+                        const delay = Math.min(30000, Math.pow(2, times) * 200);
+                        return delay;
+                    },
+                    reconnectOnError(err){
+                        const msg = String(err && (err.message || err));
+                        if (msg.includes('READONLY') || msg.includes('ETIMEDOUT') || msg.includes('ECONNRESET')) return true;
+                        return false;
+                    }
                 };
                 // Enable TLS for ElastiCache Serverless; allow self-signed
                 connectionOptions.tls = { rejectUnauthorized: false };
