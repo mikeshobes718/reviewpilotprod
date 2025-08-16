@@ -134,10 +134,12 @@
           <div class="column">
             <div class="card base-card">
               <h2>Settings & Rating Link</h2>
-              <div id="placeIdHint" class="notice-banner" style="display:none; margin-bottom:12px">
+              <% if (!(business && business.googlePlaceId)) { %>
+              <div id="placeIdHint" class="notice-banner" style="margin-bottom:12px">
                 <span aria-hidden="true">💡</span>
                 <span>Add your Google Place ID to generate your public review link and QR code for customers.</span>
               </div>
+              <% } %>
               <form action="/update-settings" method="POST">
                 <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
                 <label for="googlePlaceId">Your Google Place ID:</label>
