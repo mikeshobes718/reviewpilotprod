@@ -516,6 +516,35 @@
             }
         });
 
+        // Onboarding status (dynamic, single source of truth)
+        app.get('/api/onboarding/status', requireLogin, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const ref = db.collection('businesses').doc(uid);
+                const doc = await ref.get();
+                const b = doc.exists ? (doc.data() || {}) : {};
+                let posConnected = !!(b.posConnection && b.posConnection.isConnected);
+                if (!posConnected && b.square && b.square.access) posConnected = true;
+                let sentFirst = false;
+                try {
+                    const es = await ref.collection('events').orderBy('ts', 'desc').limit(25).get();
+                    sentFirst = es.docs.some(d => {
+                        const t = (d.data() || {}).type || '';
+                        return t === 'send_email' || t === 'send_sms';
+                    });
+                } catch(_) {}
+                return res.json({
+                    hasPlaceId: !!b.googlePlaceId,
+                    hasShortLink: !!(b.shortSlug || b.googlePlaceId),
+                    posConnected,
+                    sentFirst
+                });
+            } catch (e) {
+                console.error('onboarding status error', e);
+                return res.status(200).json({ hasPlaceId:false, hasShortLink:false, posConnected:false, sentFirst:false });
+            }
+        });
+
         // POS: disconnect Square (revoke token, clear metadata)
         app.post('/auth/pos/square/disconnect', async (req, res) => {
             try {
@@ -1557,7 +1586,8 @@
             const now = Date.now();
             const thirtyDaysAgo = now - (30 * 24 * 60 * 60 * 1000);
             // basic fetch: we may filter client-side for last 30 days for Free
-            const feedbackSnapshot = await db.collection('businesses').doc(req.session.user.uid).collection('feedback').orderBy('createdAt', 'desc').get();
+            const businessRef = db.collection('businesses').doc(req.session.user.uid);
+            const feedbackSnapshot = await businessRef.collection('feedback').orderBy('createdAt', 'desc').get();
             let feedback = feedbackSnapshot.docs.map(doc => doc.data());
             if (!isPro) {
                 feedback = feedback.filter(f => {
@@ -1613,6 +1643,35 @@
                     console.warn('Stripe subscription lookup failed:', e.message);
                 }
             }
+            // Onboarding checklist
+            const bizData = businessDoc.data() || {};
+            let posConnected = !!(bizData.posConnection && bizData.posConnection.isConnected);
+            if (!posConnected && bizData.square && bizData.square.access) posConnected = true;
+            let sentFirst = false;
+            try {
+                const es = await businessRef.collection('events').orderBy('ts', 'desc').limit(25).get();
+                sentFirst = es.docs.some(d => {
+                    const t = (d.data() || {}).type || '';
+                    return t === 'send_email' || t === 'send_sms';
+                });
+            } catch(_) {}
+            const onboarding = {
+                hasPlaceId: !!bizData.googlePlaceId,
+                hasShortLink: !!(bizData.shortSlug || bizData.googlePlaceId),
+                posConnected,
+                sentFirst
+            };
+
+            // Trial days left for UI
+            let trialDaysLeft = null;
+            try {
+                const t = businessDoc.data()?.trialEndsAt;
+                if (t) {
+                    const ms = new Date(t).getTime() - Date.now();
+                    if (ms > 0) trialDaysLeft = Math.ceil(ms / (24*60*60*1000));
+                }
+            } catch(_) {}
+
             res.render('dashboard', {
                 business: businessDoc.data(),
                 user: req.session.user,
@@ -1621,6 +1680,8 @@
                 csrfToken: req.csrfToken(),
                 analytics: { total, avg, counts, conversions, planTier: isPro ? 'pro' : 'free' },
                 billing,
+                onboarding,
+                trialDaysLeft,
                 pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
             });
         } catch (error) {

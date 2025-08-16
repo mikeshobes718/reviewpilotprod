@@ -31,7 +31,7 @@
         .btn-primary:hover{ background: var(--accentHover) }
         .btn-secondary{ background:transparent; border:1px solid var(--theme-colors-button-secondaryBorder); color: var(--theme-colors-button-secondaryText); border-radius:8px; padding:10px 12px; font-weight:600 }
 
-        .link-box{ background: var(--bg); padding: 12px; border-radius:8px; font-family:monospace; border:1px solid var(--border) }
+        .link-box{ background: var(--bg); padding: 12px; border-radius:8px; font-family:monospace; border:1px solid var(--border); width:100%; box-sizing:border-box; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block }
 
         .kpis{ display:grid; grid-template-columns: repeat(3,1fr); gap: 12px }
         .kpi{ background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center }
@@ -182,11 +182,8 @@
 
             <div class="card base-card">
               <h2>Onboarding Checklist</h2>
-              <ul style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
-                <li>1. Add your Google Place ID <%= business.googlePlaceId ? '✅' : '—' %></li>
-                <li>2. Copy and test your review link ✅</li>
-                <li>3. Connect POS (Square) <span id="chkPos">—</span></li>
-                <li>4. Send your first request ✅</li>
+              <ul id="obList" style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
+                <li>Loading…</li>
               </ul>
             </div>
 
@@ -534,6 +531,23 @@
           }
         } catch(_){}
         refreshPosStatus();
+
+        // Live onboarding status fetch
+        ;(async function(){
+          try{
+            const ul = document.getElementById('obList');
+            if (!ul) return;
+            const r = await fetch('/api/onboarding/status', { credentials:'same-origin' });
+            const j = await r.json().catch(()=>({}));
+            const items = [
+              `1. Add your Google Place ID ${j.hasPlaceId ? '✅' : '—'}`,
+              `2. Copy and test your review link ${j.hasShortLink ? '✅' : '—'}`,
+              `3. Connect POS (Square) ${j.posConnected ? '✅' : '—'}`,
+              `4. Send your first request ${j.sentFirst ? '✅' : '—'}`
+            ];
+            ul.innerHTML = items.map(t=>`<li>${t}</li>`).join('');
+          }catch(_){ }
+        })();
 
         const sqBtn = document.getElementById('btnSquareConnect');
         if (sqBtn){
