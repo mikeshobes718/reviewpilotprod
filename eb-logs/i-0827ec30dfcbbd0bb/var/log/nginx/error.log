@@ -1,0 +1,12 @@
+2025/08/16 22:42:25 [warn] 2137#2137: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/16 22:42:25 [warn] 2178#2178: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/16 22:42:25 [warn] 2179#2179: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/16 22:50:52 [warn] 3056#3056: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/16 22:50:52 [warn] 3095#3095: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/16 22:50:52 [warn] 3096#3096: could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+2025/08/16 22:50:54 [error] 3099#3099: *1 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.74.164, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.13.164"
+2025/08/16 22:50:54 [error] 3098#3098: *3 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.55.156, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.13.164"
+2025/08/16 22:50:54 [error] 3099#3099: *5 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.7.232, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.13.164"
+2025/08/16 22:50:54 [error] 3099#3099: *7 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.85.125, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.13.164"
+2025/08/16 22:50:54 [error] 3099#3099: *9 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.35.56, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.13.164"
+2025/08/16 22:50:54 [error] 3099#3099: *11 connect() failed (111: Connection refused) while connecting to upstream, client: 172.31.20.8, server: , request: "GET / HTTP/1.1", upstream: "http://127.0.0.1:8080/", host: "172.31.13.164"

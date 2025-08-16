@@ -2118,8 +2118,8 @@
         try {
             const businessId = req.params.businessId;
             const doc = await db.collection('businesses').doc(businessId).get();
-            if (!doc.exists || doc.data().subscriptionStatus !== 'active') {
-                return res.status(404).send("This business is not currently active.");
+            if (!doc.exists) {
+                return res.status(404).send("This business is not currently available.");
             }
             const businessData = { ...doc.data(), uid: doc.id };
             res.render('rate', { business: businessData, csrfToken: req.csrfToken(), hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || null });

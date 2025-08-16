@@ -1,0 +1,19 @@
+# Logfile created on 2025-08-16 22:42:23 +0000 by logger.rb/v1.7.0
+A, [2025-08-16T22:42:23.556206 #2015]   ANY -- : healthd daemon 1.0.7 initialized
+W, [2025-08-16T22:42:23.614282 #2015]  WARN -- : log file "/var/log/nginx/healthd/application.log.2025-08-16-22" does not exist
+W, [2025-08-16T22:42:28.615782 #2015]  WARN -- : log file "/var/log/nginx/healthd/application.log.2025-08-16-22" does not exist
+W, [2025-08-16T22:42:33.616916 #2015]  WARN -- : log file "/var/log/nginx/healthd/application.log.2025-08-16-22" does not exist
+W, [2025-08-16T22:42:38.617974 #2015]  WARN -- : log file "/var/log/nginx/healthd/application.log.2025-08-16-22" does not exist
+W, [2025-08-16T22:47:43.579065 #2015]  WARN -- : discarding statistic item after validation error (Invalid JSON: [missing required value [path:'commands.latest.start_time'], missing required value [path:'commands.latest.command']]): {id: "2", namespace: "base", timestamp: 1755384463, data: "{\"commands\":{\"latest\":{\"end_time\":1755384458,\"exit_status\":0,\"message\":\"Ignoring not applicable command.\",\"status\":\"FAILURE\"}}}"}
+W, [2025-08-16T22:50:33.580468 #2015]  WARN -- : discarding statistic item after validation error (Invalid JSON: [missing required value [path:'commands.latest.start_time'], missing required value [path:'commands.latest.command']]): {id: "0", namespace: "base", timestamp: 1755384633, data: "{\"commands\":{\"current\":{\"command\":\"Application deployment\",\"deployment_id\":195,\"serial\":197,\"start_time\":1755384632,\"version_label\":\"app-7169-250816_174644503940\"},\"latest\":{\"end_time\":1755384458,\"exit_status\":0,\"message\":\"Ignoring not applicable command.\",\"status\":\"FAILURE\"}}}"}
+F, [2025-08-16T22:50:45.167819 #2015] FATAL -- : /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/puma-6.6.0/lib/puma/launcher.rb:447:in 'block in Puma::Launcher#setup_signals': SIGTERM (SignalException)
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/puma-6.6.0/lib/puma/single.rb:63:in 'Thread#join'
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/puma-6.6.0/lib/puma/single.rb:63:in 'Puma::Single#run'
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/puma-6.6.0/lib/puma/launcher.rb:203:in 'Puma::Launcher#run'
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/puma-6.6.0/lib/puma/cli.rb:75:in 'Puma::CLI#run'
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/healthd-1.0.7/bin/healthd:112:in 'block in <top (required)>'
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/healthd-1.0.7/bin/healthd:19:in 'Dir.chdir'
+	from /opt/elasticbeanstalk/lib/ruby/lib/ruby/gems/3.4.0/gems/healthd-1.0.7/bin/healthd:19:in '<top (required)>'
+	from /opt/elasticbeanstalk/lib/ruby/bin/healthd:25:in 'Kernel#load'
+	from /opt/elasticbeanstalk/lib/ruby/bin/healthd:25:in '<main>'
+A, [2025-08-16T22:50:47.965099 #2817]   ANY -- : healthd daemon 1.0.7 initialized

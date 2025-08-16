@@ -1,0 +1,2243 @@
+Aug 16 22:42:25 ip-172-31-13-164 web[2133]: [dotenv@17.2.1] injecting env (6) from .env -- tip: 📡 observe env with Radar: https://dotenvx.com/radar
+Aug 16 22:42:27 ip-172-31-13-164 web[2133]: ✅ Server is running and listening on port 8080
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:37 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 619.211 ms - -#033[0m
+Aug 16 22:42:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 322.901 ms - -#033[0m
+Aug 16 22:42:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 293.474 ms - -#033[0m
+Aug 16 22:42:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 366.315 ms - -#033[0m
+Aug 16 22:42:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 399.121 ms - -#033[0m
+Aug 16 22:42:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 424.466 ms - -#033[0m
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.875 ms - -#033[0m
+Aug 16 22:42:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.216 ms - -#033[0m
+Aug 16 22:42:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 4.419 ms - -#033[0m
+Aug 16 22:42:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.419 ms - -#033[0m
+Aug 16 22:42:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.753 ms - -#033[0m
+Aug 16 22:42:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.230 ms - -#033[0m
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]: }
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:42:57 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.382 ms - -#033[0m
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.949 ms - -#033[0m
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.632 ms - -#033[0m
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.831 ms - -#033[0m
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.720 ms - -#033[0m
+Aug 16 22:43:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.551 ms - -#033[0m
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:18 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.775 ms - -#033[0m
+Aug 16 22:43:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.472 ms - -#033[0m
+Aug 16 22:43:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.165 ms - -#033[0m
+Aug 16 22:43:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.447 ms - -#033[0m
+Aug 16 22:43:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.713 ms - -#033[0m
+Aug 16 22:43:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.467 ms - -#033[0m
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:28 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.162 ms - -#033[0m
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.068 ms - -#033[0m
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.101 ms - -#033[0m
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.434 ms - -#033[0m
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.174 ms - -#033[0m
+Aug 16 22:43:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.950 ms - -#033[0m
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:49 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.967 ms - -#033[0m
+Aug 16 22:43:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.014 ms - -#033[0m
+Aug 16 22:43:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.394 ms - -#033[0m
+Aug 16 22:43:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.428 ms - -#033[0m
+Aug 16 22:43:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.180 ms - -#033[0m
+Aug 16 22:43:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.662 ms - -#033[0m
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:43:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET /ChIJRygse5CCRo4Rg2P29c0HvZU #033[33m404#033[0m 187.300 ms - 166#033[0m
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.180 ms - -#033[0m
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.948 ms - -#033[0m
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.212 ms - -#033[0m
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.500 ms - -#033[0m
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.120 ms - -#033[0m
+Aug 16 22:44:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.231 ms - -#033[0m
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:10 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:20 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.278 ms - -#033[0m
+Aug 16 22:44:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.017 ms - -#033[0m
+Aug 16 22:44:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.284 ms - -#033[0m
+Aug 16 22:44:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.963 ms - -#033[0m
+Aug 16 22:44:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.610 ms - -#033[0m
+Aug 16 22:44:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.320 ms - -#033[0m
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:31 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.420 ms - -#033[0m
+Aug 16 22:44:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.237 ms - -#033[0m
+Aug 16 22:44:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.191 ms - -#033[0m
+Aug 16 22:44:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.942 ms - -#033[0m
+Aug 16 22:44:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.050 ms - -#033[0m
+Aug 16 22:44:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.095 ms - -#033[0m
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:41 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:44:52 ip-172-31-13-164 web[2133]: }
+Aug 16 22:44:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.932 ms - -#033[0m
+Aug 16 22:44:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.034 ms - -#033[0m
+Aug 16 22:44:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.236 ms - -#033[0m
+Aug 16 22:44:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.257 ms - -#033[0m
+Aug 16 22:44:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.236 ms - -#033[0m
+Aug 16 22:44:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.055 ms - -#033[0m
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:03 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.431 ms - -#033[0m
+Aug 16 22:45:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.793 ms - -#033[0m
+Aug 16 22:45:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.261 ms - -#033[0m
+Aug 16 22:45:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.082 ms - -#033[0m
+Aug 16 22:45:08 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.957 ms - -#033[0m
+Aug 16 22:45:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.464 ms - -#033[0m
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:13 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.000 ms - -#033[0m
+Aug 16 22:45:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.067 ms - -#033[0m
+Aug 16 22:45:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.247 ms - -#033[0m
+Aug 16 22:45:23 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.972 ms - -#033[0m
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.623 ms - -#033[0m
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.544 ms - -#033[0m
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:24 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.420 ms - -#033[0m
+Aug 16 22:45:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.027 ms - -#033[0m
+Aug 16 22:45:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.045 ms - -#033[0m
+Aug 16 22:45:38 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.094 ms - -#033[0m
+Aug 16 22:45:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.299 ms - -#033[0m
+Aug 16 22:45:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.825 ms - -#033[0m
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:46 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.160 ms - -#033[0m
+Aug 16 22:45:53 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.927 ms - -#033[0m
+Aug 16 22:45:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.466 ms - -#033[0m
+Aug 16 22:45:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.012 ms - -#033[0m
+Aug 16 22:45:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.293 ms - -#033[0m
+Aug 16 22:45:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.298 ms - -#033[0m
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]: }
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:45:57 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:08 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.705 ms - -#033[0m
+Aug 16 22:46:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.572 ms - -#033[0m
+Aug 16 22:46:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 4.516 ms - -#033[0m
+Aug 16 22:46:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.389 ms - -#033[0m
+Aug 16 22:46:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.133 ms - -#033[0m
+Aug 16 22:46:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.410 ms - -#033[0m
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:19 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.521 ms - -#033[0m
+Aug 16 22:46:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.277 ms - -#033[0m
+Aug 16 22:46:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.191 ms - -#033[0m
+Aug 16 22:46:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.340 ms - -#033[0m
+Aug 16 22:46:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.067 ms - -#033[0m
+Aug 16 22:46:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.391 ms - -#033[0m
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:30 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.220 ms - -#033[0m
+Aug 16 22:46:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.079 ms - -#033[0m
+Aug 16 22:46:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.272 ms - -#033[0m
+Aug 16 22:46:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.394 ms - -#033[0m
+Aug 16 22:46:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.267 ms - -#033[0m
+Aug 16 22:46:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.834 ms - -#033[0m
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:41 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:46:52 ip-172-31-13-164 web[2133]: }
+Aug 16 22:46:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.566 ms - -#033[0m
+Aug 16 22:46:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.899 ms - -#033[0m
+Aug 16 22:46:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.191 ms - -#033[0m
+Aug 16 22:46:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.296 ms - -#033[0m
+Aug 16 22:46:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.807 ms - -#033[0m
+Aug 16 22:46:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.040 ms - -#033[0m
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:04 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.518 ms - -#033[0m
+Aug 16 22:47:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.715 ms - -#033[0m
+Aug 16 22:47:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.050 ms - -#033[0m
+Aug 16 22:47:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.461 ms - -#033[0m
+Aug 16 22:47:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.263 ms - -#033[0m
+Aug 16 22:47:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.394 ms - -#033[0m
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:15 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.944 ms - -#033[0m
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.476 ms - -#033[0m
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.936 ms - -#033[0m
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.789 ms - -#033[0m
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.111 ms - -#033[0m
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.569 ms - -#033[0m
+Aug 16 22:47:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.473 ms - -#033[0m
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:26 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:38 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.410 ms - -#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.395 ms - -#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.421 ms - -#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.076 ms - -#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.001 ms - -#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.902 ms - -#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mPOST /hello.world?%ADd+allow_url_include%3d1+%ADd+auto_prepend_file%3dphp://input #033[33m404#033[0m 18.838 ms - 151#033[0m
+Aug 16 22:47:39 ip-172-31-13-164 web[2133]: #033[0mPOST /?%ADd+allow_url_include%3d1+%ADd+auto_prepend_file%3dphp://input #033[33m404#033[0m 1.387 ms - 140#033[0m
+Aug 16 22:47:40 ip-172-31-13-164 web[2133]: #033[0mGET /vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.987 ms - 189#033[0m
+Aug 16 22:47:40 ip-172-31-13-164 web[2133]: #033[0mGET /vendor/phpunit/phpunit/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.760 ms - 185#033[0m
+Aug 16 22:47:41 ip-172-31-13-164 web[2133]: #033[0mGET /vendor/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.940 ms - 181#033[0m
+Aug 16 22:47:41 ip-172-31-13-164 web[2133]: #033[0mGET /vendor/phpunit/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.797 ms - 177#033[0m
+Aug 16 22:47:42 ip-172-31-13-164 web[2133]: #033[0mGET /vendor/phpunit/phpunit/LICENSE/eval-stdin.php #033[33m404#033[0m 0.886 ms - 184#033[0m
+Aug 16 22:47:43 ip-172-31-13-164 web[2133]: #033[0mGET /vendor/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 2.247 ms - 196#033[0m
+Aug 16 22:47:44 ip-172-31-13-164 web[2133]: #033[0mGET /phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.984 ms - 182#033[0m
+Aug 16 22:47:45 ip-172-31-13-164 web[2133]: #033[0mGET /phpunit/phpunit/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.780 ms - 178#033[0m
+Aug 16 22:47:47 ip-172-31-13-164 web[2133]: #033[0mGET /phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.933 ms - 174#033[0m
+Aug 16 22:47:48 ip-172-31-13-164 web[2133]: #033[0mGET /phpunit/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.777 ms - 170#033[0m
+Aug 16 22:47:48 ip-172-31-13-164 web[2133]: #033[0mGET /lib/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.911 ms - 186#033[0m
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: }
+Aug 16 22:47:49 ip-172-31-13-164 web[2133]: #033[0mGET /lib/phpunit/phpunit/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.717 ms - 182#033[0m
+Aug 16 22:47:50 ip-172-31-13-164 web[2133]: #033[0mGET /lib/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.862 ms - 178#033[0m
+Aug 16 22:47:50 ip-172-31-13-164 web[2133]: #033[0mGET /lib/phpunit/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.730 ms - 174#033[0m
+Aug 16 22:47:51 ip-172-31-13-164 web[2133]: #033[0mGET /lib/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.891 ms - 193#033[0m
+Aug 16 22:47:52 ip-172-31-13-164 web[2133]: #033[0mGET /laravel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.745 ms - 197#033[0m
+Aug 16 22:47:52 ip-172-31-13-164 web[2133]: #033[0mGET /www/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.704 ms - 193#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.084 ms - -#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET /ws/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.875 ms - 192#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.336 ms - -#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.476 ms - -#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.574 ms - -#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.111 ms - -#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.473 ms - -#033[0m
+Aug 16 22:47:54 ip-172-31-13-164 web[2133]: #033[0mGET /yii/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.717 ms - 193#033[0m
+Aug 16 22:47:55 ip-172-31-13-164 web[2133]: #033[0mGET /zend/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.864 ms - 194#033[0m
+Aug 16 22:47:56 ip-172-31-13-164 web[2133]: #033[0mGET /ws/ec/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.703 ms - 195#033[0m
+Aug 16 22:47:56 ip-172-31-13-164 web[2133]: #033[0mGET /V2/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 1.079 ms - 192#033[0m
+Aug 16 22:47:57 ip-172-31-13-164 web[2133]: #033[0mGET /tests/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.963 ms - 195#033[0m
+Aug 16 22:47:57 ip-172-31-13-164 web[2133]: #033[0mGET /test/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.698 ms - 194#033[0m
+Aug 16 22:47:58 ip-172-31-13-164 web[2133]: #033[0mGET /testing/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.716 ms - 197#033[0m
+Aug 16 22:47:59 ip-172-31-13-164 web[2133]: #033[0mGET /api/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 1.243 ms - 193#033[0m
+Aug 16 22:47:59 ip-172-31-13-164 web[2133]: #033[0mGET /demo/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.707 ms - 194#033[0m
+Aug 16 22:48:00 ip-172-31-13-164 web[2133]: #033[0mGET /cms/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.732 ms - 193#033[0m
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: #033[0mGET /crm/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 1.262 ms - 193#033[0m
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:01 ip-172-31-13-164 web[2133]: #033[0mGET /admin/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 1.249 ms - 195#033[0m
+Aug 16 22:48:02 ip-172-31-13-164 web[2133]: #033[0mGET /backup/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 1.191 ms - 196#033[0m
+Aug 16 22:48:02 ip-172-31-13-164 web[2133]: #033[0mGET /blog/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 1.963 ms - 194#033[0m
+Aug 16 22:48:03 ip-172-31-13-164 web[2133]: #033[0mGET /workspace/drupal/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.747 ms - 206#033[0m
+Aug 16 22:48:04 ip-172-31-13-164 web[2133]: #033[0mGET /panel/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.694 ms - 195#033[0m
+Aug 16 22:48:05 ip-172-31-13-164 web[2133]: #033[0mGET /public/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.858 ms - 196#033[0m
+Aug 16 22:48:05 ip-172-31-13-164 web[2133]: #033[0mGET /apps/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.652 ms - 194#033[0m
+Aug 16 22:48:06 ip-172-31-13-164 web[2133]: #033[0mGET /app/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php #033[33m404#033[0m 0.658 ms - 193#033[0m
+Aug 16 22:48:07 ip-172-31-13-164 web[2133]: #033[0mGET /index.php?s=/index/\think\app/invokefunction&function=call_user_func_array&vars[0]=md5&vars[1][]=Hello #033[33m404#033[0m 0.674 ms - 148#033[0m
+Aug 16 22:48:07 ip-172-31-13-164 web[2133]: #033[0mGET /public/index.php?s=/index/\think\app/invokefunction&function=call_user_func_array&vars[0]=md5&vars[1][]=Hello #033[33m404#033[0m 0.907 ms - 155#033[0m
+Aug 16 22:48:07 ip-172-31-13-164 web[2133]: #033[0mGET /index.php?lang=../../../../../../../../usr/local/lib/php/pearcmd&+config-create+/&/<?echo(md5("hi"));?>+/tmp/index1.php #033[33m404#033[0m 0.690 ms - 148#033[0m
+Aug 16 22:48:08 ip-172-31-13-164 web[2133]: #033[0mGET /index.php?lang=../../../../../../../../tmp/index1 #033[33m404#033[0m 0.650 ms - 148#033[0m
+Aug 16 22:48:08 ip-172-31-13-164 web[2133]: #033[0mGET /containers/json #033[33m404#033[0m 0.727 ms - 154#033[0m
+Aug 16 22:48:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.433 ms - -#033[0m
+Aug 16 22:48:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.577 ms - -#033[0m
+Aug 16 22:48:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.026 ms - -#033[0m
+Aug 16 22:48:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.055 ms - -#033[0m
+Aug 16 22:48:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.185 ms - -#033[0m
+Aug 16 22:48:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.601 ms - -#033[0m
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:12 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.554 ms - -#033[0m
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.511 ms - -#033[0m
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.210 ms - -#033[0m
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.278 ms - -#033[0m
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.246 ms - -#033[0m
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.087 ms - -#033[0m
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:24 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:36 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.169 ms - -#033[0m
+Aug 16 22:48:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.230 ms - -#033[0m
+Aug 16 22:48:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.980 ms - -#033[0m
+Aug 16 22:48:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.106 ms - -#033[0m
+Aug 16 22:48:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.089 ms - -#033[0m
+Aug 16 22:48:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.267 ms - -#033[0m
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.361 ms - -#033[0m
+Aug 16 22:48:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.499 ms - -#033[0m
+Aug 16 22:48:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.637 ms - -#033[0m
+Aug 16 22:48:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.291 ms - -#033[0m
+Aug 16 22:48:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.928 ms - -#033[0m
+Aug 16 22:48:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.267 ms - -#033[0m
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:48:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.197 ms - -#033[0m
+Aug 16 22:49:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 4.754 ms - -#033[0m
+Aug 16 22:49:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.983 ms - -#033[0m
+Aug 16 22:49:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.829 ms - -#033[0m
+Aug 16 22:49:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.949 ms - -#033[0m
+Aug 16 22:49:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.873 ms - -#033[0m
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:11 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:23 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.869 ms - -#033[0m
+Aug 16 22:49:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.260 ms - -#033[0m
+Aug 16 22:49:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.962 ms - -#033[0m
+Aug 16 22:49:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.263 ms - -#033[0m
+Aug 16 22:49:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.179 ms - -#033[0m
+Aug 16 22:49:24 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.187 ms - -#033[0m
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.370 ms - -#033[0m
+Aug 16 22:49:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.829 ms - -#033[0m
+Aug 16 22:49:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.586 ms - -#033[0m
+Aug 16 22:49:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 6.165 ms - -#033[0m
+Aug 16 22:49:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.893 ms - -#033[0m
+Aug 16 22:49:39 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 4.236 ms - -#033[0m
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.502 ms - -#033[0m
+Aug 16 22:49:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.891 ms - -#033[0m
+Aug 16 22:49:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.075 ms - -#033[0m
+Aug 16 22:49:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.959 ms - -#033[0m
+Aug 16 22:49:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 1.977 ms - -#033[0m
+Aug 16 22:49:54 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.451 ms - -#033[0m
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:49:59 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.131 ms - -#033[0m
+Aug 16 22:50:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.021 ms - -#033[0m
+Aug 16 22:50:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.114 ms - -#033[0m
+Aug 16 22:50:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.325 ms - -#033[0m
+Aug 16 22:50:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 2.061 ms - -#033[0m
+Aug 16 22:50:09 ip-172-31-13-164 web[2133]: #033[0mGET / #033[32m200#033[0m 3.426 ms - -#033[0m
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:11 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:23 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:35 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]: Error: connect ETIMEDOUT
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  errorno: 'ETIMEDOUT',
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  code: 'ETIMEDOUT',
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]:  syscall: 'connect'
+Aug 16 22:50:47 ip-172-31-13-164 web[2133]: }
+Aug 16 22:50:52 ip-172-31-13-164 web[3052]: [dotenv@17.2.1] injecting env (6) from .env -- tip: ⚙️  override existing env vars with { override: true }
+Aug 16 22:50:55 ip-172-31-13-164 web[3052]: ✅ Server is running and listening on port 8080
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:05 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 749.678 ms - -#033[0m
+Aug 16 22:51:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 196.582 ms - -#033[0m
+Aug 16 22:51:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 199.443 ms - -#033[0m
+Aug 16 22:51:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 186.641 ms - -#033[0m
+Aug 16 22:51:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 165.002 ms - -#033[0m
+Aug 16 22:51:10 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 220.086 ms - -#033[0m
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:15 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.717 ms - -#033[0m
+Aug 16 22:51:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.869 ms - -#033[0m
+Aug 16 22:51:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.793 ms - -#033[0m
+Aug 16 22:51:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 4.292 ms - -#033[0m
+Aug 16 22:51:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.292 ms - -#033[0m
+Aug 16 22:51:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.564 ms - -#033[0m
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:25 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:35 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.737 ms - -#033[0m
+Aug 16 22:51:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 4.673 ms - -#033[0m
+Aug 16 22:51:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.639 ms - -#033[0m
+Aug 16 22:51:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 4.474 ms - -#033[0m
+Aug 16 22:51:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.460 ms - -#033[0m
+Aug 16 22:51:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.214 ms - -#033[0m
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:45 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.854 ms - -#033[0m
+Aug 16 22:51:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.436 ms - -#033[0m
+Aug 16 22:51:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.137 ms - -#033[0m
+Aug 16 22:51:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.099 ms - -#033[0m
+Aug 16 22:51:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.920 ms - -#033[0m
+Aug 16 22:51:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.266 ms - -#033[0m
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]: }
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:51:56 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:06 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.925 ms - -#033[0m
+Aug 16 22:52:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.378 ms - -#033[0m
+Aug 16 22:52:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.205 ms - -#033[0m
+Aug 16 22:52:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 1.895 ms - -#033[0m
+Aug 16 22:52:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.946 ms - -#033[0m
+Aug 16 22:52:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.336 ms - -#033[0m
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:16 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.362 ms - -#033[0m
+Aug 16 22:52:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.267 ms - -#033[0m
+Aug 16 22:52:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 1.996 ms - -#033[0m
+Aug 16 22:52:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.874 ms - -#033[0m
+Aug 16 22:52:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.347 ms - -#033[0m
+Aug 16 22:52:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 4.091 ms - -#033[0m
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:27 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:37 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.051 ms - -#033[0m
+Aug 16 22:52:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.267 ms - -#033[0m
+Aug 16 22:52:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.078 ms - -#033[0m
+Aug 16 22:52:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.191 ms - -#033[0m
+Aug 16 22:52:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.609 ms - -#033[0m
+Aug 16 22:52:39 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.397 ms - -#033[0m
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:48 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.923 ms - -#033[0m
+Aug 16 22:52:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.131 ms - -#033[0m
+Aug 16 22:52:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.658 ms - -#033[0m
+Aug 16 22:52:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.142 ms - -#033[0m
+Aug 16 22:52:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.430 ms - -#033[0m
+Aug 16 22:52:54 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.461 ms - -#033[0m
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]: }
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:52:58 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.180 ms - -#033[0m
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.485 ms - -#033[0m
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.264 ms - -#033[0m
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.279 ms - -#033[0m
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.367 ms - -#033[0m
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:09 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.071 ms - -#033[0m
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]: Error: connect ETIMEDOUT
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at TLSSocket.<anonymous> (/var/app/current/node_modules/ioredis/built/Redis.js:171:41)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at Object.onceWrapper (node:events:638:28)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at TLSSocket.emit (node:events:524:28)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at Socket._onTimeout (node:net:595:8)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at listOnTimeout (node:internal/timers:581:17)
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:    at process.processTimers (node:internal/timers:519:7) {
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  errorno: 'ETIMEDOUT',
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  code: 'ETIMEDOUT',
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]:  syscall: 'connect'
+Aug 16 22:53:20 ip-172-31-13-164 web[3052]: }
+Aug 16 22:53:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.058 ms - -#033[0m
+Aug 16 22:53:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.562 ms - -#033[0m
+Aug 16 22:53:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.113 ms - -#033[0m
+Aug 16 22:53:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.159 ms - -#033[0m
+Aug 16 22:53:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 3.840 ms - -#033[0m
+Aug 16 22:53:24 ip-172-31-13-164 web[3052]: #033[0mGET / #033[32m200#033[0m 2.365 ms - -#033[0m

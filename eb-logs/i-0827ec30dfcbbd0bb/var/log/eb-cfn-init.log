@@ -1,0 +1,184 @@
+[2025-08-16T22:41:57Z] Started EB User Data
++ SLEEP_TIME=2
++ SLEEP_TIME_MAX=3600
++ true
++ curl https://elasticbeanstalk-platform-assets-us-east-1.s3.amazonaws.com/stalks/eb_nodejs20_amazon_linux_2023_1.0.887.0_20250806044942/lib/UserDataScript.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  4838  100  4838    0     0   124k      0 --:--:-- --:--:-- --:--:--  127k
++ RESULT=0
++ [[ 0 -ne 0 ]]
++ /bin/bash /tmp/ebbootstrap.sh 'https://cloudformation-waitcondition-us-east-1.s3.amazonaws.com/arn%3Aaws%3Acloudformation%3Aus-east-1%3A519848832340%3Astack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9/12a6a1e0-76d4-11f0-aa7d-0affdbff7db9/AWSEBInstanceLaunchWaitHandle?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250811T165609Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=AKIA6L7Q4OWT3JRXU3BZ%2F20250811%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=2985e853d9bc1c50dd83b677853def4a5a8089db9c6e243d493110706f6bb5b2' arn:aws:cloudformation:us-east-1:519848832340:stack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9 0183a4ec-5ba7-48c7-9623-d25cd4e431c3 https://elasticbeanstalk-health.us-east-1.amazonaws.com '' https://elasticbeanstalk-platform-assets-us-east-1.s3.amazonaws.com/stalks/eb_nodejs20_amazon_linux_2023_1.0.887.0_20250806044942 us-east-1
+[2025-08-16T22:41:57.926Z] Started EB Bootstrapping Script.
+[2025-08-16T22:41:57.928Z] Received parameters:
+ TARBALLS = 
+ EB_GEMS = 
+ SIGNAL_URL = https://cloudformation-waitcondition-us-east-1.s3.amazonaws.com/arn%3Aaws%3Acloudformation%3Aus-east-1%3A519848832340%3Astack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9/12a6a1e0-76d4-11f0-aa7d-0affdbff7db9/AWSEBInstanceLaunchWaitHandle?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250811T165609Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=AKIA6L7Q4OWT3JRXU3BZ%2F20250811%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=2985e853d9bc1c50dd83b677853def4a5a8089db9c6e243d493110706f6bb5b2
+ STACK_ID = arn:aws:cloudformation:us-east-1:519848832340:stack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9
+ REGION = us-east-1
+ GUID = 
+ HEALTHD_GROUP_ID = 0183a4ec-5ba7-48c7-9623-d25cd4e431c3
+ HEALTHD_ENDPOINT = https://elasticbeanstalk-health.us-east-1.amazonaws.com
+ PROXY_SERVER = 
+ HEALTHD_PROXY_LOG_LOCATION = 
+ PLATFORM_ASSETS_URL = https://elasticbeanstalk-platform-assets-us-east-1.s3.amazonaws.com/stalks/eb_nodejs20_amazon_linux_2023_1.0.887.0_20250806044942
+[2025-08-16T22:41:57.932Z] engine url is set to https://elasticbeanstalk-platform-assets-us-east-1.s3.amazonaws.com/stalks/eb_nodejs20_amazon_linux_2023_1.0.887.0_20250806044942/lib/platform-engine.zip
+[2025-08-16T22:41:57.934Z] first init of instance.
+[2025-08-16T22:41:57.935Z] Started executing cfn_init _OnInstanceBoot.
+[2025-08-16T22:41:57.937Z] Running cfn-init ConfigSet: _OnInstanceBoot.
+[2025-08-16T22:41:57.939Z] Using stack-id from userdata
+[2025-08-16T22:41:58.695Z] Command Returned: 
+[2025-08-16T22:41:58.697Z] Completed executing cfn_init.
+[2025-08-16T22:41:58.699Z] finished _OnInstanceBoot
+[2025-08-16T22:41:58.701Z] installing platform engine
+2025-08-16 22:41:59 URL:https://elasticbeanstalk-platform-assets-us-east-1.s3.amazonaws.com/stalks/eb_nodejs20_amazon_linux_2023_1.0.887.0_20250806044942/lib/platform-engine.zip [33662214/33662214] -> "/tmp/platform-engine.zip" [1]
+[2025-08-16T22:41:59.887Z] executing platform engine. see /var/log/eb-engine.log.
+[2025-08-16T22:42:25.832Z] Successfully bootstrapped instance.
+[2025-08-16T22:42:25.837Z] Sending signal 0 to CFN wait condition https://cloudformation-waitcondition-us-east-1.s3.amazonaws.com/arn%3Aaws%3Acloudformation%3Aus-east-1%3A519848832340%3Astack/awseb-e-aewwgj2dcx-stack/12a3e2c0-76d4-11f0-aa7d-0affdbff7db9/12a6a1e0-76d4-11f0-aa7d-0affdbff7db9/AWSEBInstanceLaunchWaitHandle?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250811T165609Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=AKIA6L7Q4OWT3JRXU3BZ%2F20250811%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=2985e853d9bc1c50dd83b677853def4a5a8089db9c6e243d493110706f6bb5b2
+Error signaling CloudFormation: [Errno 403] HTTP Error 403 : <?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>AccessDenied</Code><Message>Request has expired</Message><X-Amz-Expires>86399</X-Amz-Expires><Expires>2025-08-12T16:56:08Z</Expires><ServerTime>2025-08-16T22:42:26Z</ServerTime><RequestId>HGPJ9JCGTRZJ6W3T</RequestId><HostId>Gp5fejStZsrBBQ3L0ZkeAOojjS5faGvmYPDxQvs4GMQ48X21HFHNcKWgZXhS/8/Try0/38x/w8J5r99xP3CHFXYtSGTnjZH5n8hV/aj+n8U=</HostId></Error>
+[2025-08-16T22:42:26.183Z] Wait Condition Signal expired.
+[2025-08-16T22:42:26.186Z] Tailing /var/log/eb-engine.log
+
+******************* eb-engine taillog *******************
+
+2025/08/16 22:42:24.309902 [INFO] Running command: systemctl show -p PartOf web.service
+2025/08/16 22:42:24.322365 [INFO] Running command: systemctl daemon-reload
+2025/08/16 22:42:24.613811 [INFO] Running command: systemctl reset-failed
+2025/08/16 22:42:24.622770 [INFO] Running command: systemctl is-enabled eb-app.target
+2025/08/16 22:42:24.630464 [INFO] Copying file /opt/elasticbeanstalk/config/private/aws-eb.target to /etc/systemd/system/eb-app.target
+2025/08/16 22:42:24.631730 [INFO] Running command: systemctl enable eb-app.target
+2025/08/16 22:42:24.931407 [INFO] Created symlink /etc/systemd/system/multi-user.target.wants/eb-app.target → /etc/systemd/system/eb-app.target.
+
+2025/08/16 22:42:24.931434 [INFO] Running command: systemctl start eb-app.target
+2025/08/16 22:42:24.941903 [INFO] Running command: systemctl enable web.service
+2025/08/16 22:42:25.179498 [INFO] Created symlink /etc/systemd/system/multi-user.target.wants/web.service → /etc/systemd/system/web.service.
+
+2025/08/16 22:42:25.179532 [INFO] Running command: systemctl show -p PartOf web.service
+2025/08/16 22:42:25.190986 [INFO] Running command: systemctl is-active web.service
+2025/08/16 22:42:25.199026 [INFO] Running command: systemctl start web.service
+2025/08/16 22:42:25.233734 [INFO] Executing instruction: start X-Ray
+2025/08/16 22:42:25.233754 [INFO] X-Ray is not enabled.
+2025/08/16 22:42:25.233758 [INFO] Executing instruction: start proxy with new configuration
+2025/08/16 22:42:25.233783 [INFO] Running command: /usr/sbin/nginx -t -c /var/proxy/staging/nginx/nginx.conf
+2025/08/16 22:42:25.274468 [INFO] nginx: [warn] could not build optimal types_hash, you should increase either types_hash_max_size: 1024 or types_hash_bucket_size: 64; ignoring types_hash_bucket_size
+nginx: the configuration file /var/proxy/staging/nginx/nginx.conf syntax is ok
+nginx: configuration file /var/proxy/staging/nginx/nginx.conf test is successful
+
+2025/08/16 22:42:25.274571 [INFO] Running command: cp -rp /var/proxy/staging/nginx/* /etc/nginx
+2025/08/16 22:42:25.281339 [INFO] Running command: systemctl show -p PartOf nginx.service
+2025/08/16 22:42:25.305184 [INFO] Running command: systemctl daemon-reload
+2025/08/16 22:42:25.652062 [INFO] Running command: systemctl reset-failed
+2025/08/16 22:42:25.664245 [INFO] Running command: systemctl show -p PartOf nginx.service
+2025/08/16 22:42:25.682888 [INFO] Running command: systemctl is-active nginx.service
+2025/08/16 22:42:25.695253 [INFO] Running command: systemctl start nginx.service
+2025/08/16 22:42:25.800112 [INFO] Executing instruction: configureSqsd
+2025/08/16 22:42:25.800131 [INFO] This is a web server environment instance, skip configure sqsd daemon ...
+2025/08/16 22:42:25.800134 [INFO] Executing instruction: startSqsd
+2025/08/16 22:42:25.800137 [INFO] This is a web server environment instance, skip start sqsd daemon ...
+2025/08/16 22:42:25.800140 [INFO] Executing instruction: Track pids in healthd
+2025/08/16 22:42:25.800142 [INFO] This is an enhanced health env...
+2025/08/16 22:42:25.800151 [INFO] Running command: systemctl show -p ConsistsOf aws-eb.target | cut -d= -f2
+2025/08/16 22:42:25.812540 [INFO] nginx.service healthd.service cfn-hup.service
+
+2025/08/16 22:42:25.812574 [INFO] Running command: systemctl show -p ConsistsOf eb-app.target | cut -d= -f2
+2025/08/16 22:42:25.826383 [INFO] web.service
+
+2025/08/16 22:42:25.826889 [INFO] Executing instruction: RunAppDeployPostDeployHooks
+2025/08/16 22:42:25.826952 [INFO] Executing platform hooks in .platform/hooks/postdeploy/
+2025/08/16 22:42:25.826974 [INFO] The dir .platform/hooks/postdeploy/ does not exist
+2025/08/16 22:42:25.826977 [INFO] Finished running scripts in /var/app/current/.platform/hooks/postdeploy
+2025/08/16 22:42:25.826983 [INFO] Executing cleanup logic
+2025/08/16 22:42:25.827105 [INFO] Platform Engine finished execution on command: self-startup
+******************* End of taillog *******************
+
+
+[2025-08-16T22:42:26.193Z] Tailing /var/log/eb-tools.log
+
+******************* eb-tools taillog *******************
+***eb-tools is not available yet.***
+******************* End of taillog *******************
+
+
+[2025-08-16T22:42:26.195Z] Tailing /var/log/eb-hooks.log
+
+******************* eb-hooks taillog *******************
+
+******************* End of taillog *******************
+
+
+[2025-08-16T22:42:26.198Z] Tailing /var/log/cfn-init.log
+
+******************* cfn-init taillog *******************
+    self.send(msg)
+  File "/usr/lib64/python3.9/http/client.py", line 980, in send
+    self.connect()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+cfnbootstrap.packages.requests.packages.urllib3.exceptions.NewConnectionError: <cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc58e610>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/adapters.py", line 489, in send
+    resp = conn.urlopen(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/retry.py", line 573, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+cfnbootstrap.packages.requests.packages.urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='169.254.169.254', port=80): Max retries exceeded with url: /latest/api/token (Caused by NewConnectionError('<cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc58e610>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 191, in _retry
+    return f(*args, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 327, in _fetch_instance_id
+    token = _get_session_token()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 289, in _get_session_token
+    resp = requests.put(_get_metadata_path('/api/token'),
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/api.py", line 130, in put
+    return request("put", url, data=data, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/sessions.py", line 586, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/sessions.py", line 700, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/adapters.py", line 565, in send
+    raise ConnectionError(e, request=request)
+cfnbootstrap.packages.requests.exceptions.ConnectionError: HTTPConnectionPool(host='169.254.169.254', port=80): Max retries exceeded with url: /latest/api/token (Caused by NewConnectionError('<cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc58e610>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2025-08-16 22:42:05,163 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:42:05,168 [INFO] Running configSets: Infra-EmbeddedPreBuild
+2025-08-16 22:42:05,170 [INFO] Running configSet Infra-EmbeddedPreBuild
+2025-08-16 22:42:05,171 [INFO] ConfigSets completed
+2025-08-16 22:42:05,171 [INFO] -----------------------Build complete-----------------------
+2025-08-16 22:42:24,217 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:42:24,222 [INFO] Running configSets: Infra-EmbeddedPostBuild
+2025-08-16 22:42:24,225 [INFO] Running configSet Infra-EmbeddedPostBuild
+2025-08-16 22:42:24,225 [INFO] ConfigSets completed
+2025-08-16 22:42:24,225 [INFO] -----------------------Build complete-----------------------
+******************* End of taillog *******************
+
+
+[2025-08-16T22:42:26.202Z] Tailing /var/log/cfn-hup.log
+
+******************* cfn-hup taillog *******************
+2025-08-16 22:42:05,053 [DEBUG] CloudFormation client initialized with endpoint https://cloudformation.us-east-1.amazonaws.com
+2025-08-16 22:42:05,054 [DEBUG] SQS client initialized with endpoint https://sqs.us-east-1.amazonaws.com
+2025-08-16 22:42:05,054 [DEBUG] CloudFormation client initialized with endpoint https://cloudformation.us-east-1.amazonaws.com
+2025-08-16 22:42:05,054 [DEBUG] Enabled single threading mode.
+2025-08-16 22:42:05,055 [DEBUG] Creating /var/lib/cfn-hup/data
+2025-08-16 22:42:05,064 [INFO] No umask value specified in config file. Using the default one: 0o22
+2025-08-16 22:42:05,128 [INFO] Pid: 1804
+2025-08-16 22:42:05,389 [INFO] Refreshing listener credentials
+2025-08-16 22:42:05,472 [INFO] Scheduling next credential refresh in 1799.0 seconds
+******************* End of taillog *******************
+
+
+[2025-08-16T22:42:26.205Z] Completed EB Bootstrapping Script.
++ RESULT=0
++ [[ 0 -ne 0 ]]
++ exit 0

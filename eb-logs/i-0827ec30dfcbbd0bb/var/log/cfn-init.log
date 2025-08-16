@@ -1,0 +1,161 @@
+2025-08-16 22:41:58,402 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:41:58,407 [INFO] Running configSets: _OnInstanceBoot
+2025-08-16 22:41:58,410 [INFO] Running configSet _OnInstanceBoot
+2025-08-16 22:41:58,412 [INFO] Running config AWSEBBaseConfig
+2025-08-16 22:41:58,654 [INFO] Command clearbackupfiles succeeded
+2025-08-16 22:41:58,656 [INFO] Running config AWSEBCfnHupEndpointOverride
+2025-08-16 22:41:58,661 [INFO] Command clearbackupfiles succeeded
+2025-08-16 22:41:58,663 [INFO] ConfigSets completed
+2025-08-16 22:41:58,663 [INFO] -----------------------Build complete-----------------------
+2025-08-16 22:42:00,522 [ERROR] ConnectionError
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 169, in _new_conn
+    conn = connection.create_connection(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/connection.py", line 96, in create_connection
+    raise err
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/connection.py", line 86, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 394, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 234, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "/usr/lib64/python3.9/http/client.py", line 1285, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib64/python3.9/http/client.py", line 1331, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib64/python3.9/http/client.py", line 1280, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib64/python3.9/http/client.py", line 1040, in _send_output
+    self.send(msg)
+  File "/usr/lib64/python3.9/http/client.py", line 980, in send
+    self.connect()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+cfnbootstrap.packages.requests.packages.urllib3.exceptions.NewConnectionError: <cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc5688b0>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/adapters.py", line 489, in send
+    resp = conn.urlopen(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/retry.py", line 573, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+cfnbootstrap.packages.requests.packages.urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='169.254.169.254', port=80): Max retries exceeded with url: /latest/api/token (Caused by NewConnectionError('<cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc5688b0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 191, in _retry
+    return f(*args, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 327, in _fetch_instance_id
+    token = _get_session_token()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 289, in _get_session_token
+    resp = requests.put(_get_metadata_path('/api/token'),
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/api.py", line 130, in put
+    return request("put", url, data=data, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/sessions.py", line 586, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/sessions.py", line 700, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/adapters.py", line 565, in send
+    raise ConnectionError(e, request=request)
+cfnbootstrap.packages.requests.exceptions.ConnectionError: HTTPConnectionPool(host='169.254.169.254', port=80): Max retries exceeded with url: /latest/api/token (Caused by NewConnectionError('<cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc5688b0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2025-08-16 22:42:00,617 [ERROR] ConnectionError
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 169, in _new_conn
+    conn = connection.create_connection(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/connection.py", line 96, in create_connection
+    raise err
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/connection.py", line 86, in create_connection
+    sock.connect(sa)
+OSError: [Errno 101] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 699, in urlopen
+    httplib_response = self._make_request(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 394, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 234, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+  File "/usr/lib64/python3.9/http/client.py", line 1285, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib64/python3.9/http/client.py", line 1331, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib64/python3.9/http/client.py", line 1280, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib64/python3.9/http/client.py", line 1040, in _send_output
+    self.send(msg)
+  File "/usr/lib64/python3.9/http/client.py", line 980, in send
+    self.connect()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 200, in connect
+    conn = self._new_conn()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connection.py", line 181, in _new_conn
+    raise NewConnectionError(
+cfnbootstrap.packages.requests.packages.urllib3.exceptions.NewConnectionError: <cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc58e610>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/adapters.py", line 489, in send
+    resp = conn.urlopen(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/connectionpool.py", line 755, in urlopen
+    retries = retries.increment(
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/packages/urllib3/util/retry.py", line 573, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+cfnbootstrap.packages.requests.packages.urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='169.254.169.254', port=80): Max retries exceeded with url: /latest/api/token (Caused by NewConnectionError('<cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc58e610>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 191, in _retry
+    return f(*args, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 327, in _fetch_instance_id
+    token = _get_session_token()
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/util.py", line 289, in _get_session_token
+    resp = requests.put(_get_metadata_path('/api/token'),
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/api.py", line 130, in put
+    return request("put", url, data=data, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/sessions.py", line 586, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/sessions.py", line 700, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3.9/site-packages/cfnbootstrap/packages/requests/adapters.py", line 565, in send
+    raise ConnectionError(e, request=request)
+cfnbootstrap.packages.requests.exceptions.ConnectionError: HTTPConnectionPool(host='169.254.169.254', port=80): Max retries exceeded with url: /latest/api/token (Caused by NewConnectionError('<cfnbootstrap.packages.requests.packages.urllib3.connection.HTTPConnection object at 0x7fa5fc58e610>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+2025-08-16 22:42:05,163 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:42:05,168 [INFO] Running configSets: Infra-EmbeddedPreBuild
+2025-08-16 22:42:05,170 [INFO] Running configSet Infra-EmbeddedPreBuild
+2025-08-16 22:42:05,171 [INFO] ConfigSets completed
+2025-08-16 22:42:05,171 [INFO] -----------------------Build complete-----------------------
+2025-08-16 22:42:24,217 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:42:24,222 [INFO] Running configSets: Infra-EmbeddedPostBuild
+2025-08-16 22:42:24,225 [INFO] Running configSet Infra-EmbeddedPostBuild
+2025-08-16 22:42:24,225 [INFO] ConfigSets completed
+2025-08-16 22:42:24,225 [INFO] -----------------------Build complete-----------------------
+2025-08-16 22:50:32,721 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:50:32,725 [INFO] Running configSets: Infra-EmbeddedPreBuild
+2025-08-16 22:50:32,727 [INFO] Running configSet Infra-EmbeddedPreBuild
+2025-08-16 22:50:32,728 [INFO] ConfigSets completed
+2025-08-16 22:50:32,728 [INFO] -----------------------Build complete-----------------------
+2025-08-16 22:50:48,749 [INFO] -----------------------Starting build-----------------------
+2025-08-16 22:50:48,755 [INFO] Running configSets: Infra-EmbeddedPostBuild
+2025-08-16 22:50:48,757 [INFO] Running configSet Infra-EmbeddedPostBuild
+2025-08-16 22:50:48,758 [INFO] ConfigSets completed
+2025-08-16 22:50:48,759 [INFO] -----------------------Build complete-----------------------
