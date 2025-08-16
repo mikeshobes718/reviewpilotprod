@@ -203,6 +203,62 @@
             </div>
 
             <div class="card base-card">
+              <h2>Automated Sending</h2>
+              <form action="/integrations/square/settings" method="POST">
+                <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+                <label style="display:flex; align-items:center; gap:8px">
+                  <input type="checkbox" name="autoSend" value="1" <%= (squareSettings && squareSettings.autoSend) ? 'checked' : '' %> /> Enable auto‑send after payments
+                </label>
+                <div class="sub-row">
+                  <div style="flex:1">
+                    <label for="delayMinutes">Delay (minutes)</label>
+                    <input type="text" id="delayMinutes" name="delayMinutes" value="<%= (squareSettings && squareSettings.delayMinutes != null) ? squareSettings.delayMinutes : 0 %>">
+                  </div>
+                  <div>
+                    <label for="channel">Preferred channel</label>
+                    <select id="channel" name="channel" class="btn btn-secondary" style="padding:8px 10px">
+                      <option value="email" <%= (squareSettings && squareSettings.channel === 'email') ? 'selected' : '' %>>Email</option>
+                      <option value="sms" <%= (squareSettings && squareSettings.channel === 'sms') ? 'selected' : '' %>>SMS</option>
+                    </select>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-secondary" style="margin-top:8px">Save Automation</button>
+              </form>
+            </div>
+
+            <div class="card base-card">
+              <h2>Recent Activity</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Event</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (Array.isArray(recentEvents) && recentEvents.length) { %>
+                      <% recentEvents.forEach(ev => { %>
+                        <tr>
+                          <td><%= new Date(ev.ts).toLocaleString() %></td>
+                          <td><%= ev.type %></td>
+                          <td style="color:var(--muted)">
+                            <% if (ev.payload && ev.payload.email) { %>email: <%= ev.payload.email %><% } %>
+                            <% if (ev.payload && ev.payload.phone) { %> phone: <%= ev.payload.phone %><% } %>
+                            <% if (ev.payload && ev.payload.shortLink) { %> link: <%= ev.payload.shortLink %><% } %>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr><td colspan="3" style="text-align:center; color: var(--muted); padding:18px">No recent activity yet.</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card base-card">
               <h2>Onboarding Checklist</h2>
               <ul id="obList" style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
                 <li>Loading…</li>

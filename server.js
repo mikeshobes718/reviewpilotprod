@@ -1685,11 +1685,16 @@
             let posConnected = !!(bizData.posConnection && bizData.posConnection.isConnected);
             if (!posConnected && bizData.square && bizData.square.access) posConnected = true;
             let sentFirst = false;
+            let recentEvents = [];
             try {
                 const es = await businessRef.collection('events').orderBy('ts', 'desc').limit(25).get();
                 sentFirst = es.docs.some(d => {
                     const t = (d.data() || {}).type || '';
                     return t === 'send_email' || t === 'send_sms';
+                });
+                recentEvents = es.docs.map(d => {
+                    const e = d.data() || {};
+                    return { type: e.type || 'event', ts: e.ts || new Date().toISOString(), payload: e.payload || {} };
                 });
             } catch(_) {}
             const onboarding = {
@@ -1698,6 +1703,7 @@
                 posConnected,
                 sentFirst
             };
+            const squareSettings = bizData.squareSettings || { autoSend: false, delayMinutes: 0, channel: 'email' };
 
             // Trial days left for UI
             let trialDaysLeft = null;
@@ -1718,6 +1724,8 @@
                 analytics: { total, avg, counts, conversions, planTier: isPro ? 'pro' : 'free' },
                 billing,
                 onboarding,
+                squareSettings,
+                recentEvents,
                 trialDaysLeft,
                 selectedRange,
                 pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
@@ -1735,6 +1743,9 @@
                     csrfToken: req.csrfToken(),
                     analytics: placeholderAnalytics,
                     billing: null,
+                    onboarding: { hasPlaceId: false, hasShortLink: false, posConnected: false, sentFirst: false },
+                    squareSettings: { autoSend: false, delayMinutes: 0, channel: 'email' },
+                    recentEvents: [],
                     pageError: null
                 });
             } catch (_) {
