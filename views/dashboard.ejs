@@ -444,9 +444,35 @@
           });
         }
 
-        // Placeholder disconnect action (will clear tokens server-side when implemented)
+        // Disconnect Square
         const sqDisc = document.getElementById('btnSquareDisconnect');
-        if (sqDisc){ sqDisc.addEventListener('click', function(){ alert('Disconnect coming soon'); }); }
+        if (sqDisc){
+          sqDisc.addEventListener('click', async function(){
+            try{
+              sqDisc.disabled = true; sqDisc.textContent = 'Disconnecting…';
+              const resp = await fetch('/auth/pos/square/disconnect', {
+                method:'POST',
+                headers:{ 'X-Requested-With':'XMLHttpRequest', 'Content-Type':'application/x-www-form-urlencoded' },
+                body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>',
+                credentials:'same-origin'
+              });
+              if (resp.ok) {
+                // Reflect in UI immediately
+                const s = document.getElementById('posStatus');
+                const c = document.getElementById('btnSquareConnect');
+                const d = document.getElementById('btnSquareDisconnect');
+                if (s) s.style.display = 'none';
+                if (c) c.style.display = '';
+                if (d) d.style.display = 'none';
+                // Also re-check server status
+                await refreshPosStatus();
+                return;
+              }
+            } catch(_) { }
+            sqDisc.disabled = false; sqDisc.textContent = 'Disconnect';
+            alert('Could not disconnect. Please try again.');
+          });
+        }
 
         if (!upgradeBtn) return;
         var publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>';

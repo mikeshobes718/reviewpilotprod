@@ -419,6 +419,61 @@
             }
         });
 
+        // POS: disconnect Square (revoke token, clear metadata)
+        app.post('/auth/pos/square/disconnect', async (req, res) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ ok: false, reason: 'unauthorized' });
+                const ref = db.collection('businesses').doc(uid);
+                const snap = await ref.get();
+                const d = snap.exists ? (snap.data() || {}) : {};
+                const squareMeta = d.square || {};
+
+                // Best-effort revoke at Square
+                if (squareMeta && squareMeta.access) {
+                    try {
+                        const tokenCipher = squareMeta.access;
+                        const accessToken = await decryptString(tokenCipher);
+                        const revokeResp = await fetch('https://connect.squareup.com/oauth2/revoke', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Client ${SQUARE_APP_SECRET}`
+                            },
+                            body: JSON.stringify({ client_id: SQUARE_APP_ID, access_token: accessToken })
+                        });
+                        if (!revokeResp.ok) {
+                            const t = await revokeResp.text().catch(() => '');
+                            console.warn('square revoke failed', t);
+                        }
+                    } catch (e) {
+                        console.warn('square revoke error', e);
+                    }
+                }
+
+                await ref.set({
+                    square: {
+                        merchantId: null,
+                        access: null,
+                        refresh: null,
+                        expiresAt: null,
+                        scope: null
+                    },
+                    posConnection: {
+                        isConnected: false,
+                        provider: null,
+                        connectedAt: null,
+                        scopesGranted: []
+                    }
+                }, { merge: true });
+
+                return res.json({ ok: true, disconnected: true });
+            } catch (e) {
+                console.error('square disconnect error', e);
+                return res.status(500).json({ ok: false, reason: 'server_error' });
+            }
+        });
+
         // Save Square automation settings
         app.post('/integrations/square/settings', requireLogin, async (req, res) => {
             try {
@@ -787,7 +842,7 @@
         let isActive = false;
         let validTrial = false;
         try {
-            if (req.session.user) {
+        if (req.session.user) {
                 const doc = await db.collection('businesses').doc(req.session.user.uid).get();
                 if (doc.exists) {
                     const data = doc.data() || {};
