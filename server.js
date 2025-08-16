@@ -2299,6 +2299,41 @@
     app.listen(PORT, HOST, () => {
         console.log(`✅ Server is running and listening on port ${PORT}`);
     });
+    
+    // --- 6. SHORT LINK RESOLVER (last so it doesn't shadow other routes) ---
+    // Handles URLs like https://reviewsandmarketing.com/{slug}
+    // Looks up a business by shortSlug or googlePlaceId and redirects to /rate/:businessId
+    app.get('/:slug', async (req, res, next) => {
+        try {
+            const slug = (req.params && req.params.slug) ? String(req.params.slug) : '';
+            // Ignore known app paths and static assets
+            const reserved = new Set([
+                '', 'favicon.ico', 'robots.txt', 'sitemap.xml',
+                'login', 'logout', 'signup', 'forgot-password', 'reset-password', 'verify',
+                'dashboard', 'pricing', 'features', 'terms', 'privacy', 'healthz',
+                'api', 'auth', 'webhooks', 'integrations', 'assets', 'images', 'css', 'js'
+            ]);
+            if (!slug || reserved.has(slug) || slug.includes('.')) return next();
+            // Lookup by shortSlug first
+            let businessId = null;
+            try {
+                const snap1 = await db.collection('businesses').where('shortSlug', '==', slug).limit(1).get();
+                if (!snap1.empty) businessId = snap1.docs[0].id;
+            } catch (_) {}
+            // Fallback: lookup by googlePlaceId
+            if (!businessId) {
+                try {
+                    const snap2 = await db.collection('businesses').where('googlePlaceId', '==', slug).limit(1).get();
+                    if (!snap2.empty) businessId = snap2.docs[0].id;
+                } catch (_) {}
+            }
+            if (!businessId) return res.status(404).send('Link not found');
+            const dest = `/rate/${businessId}`;
+            return res.redirect(302, dest);
+        } catch (e) {
+            return next();
+        }
+    });
     })().catch((err) => {
         console.error('❌ Fatal startup error', err);
         process.exit(1);
