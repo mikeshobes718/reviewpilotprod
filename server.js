@@ -2413,7 +2413,49 @@
                 return res.status(404).send("This business is not currently available.");
             }
             const businessData = { ...doc.data(), uid: doc.id };
-            res.render('rate', { business: businessData, csrfToken: req.csrfToken(), hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || null });
+
+            // Enrich with Google Places official name and logo/photo
+            let placeDisplayName = null;
+            let placeLogoUrl = null;
+            try {
+                const placeId = businessData.googlePlaceId;
+                const apiKey = process.env.GOOGLE_MAPS_API_KEY || null;
+                if (placeId && apiKey) {
+                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
+                        headers: {
+                            'X-Goog-Api-Key': apiKey,
+                            'X-Goog-FieldMask': 'displayName,photos'
+                        }
+                    });
+                    if (detailsResp.ok) {
+                        const dj = await detailsResp.json();
+                        if (dj && dj.displayName) {
+                            placeDisplayName = dj.displayName.text || dj.displayName;
+                        }
+                        const photos = Array.isArray(dj?.photos) ? dj.photos : [];
+                        if (photos.length) {
+                            const photoName = photos[0].name; // e.g., places/XXX/photos/YYY
+                            placeLogoUrl = `https://places.googleapis.com/v1/${encodeURIComponent(photoName)}/media?key=${encodeURIComponent(apiKey)}&maxHeightPx=160`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('places details error', e && (e.message || e));
+            }
+            // Fallbacks
+            if (!placeDisplayName) placeDisplayName = businessData.businessName || null;
+            if (!placeLogoUrl) {
+                // Generic Google Business Profile icon
+                placeLogoUrl = 'https://www.gstatic.com/images/branding/product/1x/business_profile_64dp.png';
+            }
+
+            res.render('rate', {
+                business: businessData,
+                placeDisplayName,
+                placeLogoUrl,
+                csrfToken: req.csrfToken(),
+                hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || null
+            });
         } catch (error) {
             console.error("❌ Error fetching rating page:", error);
             res.status(500).send("Could not load rating page.");

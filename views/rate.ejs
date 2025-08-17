@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= (business && business.businessName) ? ('Rate ' + business.businessName) : 'Rate Your Experience' %> • Reviews &amp; Marketing</title>
+    <title><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? ('Rate ' + placeDisplayName) : ((business && business.businessName) ? ('Rate ' + business.businessName) : 'Rate Your Experience') %> • Reviews &amp; Marketing</title>
     <meta name="csrf-token" content="<%= csrfToken %>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,10 +54,9 @@
 <body>
     <div id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId || '' %>" class="public-wrap">
       <div class="public-card">
-        <% const logo = (business && (business.logoUrl || business.logo)) ? (business.logoUrl || business.logo) : '/logos/main-logo.png'; %>
-        <img class="biz-logo" src="<%= logo %>" alt="<%= (business && business.businessName) ? business.businessName + ' logo' : 'Business logo' %>">
-        <div class="modal-title"><%= (business && business.businessName) ? business.businessName : 'Our Business' %></div>
-        <p class="modal-sub">How was your experience at <%= (business && business.businessName) ? business.businessName : 'our business' %>?</p>
+        <img class="biz-logo" src="<%= (typeof placeLogoUrl !== 'undefined' && placeLogoUrl) ? placeLogoUrl : '' %>" alt="<%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName + ' logo' : 'Business logo' %>">
+        <div class="modal-title"><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : '') %></div>
+        <p class="modal-sub">How was your experience at <%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'our business') %>?</p>
 
         <!-- Initial Rating Section -->
         <div id="rating-section">
