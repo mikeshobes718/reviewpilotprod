@@ -2462,29 +2462,17 @@
             }
             const businessData = { ...doc.data(), uid: doc.id };
 
-            // Enrich with Google Places official name and logo/photo
+            // Enrich with Google Places official name
             let placeDisplayName = null;
-            let placeLogoUrl = null;
             try {
                 const placeId = businessData.googlePlaceId;
                 const apiKey = process.env.GOOGLE_MAPS_API_KEY || null;
                 if (placeId && apiKey) {
-                    // Use text mask to ensure name arrives even if photos missing
-                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?fields=displayName,photos`, {
-                        headers: {
-                            'X-Goog-Api-Key': apiKey
-                        }
-                    });
+                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, { headers: { 'X-Goog-Api-Key': apiKey, 'X-Goog-FieldMask': 'displayName' } });
                     if (detailsResp.ok) {
                         const dj = await detailsResp.json();
                         if (dj && dj.displayName) {
                             placeDisplayName = (dj.displayName.text || dj.displayName || '').toString();
-                        }
-                        const photos = Array.isArray(dj && dj.photos) ? dj.photos : [];
-                        if (photos.length && photos[0] && photos[0].name) {
-                            const photoName = photos[0].name; // e.g., places/XXX/photos/YYY
-                            // Request media; fallback height ensures reasonable size
-                            placeLogoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=160&key=${apiKey}`;
                         }
                     } else {
                         const txt = await detailsResp.text().catch(()=>String(detailsResp.status));
@@ -2496,15 +2484,10 @@
             }
             // Fallbacks
             if (!placeDisplayName) placeDisplayName = businessData.businessName || null;
-            if (!placeLogoUrl) {
-                // Generic Google Business Profile icon
-                placeLogoUrl = 'https://www.gstatic.com/images/branding/product/1x/business_profile_64dp.png';
-            }
 
             res.render('rate', {
                 business: businessData,
                 placeDisplayName,
-                placeLogoUrl,
                 csrfToken: req.csrfToken(),
                 hcaptchaSiteKey: process.env.HCAPTCHA_SITE_KEY || null
             });

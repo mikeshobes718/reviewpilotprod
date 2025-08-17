@@ -54,8 +54,10 @@
 <body>
     <div id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId || '' %>" class="public-wrap">
       <div class="public-card">
-        <img class="biz-logo" src="<%= (typeof placeLogoUrl !== 'undefined' && placeLogoUrl) ? placeLogoUrl : 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png' %>"
-             alt="<%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName + ' logo' : 'Business logo' %>">
+        <!-- Standard star icon for all businesses -->
+        <svg class="biz-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2.5l2.89 5.86 6.47.94-4.68 4.56 1.1 6.43L12 17.77l-5.78 3.02 1.1-6.43L2.64 9.3l6.47-.94L12 2.5z" fill="#FBBF24" stroke="#F59E0B" stroke-width="0.5"/>
+        </svg>
         <div class="modal-title"><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'Business') %></div>
         <p class="modal-sub">How was your experience at <%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'our business') %>?</p>
 
