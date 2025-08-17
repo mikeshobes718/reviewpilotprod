@@ -840,6 +840,43 @@
             }
         });
 
+        // Leaderless daily sync for all merchants (loopback-only)
+        app.post('/tasks/square/sync-all-daily', async (req, res) => {
+            try {
+                const remote = (req.ip || '').toString();
+                if (!(remote.includes('127.0.0.1') || remote.includes('::1'))) {
+                    return res.status(403).json({ error: 'forbidden' });
+                }
+                const end = new Date();
+                const begin = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                const paramsBase = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
+                let scannedTotal = 0, processedTotal = 0, merchants = 0;
+
+                const snap = await db.collection('businesses').limit(500).get();
+                for (const d of snap.docs) {
+                    const biz = { uid: d.id, ...(d.data() || {}) };
+                    const tokenCipher = biz?.square?.access;
+                    if (!tokenCipher) continue;
+                    merchants++;
+                    try {
+                        const accessToken = await decryptString(tokenCipher);
+                        const payments = await fetchSquarePayments(accessToken, paramsBase);
+                        scannedTotal += payments.length;
+                        for (const p of payments) {
+                            const ok = await processSquarePayment({ businessRef: db.collection('businesses').doc(biz.uid), businessData: biz, payment: p, accessToken });
+                            if (ok) processedTotal++;
+                        }
+                    } catch (e) {
+                        console.warn('sync-all merchant error', biz.uid, e && (e.message || e));
+                    }
+                }
+                return res.json({ ok: true, merchants, scanned: scannedTotal, processed: processedTotal });
+            } catch (e) {
+                console.error('sync-all-daily error', e && (e.stack || e.message || e));
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
         // --- Square historical backfill and incremental sync ---
         async function fetchSquarePaymentsPaged(accessToken, beginIso, endIso) {
             const payments = [];
