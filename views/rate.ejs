@@ -54,8 +54,9 @@
 <body>
     <div id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId || '' %>" class="public-wrap">
       <div class="public-card">
-        <img class="biz-logo" src="<%= (typeof placeLogoUrl !== 'undefined' && placeLogoUrl) ? placeLogoUrl : '' %>" alt="<%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName + ' logo' : 'Business logo' %>">
-        <div class="modal-title"><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : '') %></div>
+        <img class="biz-logo" src="<%= (typeof placeLogoUrl !== 'undefined' && placeLogoUrl) ? placeLogoUrl : 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png' %>"
+             alt="<%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName + ' logo' : 'Business logo' %>">
+        <div class="modal-title"><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'Business') %></div>
         <p class="modal-sub">How was your experience at <%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'our business') %>?</p>
 
         <!-- Initial Rating Section -->

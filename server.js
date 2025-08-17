@@ -649,6 +649,16 @@
             } catch (e) { console.error('save square settings', e); res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
         });
 
+        // Simple alert notifier (Slack webhook if configured)
+        async function notifyAlert(message, extra){
+            try {
+                const hook = process.env.SLACK_WEBHOOK_URL || '';
+                if (!hook) return;
+                const body = { text: `:rotating_light: ${message}${extra ? `\n\n${typeof extra === 'string' ? extra : JSON.stringify(extra)}` : ''}` };
+                await fetch(hook, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) });
+            } catch(_) {}
+        }
+
         // Square webhook
         app.post('/api/webhooks/square', express.raw({ type: 'application/json' }), async (req, res) => {
             try {
@@ -707,7 +717,7 @@
                     try { await db.collection('businesses').doc(biz.uid || req.session.user.uid).set({ posLastSyncAt: new Date().toISOString() }, { merge: true }); } catch(_) {}
                 }
                 res.status(200).send('ok');
-            } catch (e) { console.error('square webhook error', e); res.status(200).send('ok'); }
+            } catch (e) { console.error('square webhook error', e); notifyAlert('Square webhook error', e && (e.stack || e.message || e)); res.status(200).send('ok'); }
         });
 
         // Square payments backfill and daily sync
@@ -774,6 +784,7 @@
                 return true;
             } catch (e) {
                 console.error('processSquarePayment error', e && (e.stack || e.message || e));
+                notifyAlert('Square processPayment error', { uid: businessData && businessData.uid, err: e && (e.stack || e.message || e) });
                 return false;
             }
         }
@@ -2458,22 +2469,26 @@
                 const placeId = businessData.googlePlaceId;
                 const apiKey = process.env.GOOGLE_MAPS_API_KEY || null;
                 if (placeId && apiKey) {
-                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
+                    // Use text mask to ensure name arrives even if photos missing
+                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?fields=displayName,photos`, {
                         headers: {
-                            'X-Goog-Api-Key': apiKey,
-                            'X-Goog-FieldMask': 'displayName,photos'
+                            'X-Goog-Api-Key': apiKey
                         }
                     });
                     if (detailsResp.ok) {
                         const dj = await detailsResp.json();
                         if (dj && dj.displayName) {
-                            placeDisplayName = dj.displayName.text || dj.displayName;
+                            placeDisplayName = (dj.displayName.text || dj.displayName || '').toString();
                         }
-                        const photos = Array.isArray(dj?.photos) ? dj.photos : [];
-                        if (photos.length) {
+                        const photos = Array.isArray(dj && dj.photos) ? dj.photos : [];
+                        if (photos.length && photos[0] && photos[0].name) {
                             const photoName = photos[0].name; // e.g., places/XXX/photos/YYY
-                            placeLogoUrl = `https://places.googleapis.com/v1/${encodeURIComponent(photoName)}/media?key=${encodeURIComponent(apiKey)}&maxHeightPx=160`;
+                            // Request media; fallback height ensures reasonable size
+                            placeLogoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=160&key=${apiKey}`;
                         }
+                    } else {
+                        const txt = await detailsResp.text().catch(()=>String(detailsResp.status));
+                        console.warn('places details http', detailsResp.status, txt);
                     }
                 }
             } catch (e) {
