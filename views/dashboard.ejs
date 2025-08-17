@@ -231,6 +231,18 @@
                 </div>
                 <button type="submit" class="btn btn-secondary" style="margin-top:8px">Save Automation</button>
               </form>
+              <div style="border-top:1px solid var(--border); margin:12px 0 0; padding-top:12px">
+                <div style="font-weight:600; color: var(--muted); margin-bottom:6px">Sync tools</div>
+                <div class="sub-row">
+                  <div style="display:flex; gap:8px; align-items:center">
+                    <input type="number" id="bfDays" min="1" max="90" value="30" style="width:84px;padding:8px 10px; border:1px solid var(--border); border-radius:8px">
+                    <button id="btnBackfill" class="btn btn-secondary" type="button">Run Backfill</button>
+                  </div>
+                  <div>
+                    <button id="btnSyncDaily" class="btn btn-secondary" type="button">Run Daily Sync</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="card base-card">
@@ -705,6 +717,34 @@
         }
 
         if (!upgradeBtn) return;
+        // Backfill + daily sync actions
+        try{
+          var bfBtn = document.getElementById('btnBackfill');
+          var bfDays = document.getElementById('bfDays');
+          var sdBtn = document.getElementById('btnSyncDaily');
+          async function postForm(url, params){
+            const body = new URLSearchParams(params||{}).toString();
+            const resp = await fetch(url, { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest', 'Content-Type':'application/x-www-form-urlencoded' }, body, credentials:'same-origin' });
+            return resp.json().catch(()=>({}));
+          }
+          if (bfBtn){
+            bfBtn.addEventListener('click', async function(){
+              try{ bfBtn.disabled = true; bfBtn.textContent = 'Backfilling…'; }catch(_){ }
+              const days = Math.max(1, Math.min(90, parseInt((bfDays && bfDays.value) || '30', 10)));
+              const res = await postForm('/integrations/square/backfill?days=' + days, {});
+              alert(res && res.ok ? `Backfill complete. Scanned ${res.scanned}, processed ${res.processed}.` : 'Backfill finished.');
+            });
+          }
+          if (sdBtn){
+            sdBtn.addEventListener('click', async function(){
+              try{ sdBtn.disabled = true; sdBtn.textContent = 'Syncing…'; }catch(_){ }
+              const res = await postForm('/integrations/square/sync-daily', {});
+              alert(res && res.ok ? `Daily sync complete. Scanned ${res.scanned}, processed ${res.processed}.` : 'Daily sync finished.');
+            });
+          }
+        }catch(_){ }
+
+        // Stop wiring below if no upgrade button
         var publishableKey = '<%= process.env.STRIPE_PUBLISHABLE_KEY || "" %>';
         var stripe = (window.Stripe && publishableKey) ? Stripe(publishableKey) : null;
         upgradeBtn.addEventListener('click', async function(){
