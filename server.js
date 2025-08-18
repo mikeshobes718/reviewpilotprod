@@ -775,97 +775,7 @@
             }
         });
 
-        // Test endpoint to verify API is working
-        app.get('/api/automation/test', (req, res) => {
-            console.log('[TEST-AUTOMATION] Test endpoint hit');
-            res.json({ message: 'Automation API is working', timestamp: new Date().toISOString() });
-        });
-
-        // New simple automation API endpoints
-        app.get('/api/automation/get-settings', async (req, res) => {
-            try {
-                console.log('[GET-AUTOMATION-SETTINGS] Request received');
-                console.log('[GET-AUTOMATION-SETTINGS] Session:', req.session);
-                console.log('[GET-AUTOMATION-SETTINGS] Session user:', req.session?.user);
-                
-                if (!req.session || !req.session.user) {
-                    console.log('[GET-AUTOMATION-SETTINGS] No session user, returning 401');
-                    return res.status(401).json({ error: 'Not authenticated' });
-                }
-                
-                const uid = req.session.user.uid;
-                console.log('[GET-AUTOMATION-SETTINGS] User UID:', uid);
-                
-                const businessRef = db.collection('businesses').doc(uid);
-                const businessDoc = await businessRef.get();
-                
-                if (!businessDoc.exists) {
-                    console.log('[GET-AUTOMATION-SETTINGS] Business document not found for UID:', uid);
-                    return res.status(404).json({ error: 'Business not found' });
-                }
-                
-                const businessData = businessDoc.data();
-                const settings = businessData.squareSettings || {};
-                
-                console.log('[GET-AUTOMATION-SETTINGS] Retrieved settings:', settings);
-                
-                res.json({
-                    autoSend: settings.autoSend || false,
-                    delayMinutes: settings.delayMinutes || 0,
-                    channel: settings.channel || 'email'
-                });
-            } catch (error) {
-                console.error('[GET-AUTOMATION-SETTINGS] Error:', error);
-                res.status(500).json({ error: 'Failed to load settings' });
-            }
-        });
-
-        app.post('/api/automation/save-settings', async (req, res) => {
-            try {
-                console.log('[SAVE-AUTOMATION-SETTINGS] Request received');
-                console.log('[SAVE-AUTOMATION-SETTINGS] Session:', req.session);
-                console.log('[SAVE-AUTOMATION-SETTINGS] Session user:', req.session?.user);
-                console.log('[SAVE-AUTOMATION-SETTINGS] Request body:', req.body);
-                
-                if (!req.session || !req.session.user) {
-                    console.log('[SAVE-AUTOMATION-SETTINGS] No session user, returning 401');
-                    return res.status(401).json({ error: 'Not authenticated' });
-                }
-                
-                const uid = req.session.user.uid;
-                console.log('[SAVE-AUTOMATION-SETTINGS] User UID:', uid);
-                
-                const { autoSend, delayMinutes, channel } = req.body || {};
-                
-                // Validate input
-                if (typeof autoSend !== 'boolean') {
-                    console.log('[SAVE-AUTOMATION-SETTINGS] Invalid autoSend type:', typeof autoSend);
-                    return res.status(400).json({ error: 'Invalid autoSend value' });
-                }
-                
-                if (typeof delayMinutes !== 'number' || delayMinutes < 0 || delayMinutes > 10080) {
-                    console.log('[SAVE-AUTOMATION-SETTINGS] Invalid delay value:', delayMinutes);
-                    return res.status(400).json({ error: 'Invalid delay value (0-10080 minutes)' });
-                }
-                
-                if (!['email', 'sms'].includes(channel)) {
-                    console.log('[SAVE-AUTOMATION-SETTINGS] Invalid channel value:', channel);
-                    return res.status(400).json({ error: 'Invalid channel value' });
-                }
-                
-                const settings = { autoSend, delayMinutes, channel };
-                console.log('[SAVE-AUTOMATION-SETTINGS] Saving settings for UID:', uid, settings);
-                
-                const businessRef = db.collection('businesses').doc(uid);
-                await businessRef.set({ squareSettings: settings }, { merge: true });
-                
-                console.log('[SAVE-AUTOMATION-SETTINGS] Settings saved successfully');
-                res.json({ success: true, message: 'Settings saved successfully' });
-            } catch (error) {
-                console.error('[SAVE-AUTOMATION-SETTINGS] Error:', error);
-                res.status(500).json({ error: 'Failed to save settings' });
-            }
-        });
+        // Automation endpoints moved to after session middleware
 
         // Simple form-based automation save route
         app.post('/save-automation', async (req, res) => {
@@ -1603,6 +1513,97 @@
     // Now enable parsers for the rest of the app
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+
+    // AUTOMATION API ENDPOINTS - placed after session middleware
+    app.get('/api/automation/test', (req, res) => {
+        console.log('[TEST-AUTOMATION] Test endpoint hit');
+        res.json({ message: 'Automation API is working', timestamp: new Date().toISOString() });
+    });
+
+    app.get('/api/automation/get-settings', async (req, res) => {
+        try {
+            console.log('[GET-AUTOMATION-SETTINGS] Request received');
+            console.log('[GET-AUTOMATION-SETTINGS] Session:', req.session);
+            console.log('[GET-AUTOMATION-SETTINGS] Session user:', req.session?.user);
+            
+            if (!req.session || !req.session.user) {
+                console.log('[GET-AUTOMATION-SETTINGS] No session user, returning 401');
+                return res.status(401).json({ error: 'Not authenticated' });
+            }
+            
+            const uid = req.session.user.uid;
+            console.log('[GET-AUTOMATION-SETTINGS] User UID:', uid);
+            
+            const businessRef = db.collection('businesses').doc(uid);
+            const businessDoc = await businessRef.get();
+            
+            if (!businessDoc.exists) {
+                console.log('[GET-AUTOMATION-SETTINGS] Business document not found for UID:', uid);
+                return res.status(404).json({ error: 'Business not found' });
+            }
+            
+            const businessData = businessDoc.data();
+            const settings = businessData.squareSettings || {};
+            
+            console.log('[GET-AUTOMATION-SETTINGS] Retrieved settings:', settings);
+            
+            res.json({
+                autoSend: settings.autoSend || false,
+                delayMinutes: settings.delayMinutes || 0,
+                channel: settings.channel || 'email'
+            });
+        } catch (error) {
+            console.error('[GET-AUTOMATION-SETTINGS] Error:', error);
+            res.status(500).json({ error: 'Failed to load settings' });
+        }
+    });
+
+    app.post('/api/automation/save-settings', async (req, res) => {
+        try {
+            console.log('[SAVE-AUTOMATION-SETTINGS] Request received');
+            console.log('[SAVE-AUTOMATION-SETTINGS] Session:', req.session);
+            console.log('[SAVE-AUTOMATION-SETTINGS] Session user:', req.session?.user);
+            console.log('[SAVE-AUTOMATION-SETTINGS] Request body:', req.body);
+            
+            if (!req.session || !req.session.user) {
+                console.log('[SAVE-AUTOMATION-SETTINGS] No session user, returning 401');
+                return res.status(401).json({ error: 'Not authenticated' });
+            }
+            
+            const uid = req.session.user.uid;
+            console.log('[SAVE-AUTOMATION-SETTINGS] User UID:', uid);
+            
+            const { autoSend, delayMinutes, channel } = req.body || {};
+            
+            // Validate input
+            if (typeof autoSend !== 'boolean') {
+                console.log('[SAVE-AUTOMATION-SETTINGS] Invalid autoSend type:', typeof autoSend);
+                return res.status(400).json({ error: 'Invalid autoSend value' });
+            }
+            
+            if (typeof delayMinutes !== 'number' || delayMinutes < 0 || delayMinutes > 10080) {
+                console.log('[SAVE-AUTOMATION-SETTINGS] Invalid delay value:', delayMinutes);
+                return res.status(400).json({ error: 'Invalid delay value (0-10080 minutes)' });
+            }
+            
+            if (!['email', 'sms'].includes(channel)) {
+                console.log('[SAVE-AUTOMATION-SETTINGS] Invalid channel value:', channel);
+                return res.status(400).json({ error: 'Invalid channel value' });
+            }
+            
+            const settings = { autoSend, delayMinutes, channel };
+            console.log('[SAVE-AUTOMATION-SETTINGS] Saving settings for UID:', uid, settings);
+            
+            const businessRef = db.collection('businesses').doc(uid);
+            await businessRef.set({ squareSettings: settings }, { merge: true });
+            
+            console.log('[SAVE-AUTOMATION-SETTINGS] Settings saved successfully');
+            res.json({ success: true, message: 'Settings saved successfully' });
+        } catch (error) {
+            console.error('[SAVE-AUTOMATION-SETTINGS] Error:', error);
+            res.status(500).json({ error: 'Failed to save settings' });
+        }
+    });
 
     // CSRF protection (already defined above) — cookie-based secret for stability
     // Friendly CSRF error handler
