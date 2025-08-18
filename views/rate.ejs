@@ -55,6 +55,14 @@
 </head>
 <body>
     <div id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId || '' %>" class="public-wrap">
+      <!-- DEBUG: Show what data we have -->
+      <script>
+        console.log('[DEBUG] Template data:', {
+          business: <%- JSON.stringify(business) %>,
+          uid: '<%= business.uid %>',
+          googlePlaceId: '<%= business.googlePlaceId %>'
+        });
+      </script>
       <div class="public-card">
         <!-- Standard star icon for all businesses -->
         <svg class="biz-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

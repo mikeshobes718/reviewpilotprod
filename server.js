@@ -2594,6 +2594,86 @@
         }
     });
 
+    // Clean Room Implementation: The Write Path (Review Submission Endpoint)
+    app.post('/api/reviews/submit', async (req, res) => {
+        // 'targetBusinessId' must be the canonical Auth UID passed from the frontend.
+        const { rating, comment, targetBusinessId } = req.body;
+
+        console.log(`[CLEANROOM-WRITE] Incoming: UID=${targetBusinessId}, Rating=${rating}`);
+
+        // 1. Strict Validation
+        const parsedRating = parseInt(rating, 10);
+        if (!targetBusinessId || !parsedRating || parsedRating < 1 || parsedRating > 5) {
+            console.error(`[CLEANROOM-WRITE] Validation Failed. Body: ${JSON.stringify(req.body)}`);
+            return res.status(400).json({ error: "Invalid submission data." });
+        }
+
+        try {
+            const newReview = {
+                // CRITICAL: Attribution Key (must match owner's Auth UID)
+                userId: targetBusinessId,
+                rating: parsedRating,
+                comment: comment || null,
+                // CRITICAL: Server Timestamp for reliable indexing/ordering
+                createdAt: FieldValue.serverTimestamp(),
+                source: 'cleanroom-v1'
+            };
+
+            const docRef = await db.collection('reviews').add(newReview);
+            console.log(`[CLEANROOM-WRITE] SUCCESS: Written doc ${docRef.id} for UID: ${targetBusinessId}`);
+            
+            // Clean Room Aggregation: Update stats atomically on the business doc
+            try {
+                const businessRef = db.collection('businesses').doc(targetBusinessId);
+                await db.runTransaction(async (transaction) => {
+                    const businessSnap = await transaction.get(businessRef);
+                    
+                    if (!businessSnap.exists) {
+                        // CRITICAL ERROR: If this happens, the UID used in the review does not match a business document ID.
+                        console.error(`[CLEANROOM-AGGREGATE] ERROR: Business doc not found for UID: ${targetBusinessId}`);
+                        return;
+                    }
+
+                    // Initialize standardized stats structure if missing
+                    const businessData = businessSnap.data() || {};
+                    const stats = businessData.stats || {
+                        totalFeedback: 0,
+                        totalRatingSum: 0, // Store sum for precise average calculation
+                        averageRating: 0.00,
+                        fiveStarConversions: 0,
+                        histogram: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+                    };
+
+                    // Calculate updates
+                    stats.totalFeedback += 1;
+                    stats.totalRatingSum += parsedRating;
+                    // Calculate precise average
+                    stats.averageRating = parseFloat((stats.totalRatingSum / stats.totalFeedback).toFixed(2));
+                    stats.histogram[parsedRating] = (stats.histogram[parsedRating] || 0) + 1;
+
+                    if (parsedRating === 5) {
+                        stats.fiveStarConversions += 1;
+                    }
+
+                    // Write back the updated stats object
+                    transaction.update(businessRef, { 
+                        stats: stats,
+                        updatedAt: FieldValue.serverTimestamp()
+                    });
+                    console.log(`[CLEANROOM-AGGREGATE] SUCCESS: Updated stats for ${targetBusinessId}. Total: ${stats.totalFeedback}`);
+                });
+            } catch (aggError) {
+                console.error(`[CLEANROOM-AGGREGATE] Transaction failed for UID: ${targetBusinessId}`, aggError);
+            }
+            
+            res.status(201).json({ success: true });
+
+        } catch (error) {
+            console.error("[CLEANROOM-WRITE] ERROR Firestore:", error);
+            res.status(500).json({ error: "Server error during submission." });
+        }
+    });
+
     // Legacy endpoint for backward compatibility
     app.post('/api/v1/reviews', feedbackLimiter, csrfProtection, async (req, res) => {
         try {
