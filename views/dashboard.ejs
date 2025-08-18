@@ -1752,8 +1752,17 @@
           addClickHandler(dynamicButton, 'Dynamic');
           
           if (!staticButton && !dynamicButton) {
-            console.log('[FIRST-REQUEST] No buttons found!');
-            alert('First request buttons not found!');
+            console.log('[FIRST-REQUEST] No buttons found yet - will retry after dynamic content loads');
+            // Retry after a short delay to catch dynamically created buttons
+            setTimeout(function() {
+              var retryStaticButton = document.getElementById('btnFirstRequestStatic');
+              var retryDynamicButton = document.getElementById('btnFirstRequestDynamic');
+              if (retryStaticButton || retryDynamicButton) {
+                console.log('[FIRST-REQUEST] Found buttons on retry, setting up handlers');
+                addClickHandler(retryStaticButton, 'Static (retry)');
+                addClickHandler(retryDynamicButton, 'Dynamic (retry)');
+              }
+            }, 1000);
           } else {
             console.log('[FIRST-REQUEST] Button handlers set up successfully');
           }
