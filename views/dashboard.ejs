@@ -1668,23 +1668,23 @@
               console.log('[FIRST-REQUEST] Adding click handler to button', index + 1);
               button.addEventListener('click', function(){
                 console.log('[FIRST-REQUEST] Button', index + 1, 'clicked!');
-                alert('Button clicked! This will scroll to settings.');
-                var settingsCard = document.getElementById('settingsCard');
-                console.log('[FIRST-REQUEST] Settings card element:', settingsCard);
-                if (!settingsCard) {
-                  console.log('[FIRST-REQUEST] Settings card not found!');
-                  alert('Settings card not found!');
+                alert('Button clicked! This will scroll to Review Collection Kit.');
+                var reviewKitCard = document.getElementById('reviewKitCard');
+                console.log('[FIRST-REQUEST] Review Kit card element:', reviewKitCard);
+                if (!reviewKitCard) {
+                  console.log('[FIRST-REQUEST] Review Kit card not found!');
+                  alert('Review Collection Kit section not found!');
                   return;
                 }
-                console.log('[FIRST-REQUEST] Scrolling to settings card...');
-                settingsCard.scrollIntoView({ behavior:'smooth', block:'center' });
+                console.log('[FIRST-REQUEST] Scrolling to Review Collection Kit...');
+                reviewKitCard.scrollIntoView({ behavior:'smooth', block:'center' });
                 // After a short delay, apply highlight animation
                 setTimeout(function(){
                   console.log('[FIRST-REQUEST] Adding highlight class');
-                  settingsCard.classList.add('is-highlighted');
+                  reviewKitCard.classList.add('is-highlighted');
                   setTimeout(function(){ 
                     console.log('[FIRST-REQUEST] Removing highlight class');
-                    settingsCard.classList.remove('is-highlighted'); 
+                    reviewKitCard.classList.remove('is-highlighted'); 
                   }, 2500);
                 }, 450);
               });
