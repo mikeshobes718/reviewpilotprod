@@ -2562,7 +2562,7 @@
 
 
     // Clean Room Implementation: The Write Path (Review Submission Endpoint)
-    app.post('/api/reviews/submit', feedbackLimiter, csrfProtection, async (req, res) => {
+    app.post('/api/reviews/submit', feedbackLimiter, async (req, res) => {
         // 'targetBusinessId' must be the canonical Auth UID passed from the frontend.
         const { rating, comment, targetBusinessId } = req.body;
 
@@ -2641,7 +2641,16 @@
 
         } catch (error) {
             console.error("[CLEANROOM-WRITE] ERROR Firestore:", error);
-            res.status(500).json({ error: "Server error during submission." });
+            console.error("[CLEANROOM-WRITE] Error details:", {
+                message: error.message,
+                code: error.code,
+                stack: error.stack
+            });
+            res.status(500).json({ 
+                error: "Server error during submission.",
+                details: error.message,
+                code: error.code || 'unknown'
+            });
         }
     });
 
