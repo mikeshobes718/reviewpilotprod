@@ -26,6 +26,9 @@
     // --- 2. INITIALIZE THE APP ---
     ;(async () => {
     const app = express();
+    
+    // CSRF protection (define early so it can be used in routes)
+    const csrfProtection = csurf({ cookie: { key: '_csrf', httpOnly: true, sameSite: 'lax', secure: true } });
     // Parse cookies early so downstream middleware (e.g., JWT hydration) can read them
     app.use(cookieParser());
     // Behind ALB/NGINX on EB; trust proxy so secure cookies and req.secure work
@@ -337,10 +340,17 @@
         function getUserIdFromRequest(req) {
             try {
                 const raw = req.cookies && req.cookies.session;
-                if (raw) {
+                if (raw && raw !== 'INVALIDATED') {
                     const jwt = require('jsonwebtoken');
                     const d = jwt.decode(raw);
-                    if (d && d.sub) return d.sub;
+                    if (d && d.sub) {
+                        // Check if this JWT was issued before the logout invalidation
+                        if (d.iat && sessionInvalidationTime > 0 && d.iat * 1000 < sessionInvalidationTime) {
+                            console.log(`[AUTH] Rejected JWT issued before logout: iat=${d.iat * 1000}, invalidation=${sessionInvalidationTime}`);
+                            return null;
+                        }
+                        return d.sub;
+                    }
                 }
             } catch(_) {}
             // Fallback to session if present, but do not require it
@@ -583,11 +593,9 @@
                 if (!posConnected && b.square && b.square.access) posConnected = true;
                 let sentFirst = false;
                 try {
-                    const es = await ref.collection('events').orderBy('ts', 'desc').limit(25).get();
-                    sentFirst = es.docs.some(d => {
-                        const t = (d.data() || {}).type || '';
-                        return t === 'send_email' || t === 'send_sms';
-                    });
+                    // Check if there are any customer reviews in the reviews collection
+                    const reviewsQuery = await db.collection('reviews').where('userId', '==', uid).limit(1).get();
+                    sentFirst = !reviewsQuery.empty;
                 } catch(_) {}
                 return res.json({
                     hasPlaceId: !!b.googlePlaceId,
@@ -657,15 +665,18 @@
         });
 
         // Save Square automation settings
-        app.post('/integrations/square/settings', requireLogin, async (req, res) => {
+        app.post('/integrations/square/settings', requireLogin, csrfProtection, async (req, res) => {
             try {
+                console.log(`[SQUARE-SETTINGS] Form submitted successfully, body:`, req.body);
                 const { autoSend, delayMinutes, channel } = req.body || {};
                 const settings = {
                     autoSend: !!autoSend,
                     delayMinutes: Math.max(0, Math.min(10080, parseInt(delayMinutes || '0', 10))),
                     channel: channel === 'sms' ? 'sms' : 'email'
                 };
+                console.log(`[SQUARE-SETTINGS] Settings to save:`, settings);
                 await db.collection('businesses').doc(req.session.user.uid).set({ squareSettings: settings }, { merge: true });
+                console.log(`[SQUARE-SETTINGS] Settings saved successfully`);
                 res.redirect('/dashboard');
             } catch (e) { console.error('save square settings', e); res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
         });
@@ -816,7 +827,7 @@
         };
 
         // Backfill recent payments (default 30 days; up to 90)
-        app.post('/integrations/square/backfill', requireMerchantAuth, async (req, res) => {
+        app.post('/integrations/square/backfill', requireMerchantAuth, csrfProtection, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const businessRef = db.collection('businesses').doc(uid);
@@ -845,7 +856,7 @@
         });
 
         // Daily incremental sync (last 24h)
-        app.post('/integrations/square/sync-daily', requireMerchantAuth, async (req, res) => {
+        app.post('/integrations/square/sync-daily', requireMerchantAuth, csrfProtection, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const businessRef = db.collection('businesses').doc(uid);
@@ -1006,7 +1017,7 @@
         }
 
         // Trigger backfill for current merchant (default 30 days, max 90)
-        app.post('/integrations/square/backfill', requireLogin, async (req, res) => {
+        app.post('/integrations/square/backfill', requireLogin, csrfProtection, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const businessSnap = await db.collection('businesses').doc(uid).get();
@@ -1025,7 +1036,7 @@
         });
 
         // Incremental sync from last sync time (fallback to 24h)
-        app.post('/integrations/square/sync', requireLogin, async (req, res) => {
+        app.post('/integrations/square/sync', requireLogin, csrfProtection, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const ref = db.collection('businesses').doc(uid);
@@ -1120,7 +1131,7 @@
         saveUninitialized: false,
         proxy: true,
         cookie: {
-            secure: true,
+            secure: process.env.NODE_ENV === 'production', // Only require HTTPS in production
             httpOnly: true,
             sameSite: 'lax',
             domain: COOKIE_DOMAIN,
@@ -1138,7 +1149,16 @@
                         const jwt = require('jsonwebtoken');
                         const decoded = jwt.decode(raw);
                         if (decoded && decoded.sub) {
-                            req.session.user = { uid: decoded.sub, email: null, displayName: null };
+                            // Reject stale JWTs issued before logout invalidation
+                            if (decoded.iat && sessionInvalidationTime > 0 && decoded.iat * 1000 < sessionInvalidationTime) {
+                                console.log(`[MIDDLEWARE] Rejected JWT issued before logout: iat=${decoded.iat * 1000}, invalidation=${sessionInvalidationTime}`);
+                            } else {
+                                req.session.user = {
+                                    uid: decoded.sub,
+                                    email: decoded.email || decoded.username || null,
+                                    displayName: decoded.name || null
+                                };
+                            }
                         }
                     } catch(_) {}
                 }
@@ -1148,17 +1168,21 @@
         next();
     });
 
-    // Attach user access info (trial/active) for header visibility
+    // Attach user access info (trial/active) for header visibility and hydrate missing profile fields
     app.use(async (req, res, next) => {
         try {
             res.locals.userHasAccess = false;
             if (req.session && req.session.user) {
                 const doc = await db.collection('businesses').doc(req.session.user.uid).get();
                 if (doc.exists) {
-                    const b = doc.data();
+                    const b = doc.data() || {};
                     const isActive = b.subscriptionStatus === 'active';
                     const isTrial = b.subscriptionStatus === 'trial' && b.trialEndsAt && (new Date(b.trialEndsAt) > new Date());
                     res.locals.userHasAccess = !!(isActive || isTrial);
+                    // Backfill missing email/displayName for header rendering
+                    if (!req.session.user.email && b.email) req.session.user.email = b.email;
+                    if (!req.session.user.displayName && b.businessName) req.session.user.displayName = b.businessName;
+                    res.locals.user = req.session.user; // keep locals in sync
                 }
             }
         } catch (_) { /* noop */ }
@@ -1211,8 +1235,8 @@
                                     orderNumber: sessionObj.id,
                                     date: new Date().toISOString(),
                                     description: 'Reviews & Marketing - Pro Plan (Billed Monthly)',
-                                    amount: '$49.00',
-                                    totalPaid: '$49.00',
+                                    amount: '$49.99',
+                                    totalPaid: '$49.99',
                                     paidWith: (b.card && b.card.last4) ? `Card ending in ${b.card.last4}` : 'Card on file'
                                 };
                                 await sendEmail({
@@ -1280,8 +1304,7 @@
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // CSRF protection (opt-in per route) — cookie-based secret for stability
-    const csrfProtection = csurf({ cookie: { key: '_csrf', httpOnly: true, sameSite: 'lax', secure: isProduction } });
+    // CSRF protection (already defined above) — cookie-based secret for stability
     // Friendly CSRF error handler
     app.use((err, req, res, next) => {
         if (err && err.code === 'EBADCSRFTOKEN') {
@@ -1299,6 +1322,24 @@
             if (path.startsWith('/reset-password') || path.startsWith('/auth/reset-password')) {
                 const t = req.body && req.body.token ? req.body.token : (req.query && req.query.token ? req.query.token : '');
                 return res.status(403).render('reset-password', { csrfToken: token, token: t, error: 'Security check failed. Please try again.', user: req.session.user || null });
+            }
+            if (path.startsWith('/integrations/square')) {
+                return res.status(403).render('dashboard', { 
+                    csrfToken: token, 
+                    error: 'Security check failed. Please refresh the page and try again.', 
+                    user: (req.session && req.session.user) || null,
+                    business: {},
+                    feedback: [],
+                    appUrl: process.env.APP_BASE_URL || '',
+                    analytics: { total: 0, avg: '0.00', counts: { 1:0, 2:0, 3:0, 4:0, 5:0 }, conversions: 0 },
+                    billing: null,
+                    onboarding: { hasPlaceId: false, hasShortLink: false, posConnected: false, sentFirst: false },
+                    onboardingDismissed: false,
+                    hasGooglePlaceId: false,
+                    squareSettings: { autoSend: false, delayMinutes: 0, channel: 'email' },
+                    recentEvents: [],
+                    pageError: 'Security check failed. Please refresh the page and try again.'
+                });
             }
             return res.status(403).send('Form expired. Refresh and try again.');
         }
@@ -1375,6 +1416,13 @@
     // Simple in-memory cache for homepage stats (15 minutes)
     let __homepageStatsCache = { at: 0, data: { avg: '4.8', convPercent: '62' } };
     app.get('/', csrfProtection, async (req, res) => {
+        // Force no-cache headers to prevent browser caching of user state
+        res.set({
+            'Cache-Control': 'no-cache, no-store, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+        
         try {
             const now = Date.now();
             if (now - __homepageStatsCache.at > 15 * 60 * 1000) {
@@ -1390,10 +1438,14 @@
                 const convPercent = total ? Math.round((five / total) * 100).toString() : '0';
                 __homepageStatsCache = { at: now, data: { avg, convPercent } };
             }
+            
+            // Get fresh user data from request (don't rely on cached session)
+            const user = req.session.user || null;
+            
             return res.render('index', {
                 csrfToken: req.csrfToken(),
                 title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews',
-                user: req.session.user || null,
+                user: user,
                 homepageStats: __homepageStatsCache.data,
             });
         } catch (e) {
@@ -1525,18 +1577,41 @@
                         try {
                             const ref = db.collection('businesses').doc(bridgedUserId);
                             const snap = await ref.get();
+                            
+                            // Fetch business name from DynamoDB if available
+                            let businessName = '';
+                            try {
+                                const { DynamoDBClient, GetItemCommand } = require('@aws-sdk/client-dynamodb');
+                                const ddb = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
+                                const ddbResponse = await ddb.send(new GetItemCommand({
+                                    TableName: process.env.USERS_TABLE || 'users',
+                                    Key: { UserId: { S: bridgedUserId } }
+                                }));
+                                if (ddbResponse.Item && ddbResponse.Item.BusinessName) {
+                                    businessName = ddbResponse.Item.BusinessName.S || '';
+                                }
+                            } catch (ddbError) {
+                                console.warn('Could not fetch business name from DynamoDB:', ddbError.message);
+                            }
+                            
                             if (!snap.exists) {
+                                // Create new business document
                                 await ref.set({
-                                    businessName: '',
+                                    businessName: businessName,
                                     email: (email || '').toLowerCase(),
                                     googlePlaceId: null,
                                     stripeCustomerId: null,
                                     subscriptionStatus: 'none',
-                createdAt: new Date().toISOString(),
-            });
+                                    createdAt: new Date().toISOString(),
+                                });
+                            } else if (businessName && (!snap.data().businessName || snap.data().businessName === '')) {
+                                // Update existing document with business name if it's missing
+                                await ref.update({
+                                    businessName: businessName
+                                });
                             }
                         } catch (_) { /* non-fatal */ }
-                        req.session.user = { uid: bridgedUserId, email: (email || '').toLowerCase(), displayName: null };
+                        req.session.user = { uid: bridgedUserId, email: (email || '').toLowerCase(), displayName: businessName };
                         return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); res.setHeader('Cache-Control','no-store'); return res.redirect('/dashboard'); });
                     }
                 } catch (_) { /* ignore bridge errors */ }
@@ -1599,15 +1674,71 @@
         res.setHeader('Set-Cookie', 'session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax');
         return res.redirect('/login');
     });
+    // Session invalidation timestamp for logout
+    let sessionInvalidationTime = 0;
+    
     // Recovery: GET /logout clears cookies without CSRF (useful to break redirect loops)
     app.get('/logout', (req, res) => {
-        try { if (req.session) req.session.destroy(()=>{}); } catch(_){ }
+        // Set global invalidation timestamp
+        sessionInvalidationTime = Date.now();
+        console.log(`[LOGOUT] Session invalidation time set to: ${sessionInvalidationTime}`);
+        
+        // Completely destroy the session
+        try { 
+            if (req.session) {
+                req.session.destroy(() => {
+                    console.log('[LOGOUT] Session destroyed');
+                });
+            }
+        } catch(_) {}
+        
+        // Clear all authentication cookies with immediate expiration
         res.setHeader('Set-Cookie', [
-            'session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax',
-            'connect.sid=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax'
+            'session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+            'connect.sid=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+            '_csrf=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
         ]);
-        return res.redirect('/login');
+        
+        // Also clear cookies using res.clearCookie for maximum compatibility
+        res.clearCookie('session', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
+        res.clearCookie('connect.sid', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
+        res.clearCookie('_csrf', { path: '/', httpOnly: true, secure: true, sameSite: 'lax' });
+        
+        // Force browser to reload the page to clear any cached user state
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        
+        // Simple redirect to login with cache busting
+        return res.redirect(`/login?logout=${Date.now()}&cleared=true`);
     });
+    
+    // Debug endpoint to see current authentication state
+    app.get('/debug/auth', (req, res) => {
+        const authInfo = {
+            cookies: req.cookies || {},
+            session: req.session || null,
+            userFromCookie: null,
+            userFromSession: null,
+            headers: req.headers
+        };
+        
+        try {
+            const raw = req.cookies && req.cookies.session;
+            if (raw) {
+                const jwt = require('jsonwebtoken');
+                const d = jwt.decode(raw);
+                authInfo.userFromCookie = d;
+            }
+        } catch(_) {}
+        
+        if (req.session && req.session.user) {
+            authInfo.userFromSession = req.session.user;
+        }
+        
+        res.json(authInfo);
+    });
+    
     // Phase 4.1: Auth view routes (GET)
     app.get('/signup', csrfProtection, (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -1728,7 +1859,38 @@
                 }
             }
             if (cutoffMs) {
-                feedback = feedback.filter(f => { try { return (new Date(f.createdAt).getTime()) >= cutoffMs; } catch(_) { return false; } });
+                console.log(`[PIPELINE-READ] Applying cutoff filter: cutoffMs=${cutoffMs}, before filter: ${feedback.length} reviews`);
+                feedback = feedback.filter(f => { 
+                    try { 
+                        // Handle Firestore Timestamp objects properly
+                        let reviewTime;
+                        if (f.createdAt && typeof f.createdAt.toDate === 'function') {
+                            // Firestore Timestamp object
+                            reviewTime = f.createdAt.toDate().getTime();
+                        } else if (f.createdAt) {
+                            // String or Date object
+                            reviewTime = new Date(f.createdAt).getTime();
+                        } else {
+                            console.log(`[PIPELINE-READ] No createdAt field:`, f);
+                            return false;
+                        }
+                        
+                        if (isNaN(reviewTime)) {
+                            console.log(`[PIPELINE-READ] Invalid review time: createdAt=${f.createdAt}, reviewTime=${reviewTime}`);
+                            return false;
+                        }
+                        
+                        const passes = reviewTime >= cutoffMs;
+                        if (!passes) {
+                            console.log(`[PIPELINE-READ] Filtered out review: createdAt=${f.createdAt}, reviewTime=${reviewTime}, cutoffMs=${cutoffMs}`);
+                        }
+                        return passes; 
+                    } catch(e) { 
+                        console.log(`[PIPELINE-READ] Error parsing review date:`, f.createdAt, e);
+                        return false; 
+                    } 
+                });
+                console.log(`[PIPELINE-READ] After cutoff filter: ${feedback.length} reviews`);
             }
 
             // Basic analytics
@@ -1783,20 +1945,55 @@
             }
             // Onboarding checklist
             const bizData = businessDoc.data() || {};
+            // Hydrate missing businessName by looking up any other business doc with the same email
+            try {
+                if (!bizData.businessName || String(bizData.businessName).trim().length === 0) {
+                    const fallbackEmail = bizData.email || (req.session.user && req.session.user.email) || null;
+                    if (fallbackEmail) {
+                        const qSnap = await db.collection('businesses').where('email', '==', fallbackEmail).limit(5).get();
+                        let foundName = null;
+                        qSnap.docs.forEach(d => {
+                            const dData = d.data() || {};
+                            const n = dData.businessName && String(dData.businessName).trim();
+                            if (n && !foundName) foundName = n;
+                        });
+                        if (foundName) {
+                            bizData.businessName = foundName;
+                            try { await businessRef.update({ businessName: foundName }); } catch(_) { /* best-effort backfill */ }
+                        }
+                    }
+                }
+            } catch(_) { /* non-fatal */ }
             console.log(`[DASHBOARD READ] uid=${req.session.user.uid}, docId=${businessDoc.id}, googlePlaceId=${bizData.googlePlaceId}, hasGooglePlaceId=${!!bizData.googlePlaceId}`);
             let posConnected = !!(bizData.posConnection && bizData.posConnection.isConnected);
             if (!posConnected && bizData.square && bizData.square.access) posConnected = true;
             let sentFirst = false;
             let recentEvents = [];
             try {
-                const es = await businessRef.collection('events').orderBy('ts', 'desc').limit(25).get();
+                const es = await businessRef.collection('events').orderBy('ts', 'desc').limit(3).get();
                 sentFirst = es.docs.some(d => {
                     const t = (d.data() || {}).type || '';
                     return t === 'send_email' || t === 'send_sms';
                 });
                 recentEvents = es.docs.map(d => {
                     const e = d.data() || {};
-                    return { type: e.type || 'event', ts: e.ts || new Date().toISOString(), payload: e.payload || {} };
+                    // Normalize timestamp to ISO string for safe client-side rendering
+                    let tsIso;
+                    try {
+                        const rawTs = e.ts;
+                        if (rawTs && typeof rawTs.toDate === 'function') {
+                            tsIso = rawTs.toDate().toISOString();
+                        } else if (typeof rawTs === 'number') {
+                            tsIso = new Date(rawTs).toISOString();
+                        } else if (typeof rawTs === 'string') {
+                            tsIso = new Date(rawTs).toISOString();
+                        } else {
+                            tsIso = new Date().toISOString();
+                        }
+                    } catch (_) {
+                        tsIso = new Date().toISOString();
+                    }
+                    return { type: e.type || 'event', ts: tsIso, payload: e.payload || {} };
                 });
             } catch(_) {}
             const onboarding = {
@@ -1824,12 +2021,14 @@
             
             console.log(`[DASHBOARD RENDER] hasGooglePlaceId=${hasGooglePlaceId}, googlePlaceId="${currentGooglePlaceId}"`);
 
+            const csrfToken = req.csrfToken();
+            console.log(`[DASHBOARD] CSRF Token generated: ${csrfToken ? 'YES' : 'NO'}, length: ${csrfToken ? csrfToken.length : 0}`);
             res.render('dashboard', {
-                business: businessDoc.data(),
+                business: bizData,
                 user: req.session.user,
                 feedback: feedback,
                 appUrl: appUrl, // Pass the appUrl to the dashboard
-                csrfToken: req.csrfToken(),
+                csrfToken: csrfToken,
                 analytics: { total, avg, counts, conversions, planTier: isPro ? 'pro' : 'free' },
                 billing,
                 onboarding,
@@ -1871,19 +2070,67 @@
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
     app.get('/admin', async (req, res) => {
         try {
-            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) {
+                return res.status(403).render('error', {
+                    errorCode: '403',
+                    errorTitle: 'Admin Access Required',
+                    errorMessage: 'You need administrator privileges to access this page.',
+                    showHelp: true
+                });
+            }
             const snap = await db.collection('businesses').limit(200).get();
             const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             res.render('admin', { items, user: req.session.user || null });
         } catch (e) {
-            console.error('Admin error', e); res.status(500).send('Admin error');
+            console.error('Admin error', e);
+            res.status(500).render('error', {
+                errorCode: '500',
+                errorTitle: 'Server Error',
+                errorMessage: 'Something went wrong while loading the admin page.',
+                showHelp: false
+            });
+        }
+    });
+
+    // Endpoint to list all business names (for debugging)
+    app.get('/api/debug/businesses', async (req, res) => {
+        try {
+            const snap = await db.collection('businesses').get();
+            const businesses = snap.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    businessName: data.businessName || 'Unnamed Business',
+                    email: data.email || 'No email',
+                    subscriptionStatus: data.subscriptionStatus || 'none',
+                    createdAt: data.createdAt || 'Unknown',
+                    hasGooglePlaceId: !!(data.googlePlaceId && data.googlePlaceId.trim()),
+                    totalFeedback: data.stats?.totalFeedback || 0,
+                    averageRating: data.stats?.averageRating || 0
+                };
+            });
+            
+            res.json({
+                total: businesses.length,
+                businesses: businesses
+            });
+        } catch (error) {
+            console.error('Error fetching businesses:', error);
+            res.status(500).json({ error: 'Failed to fetch businesses' });
         }
     });
 
     // Admin: metrics for a business
     app.get('/admin/metrics/:id', async (req, res) => {
         try {
-            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).json({ error: 'forbidden' });
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) {
+                return res.status(403).render('error', {
+                    errorCode: '403',
+                    errorTitle: 'Admin Access Required',
+                    errorMessage: 'You need administrator privileges to access this page.',
+                    showHelp: true
+                });
+            }
             const businessId = req.params.id;
             const snap = await db.collection('businesses').doc(businessId).collection('feedback').get();
             const feedback = snap.docs.map(d => d.data());
@@ -1896,32 +2143,70 @@
             });
             const avg = total ? (sum / total).toFixed(2) : '0.00';
             res.json({ total, avg, conversions });
-        } catch (e) { console.error('metrics error', e); res.status(500).json({ error: 'server' }); }
+        } catch (e) { 
+            console.error('metrics error', e); 
+            res.status(500).render('error', {
+                errorCode: '500',
+                errorTitle: 'Server Error',
+                errorMessage: 'Something went wrong while loading metrics.',
+                showHelp: false
+            });
+        }
     });
 
     // Admin: impersonate a business to view dashboard
     app.post('/admin/impersonate/:id', express.urlencoded({ extended: true }), async (req, res) => {
         try {
-            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) {
+                return res.status(403).render('error', {
+                    errorCode: '403',
+                    errorTitle: 'Admin Access Required',
+                    errorMessage: 'You need administrator privileges to access this page.',
+                    showHelp: true
+                });
+            }
             const id = req.params.id;
             const doc = await db.collection('businesses').doc(id).get();
             if (!doc.exists) return res.status(404).send('Not found');
             const data = doc.data();
             req.session.user = { uid: id, email: data.email || '', displayName: data.businessName || '' };
             res.redirect('/dashboard');
-        } catch (e) { console.error('impersonate error', e); res.status(500).send('Server error'); }
+        } catch (e) { 
+            console.error('impersonate error', e); 
+            res.status(500).render('error', {
+                errorCode: '500',
+                errorTitle: 'Server Error',
+                errorMessage: 'Something went wrong while impersonating the business.',
+                showHelp: false
+            });
+        }
     });
 
     app.get('/admin/impersonate/:id', async (req, res) => {
         try {
-            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) return res.status(403).send('Forbidden');
+            if (!req.session.user || req.session.user.email !== ADMIN_EMAIL) {
+                return res.status(403).render('error', {
+                    errorCode: '403',
+                    errorTitle: 'Admin Access Required',
+                    errorMessage: 'You need administrator privileges to access this page.',
+                    showHelp: true
+                });
+            }
             const id = req.params.id;
             const doc = await db.collection('businesses').doc(id).get();
             if (!doc.exists) return res.status(404).send('Not found');
             const data = doc.data();
             req.session.user = { uid: id, email: data.email || '', displayName: data.businessName || '' };
             res.redirect('/dashboard');
-        } catch (e) { console.error('impersonate error', e); res.status(500).send('Server error'); }
+        } catch (e) { 
+            console.error('impersonate error', e); 
+            res.status(500).render('error', {
+                errorCode: '500',
+                errorTitle: 'Server Error',
+                errorMessage: 'Something went wrong while impersonating the business.',
+                showHelp: false
+            });
+        }
     });
 
     // Admin: open Stripe billing portal for a business
@@ -1966,6 +2251,19 @@
             res.json({ ok: true });
         } catch (error) {
             console.error("❌ Error dismissing onboarding:", error);
+            res.status(500).json({ ok: false });
+        }
+    });
+
+    // Mark "Send your first request" as completed when short link is copied
+    app.post('/api/onboarding/mark-sent-first', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            await db.collection('businesses').doc(req.session.user.uid).set({
+                sentFirst: true
+            }, { merge: true });
+            res.json({ ok: true });
+        } catch (error) {
+            console.error("❌ Error marking sent first:", error);
             res.status(500).json({ ok: false });
         }
     });
@@ -2317,7 +2615,7 @@
             }
             // Final fallback if everything else fails
             if (!placeDisplayName) {
-                placeDisplayName = (businessData.googlePlaceId ? `Business ID: ${businessData.googlePlaceId.slice(0, 10)}…` : 'A valued business');
+                placeDisplayName = businessData.businessName || '';
             }
 
             res.render('rate', {
@@ -2500,6 +2798,56 @@
         }
     });
 
+    // Trial usage analytics endpoint
+    app.get('/api/merchants/:merchantId/trial-usage', requireMerchant, async (req, res) => {
+        try {
+            const { merchantId } = req.params;
+            if (req.session.user.uid !== merchantId) return res.status(403).json({ error: 'forbidden' });
+            
+            // Get business data to check subscription status
+            const businessRef = db.collection('businesses').doc(merchantId);
+            const businessSnap = await businessRef.get();
+            if (!businessSnap.exists) return res.status(404).json({ error: 'business_not_found' });
+            
+            const businessData = businessSnap.data() || {};
+            
+            // Only provide trial data for trial users
+            if (businessData.subscriptionStatus !== 'trial') {
+                return res.status(403).json({ error: 'not_trial_user' });
+            }
+            
+            // Count review requests using standardized stats first (fast path)
+            let reviewCount = 0;
+            if (businessData.stats && typeof businessData.stats.totalFeedback === 'number') {
+                reviewCount = businessData.stats.totalFeedback;
+            } else {
+                // Fallback: count reviews from the canonical collection
+                const reviewsSnap = await db.collection('reviews').where('userId', '==', merchantId).get();
+                reviewCount = reviewsSnap.size;
+            }
+            
+            // Calculate trial days remaining
+            let trialDaysLeft = null;
+            if (businessData.trialEndsAt) {
+                const trialEnd = new Date(businessData.trialEndsAt);
+                const now = new Date();
+                const diffTime = trialEnd - now;
+                trialDaysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (trialDaysLeft < 0) trialDaysLeft = 0;
+            }
+            
+            return res.json({
+                reviewCount: reviewCount,
+                trialDaysLeft: trialDaysLeft,
+                trialEndsAt: businessData.trialEndsAt,
+                subscriptionStatus: businessData.subscriptionStatus
+            });
+        } catch (e) {
+            console.error('trial usage api error', e);
+            return res.status(500).json({ error: 'server_error' });
+        }
+    });
+
     // TEMP: Test Postmark integration endpoint (secured via env key). Remove after diagnostics.
     app.get('/api/test-email', async (req, res) => {
         try {
@@ -2564,15 +2912,33 @@
     // Clean Room Implementation: The Write Path (Review Submission Endpoint)
     app.post('/api/reviews/submit', feedbackLimiter, async (req, res) => {
         // 'targetBusinessId' must be the canonical Auth UID passed from the frontend.
-        const { rating, comment, targetBusinessId } = req.body;
+        const { rating, comment, targetBusinessId, email, phone, name, consent } = req.body;
 
-        console.log(`[CLEANROOM-WRITE] Incoming: UID=${targetBusinessId}, Rating=${rating}`);
+        console.log(`[CLEANROOM-WRITE] Incoming: UID=${targetBusinessId}, Rating=${rating}, Email=${email}, Name=${name || 'N/A'}`);
 
         // 1. Strict Validation
         const parsedRating = parseInt(rating, 10);
-        if (!targetBusinessId || !parsedRating || parsedRating < 1 || parsedRating > 5) {
+        if (!targetBusinessId || !parsedRating || parsedRating < 1 || parsedRating > 5 || !email || !consent) {
             console.error(`[CLEANROOM-WRITE] Validation Failed. Body: ${JSON.stringify(req.body)}`);
-            return res.status(400).json({ error: "Invalid submission data." });
+            return res.status(400).json({ error: "Invalid submission data. Email and consent are required." });
+        }
+
+        // 2. Trial Rate Limiting Check
+        try {
+            const businessRef = db.collection('businesses').doc(targetBusinessId);
+            const businessSnap = await businessRef.get();
+            
+            if (businessSnap.exists) {
+                const businessData = businessSnap.data() || {};
+                
+                // Note: Trial limits are enforced on the business side when SENDING review requests,
+                // not when customers SUBMIT reviews. Customers should always be able to submit reviews.
+                // The trial limit only affects the business owner's ability to send automated requests.
+                console.log(`[CLEANROOM-WRITE] TRIAL CHECK: UID=${targetBusinessId}, Status=${businessData.subscriptionStatus}`);
+            }
+        } catch (trialCheckError) {
+            console.error(`[CLEANROOM-WRITE] Trial check failed for UID: ${targetBusinessId}`, trialCheckError);
+            // Continue with submission even if trial check fails
         }
 
         try {
@@ -2583,6 +2949,13 @@
                 userId: targetBusinessId,
                 rating: parsedRating,
                 comment: comment || null,
+                // Customer contact information
+                customerName: name || null,
+                customerEmail: email.toLowerCase(),
+                customerPhone: phone || null,
+                // Consent and legal compliance
+                consentGiven: true,
+                consentTimestamp: FieldValue.serverTimestamp(),
                 // CRITICAL: Server Timestamp for reliable indexing/ordering
                 createdAt: FieldValue.serverTimestamp(),
                 source: 'cleanroom-v1'
@@ -2592,6 +2965,21 @@
 
             const docRef = await db.collection('reviews').add(newReview);
             console.log(`[CLEANROOM-WRITE] SUCCESS: Written doc ${docRef.id} for UID: ${targetBusinessId}`);
+            
+            // Log the review submission event for Recent Activity tracking
+            try {
+                await logEvent(targetBusinessId, 'review_submitted', {
+                    rating: parsedRating,
+                    name: name || null,
+                    email: email.toLowerCase(),
+                    phone: phone || null,
+                    hasComment: !!comment,
+                    source: 'shortlink'
+                });
+                console.log(`[CLEANROOM-WRITE] Event logged: review_submitted for UID: ${targetBusinessId}`);
+            } catch (eventError) {
+                console.warn(`[CLEANROOM-WRITE] Failed to log event:`, eventError);
+            }
             
             // Clean Room Aggregation: Update stats atomically on the business doc
             try {
@@ -2626,12 +3014,13 @@
                         stats.fiveStarConversions += 1;
                     }
 
-                    // Write back the updated stats object
+                    // Write back the updated stats object and mark sentFirst as true
                     transaction.update(businessRef, { 
                         stats: stats,
+                        sentFirst: true, // Automatically mark onboarding task as completed
                         updatedAt: FieldValue.serverTimestamp()
                     });
-                    console.log(`[CLEANROOM-AGGREGATE] SUCCESS: Updated stats for ${targetBusinessId}. Total: ${stats.totalFeedback}`);
+                    console.log(`[CLEANROOM-AGGREGATE] SUCCESS: Updated stats for ${targetBusinessId}. Total: ${stats.totalFeedback}. Marked sentFirst as true.`);
                 });
             } catch (aggError) {
                 console.error(`[CLEANROOM-AGGREGATE] Transaction failed for UID: ${targetBusinessId}`, aggError);
@@ -2718,8 +3107,12 @@
                     stats.histogram[ratingValue] = (stats.histogram[ratingValue] || 0) + 1;
                     if (ratingValue === 5) stats.fiveStarConversions += 1;
 
-                    transaction.update(businessRef, { stats, updatedAt: FieldValue.serverTimestamp() });
-                    console.log(`[TEST-REVIEW] Stats updated for ${uid}. Total: ${stats.totalFeedback}`);
+                    transaction.update(businessRef, { 
+                        stats, 
+                        sentFirst: true, // Mark onboarding task as completed
+                        updatedAt: FieldValue.serverTimestamp() 
+                    });
+                    console.log(`[TEST-REVIEW] Stats updated for ${uid}. Total: ${stats.totalFeedback}. Marked sentFirst as true.`);
                 });
             } catch (aggError) {
                 console.error(`[TEST-REVIEW] Stats update failed:`, aggError);

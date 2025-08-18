@@ -8,7 +8,7 @@
     <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin:0; background: var(--bg); color: var(--text); }
         .main-content { padding: 2rem; }
-        .container { max-width: 1100px; margin: 0 auto; }
+        .container { max-width: 1280px; margin: 0 auto; }
         .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
         @media (min-width: 900px) { .grid { grid-template-columns: 2fr 1fr; } }
         .column { display: grid; grid-auto-rows: min-content; gap: 16px; }
@@ -81,6 +81,18 @@
           40% { background:#e8f5e9; }
           100% { background: var(--card); }
         }
+        
+        /* Trial tour modal styling */
+        .tour-step{ transition: opacity 0.3s ease; }
+        .tour-step[style*="display: none"]{ opacity: 0; }
+        .tour-step[style*="display: block"]{ opacity: 1; }
+        
+        /* Trial progress animations */
+        .trial-progress-enter{ animation: progressSlide 0.5s ease-out; }
+        @keyframes progressSlide{
+          from{ transform: translateX(-100%); opacity: 0; }
+          to{ transform: translateX(0); opacity: 1; }
+        }
         /* Business name badge */
         .name-badge{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; background: var(--bg); font-weight:700; color: var(--text); margin: -6px 0 12px 0 }
         .name-badge .dot{ width:8px; height:8px; background: var(--accent); border-radius:50% }
@@ -104,7 +116,11 @@
         <div class="card base-card" style="margin-bottom:16px">
           <h2>Insights</h2>
           <% if (analytics && analytics.planTier === 'free') { %>
-            <div class="notice-banner" style="margin:8px 0 12px">Showing last 30 days. Upgrade to Pro for full history, filters, and exports.</div>
+            <div class="notice-banner" style="margin:8px 0 12px">
+              Showing last 30 days. 
+              <a href="/pricing" style="color: var(--accent); text-decoration: none; font-weight: 600;">Upgrade to Pro</a> 
+              for full history, filters, and exports.
+            </div>
           <% } %>
           <% if (analytics && analytics.planTier === 'pro') { %>
             <form method="GET" action="/dashboard" style="margin:8px 0 0">
@@ -140,13 +156,17 @@
         <div class="grid" id="settings-link">
           <div class="column">
             <div class="card base-card">
-                <h2>Customer Feedback</h2>
-                    <div class="table-wrap">
-                    <table>
+                <h2>Customer Feedback <span id="feedbackCount" style="color:var(--muted); font-weight:600; font-size:14px">(<%= (Array.isArray(feedback) ? feedback.length : 0) %>)</span></h2>
+                    <div class="table-wrap" style="max-width:100%">
+                    <table style="min-width: 1200px">
                         <thead>
                             <tr>
                                 <th>Rating</th>
                                 <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Comment</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -155,11 +175,15 @@
                                 <tr>
                                     <td><span class="rating-star"><%= item.rating %> ★</span></td>
                                     <td><%= new Date(item.createdAt).toLocaleDateString() %></td>
+                                    <td><%= item.customerName || 'N/A' %></td>
+                                    <td><%= item.customerEmail || 'N/A' %></td>
+                                    <td><%= item.customerPhone || 'N/A' %></td>
+                                    <td><%= item.comment || 'N/A' %></td>
                                 </tr>
                             <% }); %>
                     <% } else { %>
                       <tr>
-                        <td colspan="2" style="text-align:center; padding:32px 16px;">
+                        <td colspan="6" style="text-align:center; padding:32px 16px;">
                           <div style="display:flex; flex-direction:column; align-items:center; gap:14px; color: var(--muted)">
                             <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                               <rect x="7" y="18" width="74" height="50" rx="8" stroke="#E5E7EB" stroke-width="2"/>
@@ -222,8 +246,8 @@
 
             <div class="card base-card">
               <h2>Automated Sending</h2>
-              <form action="/integrations/square/settings" method="POST">
-                <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+              <form id="automationForm" action="/integrations/square/settings" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <label style="display:flex; align-items:center; gap:8px">
                   <input type="checkbox" name="autoSend" value="1" <%= (squareSettings && squareSettings.autoSend) ? 'checked' : '' %> /> Enable auto‑send after payments
                 </label>
@@ -271,10 +295,23 @@
                     <% if (Array.isArray(recentEvents) && recentEvents.length) { %>
                       <% recentEvents.forEach(ev => { %>
                         <tr>
-                          <td><%= new Date(ev.ts).toLocaleString() %></td>
+                          <td class="event-time" data-timestamp="<%= ev.ts %>">Loading...</td>
                           <td><%= ev.type %></td>
                           <td style="color:var(--muted)">
-                            <% if (ev.payload && ev.payload.email) { %>email: <%= ev.payload.email %><% } %>
+                            <% if (ev.type === 'review_submitted') { %>
+                              <%= ev.payload.rating %>★ review from <%= ev.payload.email %>
+                              <% if (ev.payload.hasComment) { %> (with comment)<% } %>
+                            <% } else if (ev.type === 'send_email') { %>
+                              Email sent to <%= ev.payload.email %>
+                            <% } else if (ev.type === 'send_sms') { %>
+                              SMS sent to <%= ev.payload.phone %>
+                            <% } else if (ev.type === 'send_skipped') { %>
+                              Skipped: <%= ev.payload.reason %>
+                            <% } else if (ev.type === 'send_error') { %>
+                              Error: <%= ev.payload.message %>
+                            <% } else if (ev.payload && ev.payload.email) { %>
+                              email: <%= ev.payload.email %>
+                            <% } %>
                             <% if (ev.payload && ev.payload.phone) { %> phone: <%= ev.payload.phone %><% } %>
                             <% if (ev.payload && ev.payload.shortLink) { %> link: <%= ev.payload.shortLink %><% } %>
                           </td>
@@ -288,8 +325,7 @@
               </div>
             </div>
 
-            <% if (typeof onboardingDismissed === 'undefined' || !onboardingDismissed) { %>
-            <div class="card base-card" id="onboardingBanner">
+            <div class="card base-card" id="onboardingBanner" style="<%= (typeof onboardingDismissed !== 'undefined' && onboardingDismissed) ? 'display:none;' : '' %>">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <h2>Onboarding Checklist</h2>
                 <button id="dismissOnboarding" type="button" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:0;">&times;</button>
@@ -298,31 +334,39 @@
                 <li>Loading…</li>
               </ul>
             </div>
-            <% } %>
 
             <div class="card base-card">
               <h2>Review Collection Kit</h2>
               <div id="kitActiveState" style="<%= hasGooglePlaceId ? '' : 'display:none' %>">
-                <div class="sub-row" style="margin-bottom:10px">
-                  <div style="flex:1">
-                    <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Short link</div>
-                    <div class="link-box" id="kitShortLink" style="word-break:break-all">Loading…</div>
-                    <div class="btns" style="display:flex; gap:.5rem; margin-top:.5rem;">
+                <!-- Horizontal layout: Short link and QR code side by side -->
+                <div style="display: flex; gap: 20px; margin-bottom: 20px; align-items: flex-start;">
+                  <!-- Short link section - takes up more space -->
+                  <div style="flex: 2; min-width: 0;">
+                    <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.5rem;">Short link</div>
+                    <div class="link-box" id="kitShortLink" style="word-break:break-all; padding: 12px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; font-family: monospace; font-size: 14px;">Loading…</div>
+                    <div class="btns" style="display:flex; gap:.5rem; margin-top:.75rem;">
                       <button class="btn btn-secondary" id="kitCopyLink" type="button">Copy</button>
                     </div>
                   </div>
-                  <div>
-                    <img id="kitQrPreview" alt="QR code" class="qr-placeholder" src=""/>
+                  
+                  <!-- QR code section - smaller, right side -->
+                  <div style="flex: 0 0 auto;">
+                    <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.5rem; text-align: center;">QR Code</div>
+                    <img id="kitQrPreview" alt="QR code" class="qr-placeholder" src="" style="width: 120px; height: 120px; border: 1px solid var(--border); border-radius: 8px;"/>
                   </div>
                 </div>
-                <div class="sub-row">
-                  <a id="btnSignPdf" class="btn btn-secondary" href="#" download>Download Countertop Sign (PDF)</a>
-                  <a id="btnStickerPdf" class="btn btn-secondary" href="#" download>Download Sticker Sheet (PDF)</a>
+                
+                <!-- Download buttons in a row -->
+                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                  <a id="btnSignPdf" class="btn btn-secondary" href="#" download style="flex: 1; min-width: 200px; text-align: center;">Download Countertop Sign (PDF)</a>
+                  <a id="btnStickerPdf" class="btn btn-secondary" href="#" download style="flex: 1; min-width: 200px; text-align: center;">Download Sticker Sheet (PDF)</a>
                 </div>
-                <div style="margin-top:14px">
-                  <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Suggested receipt text</div>
-                  <textarea id="kitReceiptText" readonly style="width:100%; min-height:92px; padding:12px; border:1px solid var(--border); border-radius:8px; background: var(--bg);"></textarea>
-                  <div style="margin-top:.5rem">
+                
+                <!-- Receipt text section -->
+                <div>
+                  <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.5rem;">Suggested receipt text</div>
+                  <textarea id="kitReceiptText" readonly style="width:100%; min-height:92px; padding:12px; border:1px solid var(--border); border-radius:8px; background: var(--bg); font-size: 14px; line-height: 1.4;"></textarea>
+                  <div style="margin-top:.75rem">
                     <button class="btn btn-secondary" id="kitCopyReceipt" type="button">Copy Text</button>
                   </div>
                 </div>
@@ -368,6 +412,102 @@
                     <span aria-hidden="true">✅</span>
                     <span>Free trial active — <strong><%= (typeof trialDaysLeft !== 'undefined' && trialDaysLeft != null) ? (trialDaysLeft + ' days left') : ('ends ' + new Date(business.trialEndsAt).toLocaleDateString()) %></strong></span>
                   </div>
+                  
+                  <!-- Trial Feature Limits & Analytics -->
+                  <div class="card base-card" style="margin:12px 0 20px; border: 2px solid #FEF3C7; background: #FFFBEB;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                      <h2 style="margin:0; color: #92400E; border-bottom: 1px solid #FDE68A; padding-bottom: 10px;">
+                        🚀 Trial Features & Limits
+                      </h2>
+                      <button id="btn-trial-tour" class="btn btn-secondary" style="background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E; font-size: 12px; padding: 6px 12px;">
+                        🎯 Take Tour
+                      </button>
+                    </div>
+                    
+                    <!-- Trial Usage Analytics -->
+                    <div style="margin-bottom: 20px;">
+                      <h3 style="font-size: 16px; margin: 0 0 12px; color: #92400E;">Your Trial Usage</h3>
+                      <div class="kpis" style="grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <div class="kpi" style="background: #FEF3C7; border: 1px solid #FDE68A;">
+                          <div class="label" style="color: #92400E;">Review Requests</div>
+                          <div class="value" style="color: #92400E;" id="trialReviewCount">0</div>
+                          <div style="font-size: 11px; color: #B45309; margin-top: 4px;">of 25 allowed</div>
+                        </div>
+                        <div class="kpi" style="background: #FEF3C7; border: 1px solid #FDE68A;">
+                          <div class="label" style="color: #92400E;">Days Remaining</div>
+                          <div class="value" style="color: #92400E;" id="trialDaysLeft"><%= (typeof trialDaysLeft !== 'undefined' && trialDaysLeft != null) ? trialDaysLeft : '—' %></div>
+                          <div style="font-size: 11px; color: #B45309; margin-top: 4px;">trial period</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Trial vs Pro Feature Comparison -->
+                    <div style="margin-bottom: 20px;">
+                      <h3 style="font-size: 16px; margin: 0 0 12px; color: #92400E;">What's Available in Trial</h3>
+                      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                        <div>
+                          <h4 style="margin: 0 0 8px; color: #92400E; font-size: 14px;">✅ Trial Features</h4>
+                          <ul style="margin: 0; padding-left: 20px; color: #92400E; line-height: 1.6;">
+                            <li>25 review requests</li>
+                            <li>Basic analytics</li>
+                            <li>Review Collection Kit</li>
+                            <li>Square integration</li>
+                            <li>Email support</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 style="margin: 0 0 8px; color: #B45309; font-size: 14px;">🔒 Pro Features</h4>
+                          <ul style="margin: 0; padding-left: 20px; color: #B45309; line-height: 1.6;">
+                            <li>Unlimited requests</li>
+                            <li>Advanced analytics</li>
+                            <li>Export data</li>
+                            <li>Priority support</li>
+                            <li>Custom branding</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Trial Progress & Conversion CTA -->
+                    <div style="margin-bottom: 20px;">
+                      <h3 style="font-size: 16px; margin: 0 0 12px; color: #92400E;">Trial Progress</h3>
+                      <div style="background: #F3F4F6; border-radius: 8px; padding: 16px; border: 1px solid #E5E7EB;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: #6B7280;">
+                          <span>Review Requests Used</span>
+                          <span id="trialProgressText">0 / 25</span>
+                        </div>
+                        <div style="background: #E5E7EB; border-radius: 4px; height: 8px; overflow: hidden;">
+                          <div id="trialProgressBar" style="background: linear-gradient(90deg, #10B981 0%, #059669 100%); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #6B7280;">
+                          <span id="trialProgressMessage">Great start! You have 25 review requests available.</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Trial Conversion CTA -->
+                    <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 12px; border: 2px solid #F59E0B; position: relative; overflow: hidden;">
+                      <div style="position: absolute; top: -10px; right: -10px; background: #DC2626; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; transform: rotate(15deg);">
+                        LIMITED TIME
+                      </div>
+                      <h3 style="margin: 0 0 8px; color: #92400E; font-size: 18px;">🚀 Unlock Your Full Potential!</h3>
+                      <p style="margin: 0 0 16px; color: #92400E; font-weight: 600; line-height: 1.5;">
+                        Don't let your trial expire! Upgrade to Pro and get <strong>unlimited review requests</strong>, 
+                        <strong>advanced analytics</strong>, and <strong>priority support</strong>.
+                      </p>
+                      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <button id="btn-upgrade-pro" class="btn-primary" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; color: white; padding: 14px 28px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 16px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
+                          💎 Upgrade to Pro - $49.99/mo
+                        </button>
+                        <button id="btn-trial-extend" class="btn btn-secondary" style="background: transparent; border: 2px solid #F59E0B; color: #92400E; padding: 14px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                          📧 Contact Sales
+                        </button>
+                      </div>
+                      <p style="margin: 16px 0 0; font-size: 12px; color: #B45309;">
+                        ⏰ Trial ends in <strong id="trialUrgencyText"><%= (typeof trialDaysLeft !== 'undefined' && trialDaysLeft !== null) ? trialDaysLeft : '—' %></strong> days
+                      </p>
+                    </div>
+                  </div>
                 <% } %>
                 <!-- POS Integration Status -->
                 <div class="card base-card" style="margin:12px 0 20px">
@@ -389,7 +529,7 @@
                   <div class="plan-col" style="border:2px solid #10B981; border-radius:12px">
                     <div class="card-title" style="font-size:18px">Pro</div>
                     <div class="plan-price">
-                      <div class="price-figure">$49</div>
+                      <div class="price-figure">$49.99</div>
                       <div class="price-label">/mo</div>
                     </div>
                     <ul class="plan-features">
@@ -409,6 +549,77 @@
       </div>
     </main>
     <div class="toast" id="toast">Link copied</div>
+    <!-- Trial Tour Modal -->
+    <div class="modal-overlay" id="trialTourModal">
+      <div class="modal" style="max-width: 600px;">
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h3 style="margin: 0 0 8px; color: #92400E;">🎯 Welcome to Your Trial!</h3>
+          <p style="margin: 0; color: #6B7280;">Let's explore what you can do with Reviews & Marketing</p>
+        </div>
+        
+        <div id="tourSteps" style="margin-bottom: 24px;">
+          <!-- Step 1 -->
+          <div class="tour-step" data-step="1" style="display: block;">
+            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <h4 style="margin: 0 0 8px; color: #92400E;">📊 Step 1: Set Up Your Business</h4>
+              <p style="margin: 0; color: #92400E; font-size: 14px;">
+                Add your Google Place ID in Settings to unlock your Review Collection Kit with QR codes and printable materials.
+              </p>
+            </div>
+            <div style="text-align: center;">
+              <button class="btn btn-secondary tour-next" data-next="2">Next →</button>
+            </div>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="tour-step" data-step="2" style="display: none;">
+            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <h4 style="margin: 0 0 8px; color: #92400E;">🔗 Step 2: Get Your Review Link</h4>
+              <p style="margin: 0; color: #92400E; font-size: 14px;">
+                Use your short link on receipts, business cards, and social media to collect customer reviews.
+              </p>
+            </div>
+            <div style="text-align: center;">
+              <button class="btn btn-secondary tour-prev" data-prev="1">← Previous</button>
+              <button class="btn btn-secondary tour-next" data-next="3">Next →</button>
+            </div>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="tour-step" data-step="3" style="display: none;">
+            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <h4 style="margin: 0 0 8px; color: #92400E;">📱 Step 3: Connect Square (Optional)</h4>
+              <p style="margin: 0; color: #92400E; font-size: 14px;">
+                Automatically send review requests to customers after successful transactions.
+              </p>
+            </div>
+            <div style="text-align: center;">
+              <button class="btn btn-secondary tour-prev" data-prev="2">← Previous</button>
+              <button class="btn btn-secondary tour-next" data-next="4">Next →</button>
+            </div>
+          </div>
+          
+          <!-- Step 4 -->
+          <div class="tour-step" data-step="4" style="display: none;">
+            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+              <h4 style="margin: 0 0 8px; color: #92400E;">🚀 Step 4: Upgrade When Ready</h4>
+              <p style="margin: 0; color: #92400E; font-size: 14px;">
+                Your trial includes 25 review requests. Upgrade to Pro for unlimited requests and advanced features!
+              </p>
+            </div>
+            <div style="text-align: center;">
+              <button class="btn btn-secondary tour-prev" data-prev="3">← Previous</button>
+              <button class="btn-primary" onclick="window.location.href='/pricing'">Upgrade to Pro</button>
+            </div>
+          </div>
+        </div>
+        
+        <div style="text-align: center;">
+          <button class="btn-ghost" id="tourClose">Skip Tour</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-overlay" id="cancelModal">
       <div class="modal">
         <h3>Cancel Pro subscription?</h3>
@@ -422,6 +633,223 @@
     <%- include('partials/footer') %>
     <script>
       (function(){
+        // Trial Analytics & Feature Management
+        async function fetchTrialAnalytics() {
+          try {
+            const uid = '<%= user && user.uid ? user.uid : "" %>';
+            if (!uid) return;
+            
+            // Fetch trial usage data
+            const resp = await fetch('/api/merchants/' + uid + '/trial-usage', { credentials: 'same-origin' });
+            if (resp.ok) {
+              const data = await resp.json();
+              const reviewCountElement = document.getElementById('trialReviewCount');
+              if (reviewCountElement) {
+                reviewCountElement.textContent = data.reviewCount || 0;
+                
+                // Add visual indicator if approaching limit
+                if (data.reviewCount >= 20) {
+                  reviewCountElement.style.color = '#DC2626';
+                  reviewCountElement.parentElement.style.background = '#FEE2E2';
+                  reviewCountElement.parentElement.style.borderColor = '#FCA5A5';
+                } else if (data.reviewCount >= 15) {
+                  reviewCountElement.style.color = '#F59E0B';
+                  reviewCountElement.parentElement.style.background = '#FEF3C7';
+                  reviewCountElement.parentElement.style.borderColor = '#FDE68A';
+                }
+                
+                // Update progress indicators
+                updateTrialProgress(data.reviewCount || 0);
+                
+                // Update urgency text
+                const urgencyText = document.getElementById('trialUrgencyText');
+                if (urgencyText && data.trialDaysLeft !== null) {
+                  urgencyText.textContent = data.trialDaysLeft;
+                  
+                  // Add urgency styling for low days
+                  if (data.trialDaysLeft <= 3) {
+                    urgencyText.style.color = '#DC2626';
+                    urgencyText.style.fontWeight = '900';
+                  } else if (data.trialDaysLeft <= 7) {
+                    urgencyText.style.color = '#F59E0B';
+                    urgencyText.style.fontWeight = '700';
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            console.error('[TRIAL-ANALYTICS] Error fetching trial data:', error);
+          }
+        }
+
+        // Handle trial upgrade button
+        function initializeTrialUpgrade() {
+          const trialUpgradeBtn = document.getElementById('btn-upgrade-trial');
+          console.log('[TRIAL-UPGRADE] Looking for button:', trialUpgradeBtn);
+          if (trialUpgradeBtn) {
+            console.log('[TRIAL-UPGRADE] Button found, adding click listener');
+            trialUpgradeBtn.addEventListener('click', async function() {
+              console.log('[TRIAL-UPGRADE] Button clicked!');
+              console.log('[TRIAL-UPGRADE] Stripe available:', !!window.Stripe);
+              console.log('[TRIAL-UPGRADE] CSRF token:', '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>');
+              
+              trialUpgradeBtn.disabled = true;
+              trialUpgradeBtn.textContent = 'Redirecting...';
+              
+              try {
+                console.log('[TRIAL-UPGRADE] Making checkout request...');
+                const resp = await fetch('/create-checkout-session', {
+                  method: 'POST',
+                  headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
+                  body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>',
+                  credentials: 'same-origin'
+                });
+                
+                console.log('[TRIAL-UPGRADE] Response status:', resp.status);
+                console.log('[TRIAL-UPGRADE] Response ok:', resp.ok);
+                
+                if (!resp.ok) { 
+                  console.error('[TRIAL-UPGRADE] Response not ok:', resp.status, resp.statusText);
+                  window.location.href = '/dashboard?e=' + encodeURIComponent('Checkout request failed'); 
+                  return; 
+                }
+                
+                const data = await resp.json().catch((e) => {
+                  console.error('[TRIAL-UPGRADE] JSON parse error:', e);
+                  return null;
+                });
+                
+                console.log('[TRIAL-UPGRADE] Response data:', data);
+                
+                if (data && data.id && window.Stripe) {
+                  console.log('[TRIAL-UPGRADE] Redirecting to Stripe checkout...');
+                  const { error } = await window.Stripe.redirectToCheckout({ sessionId: data.id });
+                  if (!error) return;
+                  console.error('[TRIAL-UPGRADE] Stripe redirect error:', error);
+                }
+                if (data && data.url) { 
+                  console.log('[TRIAL-UPGRADE] Redirecting to URL:', data.url);
+                  window.location = data.url; 
+                  return; 
+                }
+                if (resp.redirected && resp.url) { 
+                  console.log('[TRIAL-UPGRADE] Redirecting to redirected URL:', resp.url);
+                  window.location = resp.url; 
+                  return; 
+                }
+                console.error('[TRIAL-UPGRADE] No valid redirect found');
+                window.location.href = '/dashboard?e=' + encodeURIComponent('Checkout session not available');
+              } catch (e) {
+                console.error('[TRIAL-UPGRADE] Checkout error:', e);
+                window.location.href = '/dashboard?e=' + encodeURIComponent('Checkout failed');
+              } finally {
+                // Reset button if something goes wrong
+                console.log('[TRIAL-UPGRADE] Resetting button state');
+                trialUpgradeBtn.disabled = false;
+                trialUpgradeBtn.textContent = '💎 Upgrade to Pro - $49.99/mo';
+              }
+            });
+          } else {
+            console.error('[TRIAL-UPGRADE] Button not found!');
+          }
+        }
+
+        // Initialize trial tour functionality
+        function initializeTrialTour() {
+          const tourBtn = document.getElementById('btn-trial-tour');
+          const tourModal = document.getElementById('trialTourModal');
+          const tourClose = document.getElementById('tourClose');
+          
+          if (tourBtn && tourModal) {
+            tourBtn.addEventListener('click', function() {
+              tourModal.style.display = 'flex';
+              // Reset to first step
+              showTourStep(1);
+            });
+          }
+          
+          if (tourClose) {
+            tourClose.addEventListener('click', function() {
+              tourModal.style.display = 'none';
+            });
+          }
+          
+          // Tour navigation
+          document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tour-next')) {
+              const nextStep = parseInt(e.target.dataset.next);
+              showTourStep(nextStep);
+            } else if (e.target.classList.contains('tour-prev')) {
+              const prevStep = parseInt(e.target.dataset.prev);
+              showTourStep(prevStep);
+            }
+          });
+        }
+        
+        // Show specific tour step
+        function showTourStep(step) {
+          const steps = document.querySelectorAll('.tour-step');
+          steps.forEach(s => s.style.display = 'none');
+          
+          const currentStep = document.querySelector(`[data-step="${step}"]`);
+          if (currentStep) {
+            currentStep.style.display = 'block';
+          }
+        }
+        
+        // Update trial progress indicators
+        function updateTrialProgress(reviewCount) {
+          const progressBar = document.getElementById('trialProgressBar');
+          const progressText = document.getElementById('trialProgressText');
+          const progressMessage = document.getElementById('trialProgressMessage');
+          
+          if (progressBar && progressText && progressMessage) {
+            const percentage = Math.min((reviewCount / 25) * 100, 100);
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `${reviewCount} / 25`;
+            
+            // Update progress message based on usage
+            if (reviewCount === 0) {
+              progressMessage.textContent = 'Great start! You have 25 review requests available.';
+            } else if (reviewCount < 10) {
+              progressMessage.textContent = 'Good progress! You\'re making great use of your trial.';
+            } else if (reviewCount < 20) {
+              progressMessage.textContent = 'Getting busy! Consider upgrading for unlimited requests.';
+            } else if (reviewCount < 25) {
+              progressMessage.textContent = 'Almost at your limit! Upgrade now to continue growing.';
+            } else {
+              progressMessage.textContent = 'Trial limit reached! Upgrade to Pro for unlimited requests.';
+            }
+            
+            // Update progress bar color based on usage
+            if (reviewCount >= 25) {
+              progressBar.style.background = 'linear-gradient(90deg, #DC2626 0%, #B91C1C 100%)';
+            } else if (reviewCount >= 20) {
+              progressBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #D97706 100%)';
+            } else if (reviewCount >= 15) {
+              progressBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B 100%)';
+            } else {
+              progressBar.style.background = 'linear-gradient(90deg, #10B981 0%, #059669 100%)';
+            }
+          }
+        }
+        
+        // Handle trial extend button
+        function initializeTrialExtend() {
+          const extendBtn = document.getElementById('btn-trial-extend');
+          console.log('[TRIAL-EXTEND] Looking for button:', extendBtn);
+          if (extendBtn) {
+            console.log('[TRIAL-EXTEND] Button found, adding click listener');
+            extendBtn.addEventListener('click', function() {
+              console.log('[TRIAL-EXTEND] Button clicked!');
+              // Open email client to contact sales
+              const subject = encodeURIComponent('Trial Extension Request - Reviews & Marketing');
+              const body = encodeURIComponent(`Hi there,\n\nI'm interested in extending my trial period for Reviews & Marketing. Could you please provide more information about trial extensions?\n\nThank you!`);
+              window.location.href = `mailto:sales@reviewsandmarketing.com?subject=${subject}&body=${body}`;
+            });
+          }
+        }
+
         // Review Collection Kit loader
         async function fetchKit(){
           try {
@@ -468,6 +896,19 @@
           } catch(e) { console.error('kit load error', e); }
         }
         fetchKit();
+        
+        // Initialize trial features
+        if ('<%= business && business.subscriptionStatus === "trial" %>' === 'true') {
+          console.log('[TRIAL-INIT] Initializing trial features...');
+          fetchTrialAnalytics();
+          initializeTrialUpgrade();
+          initializeTrialTour();
+          initializeTrialExtend();
+          console.log('[TRIAL-INIT] Trial features initialized');
+        } else {
+          console.log('[TRIAL-INIT] Not a trial user, skipping trial features');
+        }
+        
         // Enable editing Place ID if already set
         try{
           var editBtn = document.getElementById('btnEditPlaceId');
@@ -495,7 +936,39 @@
           kitCopyBtn.addEventListener('click', async function(){
             var shortBox = document.getElementById('kitShortLink');
             const ok = await copyText2(shortBox ? shortBox.textContent.trim() : '');
-            if (ok) alert('Short link copied!'); else alert('Copy failed');
+            if (ok) {
+              // Mark "Send your first request" as completed
+              try {
+                const response = await fetch('/api/onboarding/mark-sent-first', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                  body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>',
+                  credentials: 'same-origin'
+                });
+                if (response.ok) {
+                  // Refresh the onboarding checklist to show updated status
+                  const obList = document.getElementById('obList');
+                  if (obList) {
+                    const r = await fetch('/api/onboarding/status', { credentials:'same-origin' });
+                    const j = await r.json().catch(()=>({}));
+                    function liHtml(id, text, done){
+                      return `<li id="${id}" style="cursor:pointer">${done ? '✅' : '—'} ${text}</li>`;
+                    }
+                    obList.innerHTML = [
+                      liHtml('ob-placeid', '1. Add your Google Place ID', !!j.hasPlaceId),
+                      liHtml('ob-short', '2. Copy and test your review link', !!j.hasShortLink),
+                      liHtml('ob-pos', '3. Connect POS (Square)', !!j.posConnected),
+                      liHtml('ob-send', '4. Send your first request', !!j.sentFirst)
+                    ].join('');
+                  }
+                }
+              } catch (error) {
+                console.warn('Could not update onboarding status:', error);
+              }
+              alert('Short link copied!');
+            } else {
+              alert('Copy failed');
+            }
           });
         }
         var kitCopyReceipt = document.getElementById('kitCopyReceipt');
@@ -741,6 +1214,14 @@
               liHtml('ob-pos', '3. Connect POS (Square)', !!j.posConnected),
               liHtml('ob-send', '4. Send your first request', !!j.sentFirst)
             ].join('');
+            
+            // Auto-hide checklist if all items are completed
+            if (j.hasPlaceId && j.hasShortLink && j.posConnected && j.sentFirst) {
+              const onboardingBanner = document.getElementById('onboardingBanner');
+              if (onboardingBanner) {
+                onboardingBanner.style.display = 'none';
+              }
+            }
             try{
               const goSettings = function(){
                 var settingsCard = document.getElementById('settingsCard');
@@ -825,17 +1306,55 @@
           }
           if (bfBtn){
             bfBtn.addEventListener('click', async function(){
-              try{ bfBtn.disabled = true; bfBtn.textContent = 'Backfilling…'; }catch(_){ }
-              const days = Math.max(1, Math.min(90, parseInt((bfDays && bfDays.value) || '30', 10)));
-              const res = await postForm('/integrations/square/backfill?days=' + days, {});
-              alert(res && res.ok ? `Backfill complete. Scanned ${res.scanned}, processed ${res.processed}.` : 'Backfill finished.');
+              try{ 
+                bfBtn.disabled = true; 
+                bfBtn.textContent = 'Backfilling…'; 
+              }catch(_){ }
+              
+              try {
+                const days = Math.max(1, Math.min(90, parseInt((bfDays && bfDays.value) || '30', 10)));
+                const res = await postForm('/integrations/square/backfill?days=' + days, {});
+                if (res && res.ok) {
+                  alert(`Backfill complete. Scanned ${res.scanned}, processed ${res.processed}.`);
+                } else {
+                  alert('Backfill finished.');
+                }
+              } catch (error) {
+                console.error('Backfill error:', error);
+                alert('Backfill failed. Please try again.');
+              } finally {
+                // Always reset button state
+                try {
+                  bfBtn.disabled = false;
+                  bfBtn.textContent = 'Run Backfill';
+                } catch(_) {}
+              }
             });
           }
           if (sdBtn){
             sdBtn.addEventListener('click', async function(){
-              try{ sdBtn.disabled = true; sdBtn.textContent = 'Syncing…'; }catch(_){ }
-              const res = await postForm('/integrations/square/sync-daily', {});
-              alert(res && res.ok ? `Daily sync complete. Scanned ${res.scanned}, processed ${res.processed}.` : 'Daily sync finished.');
+              try{ 
+                sdBtn.disabled = true; 
+                sdBtn.textContent = 'Syncing…'; 
+              }catch(_){ }
+              
+              try {
+                const res = await postForm('/integrations/square/sync-daily', {});
+                if (res && res.ok) {
+                  alert(`Daily sync complete. Scanned ${res.scanned}, processed ${res.processed}.`);
+                } else {
+                  alert('Daily sync finished.');
+                }
+              } catch (error) {
+                console.error('Daily sync error:', error);
+                alert('Daily sync failed. Please try again.');
+              } finally {
+                // Always reset button state
+                try {
+                  sdBtn.disabled = false;
+                  sdBtn.textContent = 'Run Daily Sync';
+                } catch(_) {}
+              }
             });
           }
         }catch(_){ }
@@ -998,7 +1517,7 @@
             if (!reviews || reviews.length === 0) {
                 container.innerHTML = `
                     <tr>
-                        <td colspan="2" style="text-align:center; padding:32px 16px;">
+                        <td colspan="6" style="text-align:center; padding:32px 16px;">
                             <div style="display:flex; flex-direction:column; align-items:center; gap:14px; color: var(--muted)">
                                 <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <rect x="7" y="18" width="74" height="50" rx="8" stroke="#E5E7EB" stroke-width="2"/>
@@ -1019,28 +1538,95 @@
             let html = '';
             reviews.forEach(review => {
                 const date = new Date(review.createdAt).toLocaleDateString();
+                const name = review.customerName || 'N/A';
+                const email = review.customerEmail || 'N/A';
+                const phone = review.customerPhone || 'N/A';
                 const comment = review.comment ? review.comment.substring(0, 150) : 'N/A';
                 html += `
                     <tr>
                         <td><span class="rating-star">${review.rating} ★</span></td>
-                        <td>${comment}</td>
                         <td>${date}</td>
+                        <td>${name}</td>
+                        <td>${email}</td>
+                        <td>${phone}</td>
+                        <td>${comment}</td>
                     </tr>
                 `;
             });
             
-            // Update table headers to include comment column
+            // Update table headers to include all columns
             const thead = container.parentElement.querySelector('thead tr');
             if (thead && thead.children.length === 2) {
+                const dateHeader = document.createElement('th');
+                dateHeader.textContent = 'Date';
+                thead.appendChild(dateHeader);
+                
+                const nameHeader = document.createElement('th');
+                nameHeader.textContent = 'Name';
+                thead.appendChild(nameHeader);
+                
+                const emailHeader = document.createElement('th');
+                emailHeader.textContent = 'Email';
+                thead.appendChild(emailHeader);
+                
+                const phoneHeader = document.createElement('th');
+                phoneHeader.textContent = 'Phone';
+                thead.appendChild(phoneHeader);
+                
                 const commentHeader = document.createElement('th');
                 commentHeader.textContent = 'Comment';
                 thead.appendChild(commentHeader);
             }
             
             container.innerHTML = html;
+            // Update count badge
+            try{
+              const countSpan = document.getElementById('feedbackCount');
+              if (countSpan) countSpan.textContent = `(${reviews.length})`;
+            }catch(_){ }
             console.log(`[CLEANROOM-RENDER] Customer feedback updated: ${reviews.length} reviews`);
         }
     });
+    </script>
+    
+    <!-- Timezone conversion script for Recent Activity -->
+    <script>
+        // Simple timezone conversion - run once when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeElements = document.querySelectorAll('.event-time');
+            timeElements.forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                if (timestamp) {
+                    try {
+                        const date = new Date(timestamp);
+                        if (!isNaN(date.getTime())) {
+                            element.textContent = date.toLocaleString();
+                        } else {
+                            element.textContent = 'Invalid date';
+                        }
+                    } catch (error) {
+                        element.textContent = 'Error';
+                    }
+                }
+            });
+            
+            // Simple automation form validation (no form replacement)
+            const automationForm = document.getElementById('automationForm');
+            if (automationForm) {
+                console.log('[AUTOMATION-FORM] Form found and ready for submission');
+                
+                // Add basic validation if needed
+                automationForm.addEventListener('submit', function(e) {
+                    const delayInput = this.querySelector('input[name="delayMinutes"]');
+                    if (delayInput && (isNaN(delayInput.value) || delayInput.value < 0)) {
+                        e.preventDefault();
+                        alert('Please enter a valid delay (0 or positive number)');
+                        return false;
+                    }
+                    console.log('[AUTOMATION-FORM] Form submitted successfully');
+                });
+            }
+        });
     </script>
 </body>
 </html>

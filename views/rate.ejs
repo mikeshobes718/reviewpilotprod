@@ -37,39 +37,105 @@
         input, textarea {
             width: 100%;
             box-sizing: border-box;
-            padding: 12px 14px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 16px 18px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 16px;
             font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
+            background: #FFFFFF;
         }
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(16,185,129,.2);
+            border-color: #10B981;
+            box-shadow: 0 0 0 4px rgba(16,185,129,0.1);
+            transform: translateY(-1px);
         }
+        input:hover, textarea:hover {
+            border-color: #D1D5DB;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.25);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.35);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        /* Form section styling */
+        .form-section {
+            background: #F9FAFB;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            border: 1px solid #E5E7EB;
+        }
+        
+        /* Label styling */
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        /* Checkbox styling */
+        .consent-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #F3F4F6;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+        }
+        .consent-group input[type="checkbox"] {
+            width: auto;
+            margin-top: 2px;
+            transform: scale(1.2);
+        }
+        .consent-group span {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.5;
+        }
+        
         .branding { margin: 16px auto 0; font-size: 0.875rem; color: var(--muted); text-align:center }
         .branding a { color: var(--accent); text-decoration:none; font-weight:600 }
     </style>
 </head>
 <body>
     <div id="rate-root" data-business-id="<%= business.uid %>" data-place-id="<%= business.googlePlaceId || '' %>" class="public-wrap">
-      <!-- DEBUG: Show what data we have -->
+      <!-- DEBUG: Show what data we have (Hidden) -->
       <script>
-        console.log('[DEBUG] Template data:', {
-          business: <%- JSON.stringify(business) %>,
-          uid: '<%= business.uid %>',
-          googlePlaceId: '<%= business.googlePlaceId %>'
-        });
+        // console.log('[DEBUG] Template data:', {
+        //   business: <%- JSON.stringify(business) %>,
+        //   uid: '<%= business.uid %>',
+        //   googlePlaceId: '<%= business.googlePlaceId %>'
+        // });
       </script>
       <div class="public-card">
         <!-- Standard star icon for all businesses -->
         <svg class="biz-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M12 2.5l2.89 5.86 6.47.94-4.68 4.56 1.1 6.43L12 17.77l-5.78 3.02 1.1-6.43L2.64 9.3l6.47-.94L12 2.5z" fill="#FBBF24" stroke="#F59E0B" stroke-width="0.5"/>
         </svg>
-        <div class="modal-title"><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'Business') %></div>
-        <p class="modal-sub">How was your experience at <%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : 'our business') %>?</p>
+        <div class="modal-title"><%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? placeDisplayName : (business && business.businessName ? business.businessName : '') %></div>
+        <p class="modal-sub">How was your experience<%= (typeof placeDisplayName !== 'undefined' && placeDisplayName) ? ' with ' + placeDisplayName : (business && business.businessName ? ' with ' + business.businessName : '') %>?</p>
 
         <!-- Initial Rating Section -->
         <div id="rating-section">
@@ -92,11 +158,35 @@
             </div>
         </div>
 
+        <!-- Customer Contact Information (shown for all ratings) -->
+        <div id="contact-section" class="hidden form-section">
+            <div style="margin-bottom:20px">
+                <label for="customer-name">Name (Optional)</label>
+                <input id="customer-name" type="text" placeholder="Your first name" />
+            </div>
+            <div style="margin-bottom:20px">
+                <label for="customer-email">Email Address *</label>
+                <input id="customer-email" type="email" placeholder="your@email.com" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" />
+            </div>
+            <div style="margin-bottom:20px">
+                <label for="customer-phone">Phone Number (Optional)</label>
+                <input id="customer-phone" type="tel" placeholder="(555) 123-4567" maxlength="14" pattern="\(\d{3}\) \d{3}-\d{4}" />
+            </div>
+            <div class="consent-group">
+                <input id="consent-checkbox" type="checkbox" required />
+                <span>I consent to receive review requests and follow-up communications from this business. I can unsubscribe at any time.</span>
+            </div>
+        </div>
+
         <!-- Feedback (shown for 1–4 stars) -->
-        <div id="feedback-section" class="hidden" style="margin-top:16px; text-align:left">
-            <label for="feedback-text" style="display:block; font-weight:600; margin-bottom:6px">What would make this a 5‑star experience next time?</label>
+        <div id="feedback-section" class="hidden form-section">
+            <label for="feedback-text">What would make this a 5‑star experience next time?</label>
             <textarea id="feedback-text" placeholder="Your feedback helps us improve." rows="5"></textarea>
-            <button id="action-button" class="btn-primary" type="button" style="margin-top:10px; width:100%">Submit Feedback</button>
+        </div>
+
+        <!-- Submit Button (shown for all ratings) -->
+        <div id="submit-section" class="hidden" style="margin-top:24px; text-align:center">
+            <button id="action-button-5star" class="btn-primary" type="button" style="width:100%">Submit to Google Reviews</button>
         </div>
 
         <!-- Thank You Message -->
@@ -105,14 +195,8 @@
             <p>We appreciate you taking the time to help us improve.</p>
         </div>
 
-        <!-- DEBUG: Test button for backend testing -->
-        <div style="margin-top:20px; padding:16px; background:#f8f9fa; border-radius:8px; border:1px solid #dee2e6;">
-            <h4 style="margin:0 0 8px; color:#6c757d;">Debug Tools</h4>
-            <button id="test-backend" type="button" style="background:#007bff; color:white; border:none; padding:8px 16px; border-radius:4px; cursor:pointer;">
-                Test Backend Connection
-            </button>
-            <div id="debug-output" style="margin-top:8px; font-family:monospace; font-size:12px; color:#6c757d;"></div>
-        </div>
+
+
       </div>
     </div>
 
