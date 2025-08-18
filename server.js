@@ -1205,7 +1205,7 @@
         }
 
         // Trigger backfill for current merchant (default 30 days, max 90)
-        app.post('/integrations/square/backfill', requireLogin, csrfProtection, async (req, res) => {
+        app.post('/integrations/square/backfill', requireLogin, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const businessSnap = await db.collection('businesses').doc(uid).get();
@@ -1224,7 +1224,7 @@
         });
 
         // Incremental sync from last sync time (fallback to 24h)
-        app.post('/integrations/square/sync', requireLogin, csrfProtection, async (req, res) => {
+        app.post('/integrations/square/sync', requireLogin, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const ref = db.collection('businesses').doc(uid);

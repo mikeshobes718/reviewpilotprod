@@ -458,7 +458,7 @@
                               </div>
                             </div>
                             
-                            <button type="button" id="saveButton" class="btn primary" style="text-align: center;">
+                            <button type="button" id="saveButton" class="btn primary" style="text-align: center !important; display: flex; justify-content: center; align-items: center;">
                               Save Settings
                             </button>
                             
@@ -600,10 +600,9 @@
                       const response = await fetch('/integrations/square/backfill', {
                         method: 'POST',
                         headers: { 
-                          'Content-Type': 'application/x-www-form-urlencoded',
-                          'X-CSRF-Token': csrfToken
+                          'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `days=${days}&_csrf=${csrfToken}`
+                        body: `days=${days}`
                       });
                       
                       if (response.ok) {
@@ -633,10 +632,9 @@
                       const response = await fetch('/integrations/square/sync-daily', {
                         method: 'POST',
                         headers: { 
-                          'Content-Type': 'application/x-www-form-urlencoded',
-                          'X-CSRF-Token': csrfToken
+                          'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: `_csrf=${csrfToken}`
+                        body: ''
                       });
                       
                       if (response.ok) {
