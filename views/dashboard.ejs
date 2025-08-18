@@ -500,7 +500,11 @@
                   console.log('[AUTOMATION-NEW] Page loaded, loading settings...');
                   
                   try {
-                    const response = await fetch('/api/automation/get-settings');
+                    const response = await fetch('/api/automation/get-settings', {
+                      headers: { 
+                        'X-CSRF-Token': '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
+                      }
+                    });
                     if (response.ok) {
                       const settings = await response.json();
                       console.log('[AUTOMATION-NEW] Settings loaded:', settings);
@@ -557,7 +561,10 @@
                     try {
                       const response = await fetch('/api/automation/save-settings', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                          'Content-Type': 'application/json',
+                          'X-CSRF-Token': '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
+                        },
                         body: JSON.stringify(settings)
                       });
                       
