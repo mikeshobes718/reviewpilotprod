@@ -2340,28 +2340,73 @@
             const authUrl = getAuthApiBase() + '/login';
             console.log('[TEST-AUTH] Testing connectivity to:', authUrl);
             
+            // Test 1: Basic login attempt
             const testResponse = await fetch(authUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: 'test@test.com', password: 'test' })
             });
             
-            console.log('[TEST-AUTH] Response status:', testResponse.status);
-            console.log('[TEST-AUTH] Response headers:', Object.fromEntries(testResponse.headers.entries()));
-            
-            let responseData = null;
+            console.log('[TEST-AUTH] Test 1 - Basic login status:', testResponse.status);
+            let responseData1 = null;
             try {
-                responseData = await testResponse.text();
-                console.log('[TEST-AUTH] Response body:', responseData);
+                responseData1 = await testResponse.text();
+                console.log('[TEST-AUTH] Test 1 - Response body:', responseData1);
             } catch(e) {
-                console.log('[TEST-AUTH] Failed to read response:', e.message);
+                console.log('[TEST-AUTH] Test 1 - Failed to read response:', e.message);
+            }
+            
+            // Test 2: Try with different field names
+            const testResponse2 = await fetch(authUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: 'test@test.com', password: 'test' })
+            });
+            
+            console.log('[TEST-AUTH] Test 2 - Username field status:', testResponse2.status);
+            let responseData2 = null;
+            try {
+                responseData2 = await testResponse2.text();
+                console.log('[TEST-AUTH] Test 2 - Response body:', responseData2);
+            } catch(e) {
+                console.log('[TEST-AUTH] Test 2 - Failed to read response:', e.message);
+            }
+            
+            // Test 3: Try with different content type
+            const testResponse3 = await fetch(authUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'email=test@test.com&password=test'
+            });
+            
+            console.log('[TEST-AUTH] Test 3 - Form data status:', testResponse3.status);
+            let responseData3 = null;
+            try {
+                responseData3 = await testResponse3.text();
+                console.log('[TEST-AUTH] Test 3 - Response body:', responseData3);
+            } catch(e) {
+                console.log('[TEST-AUTH] Test 3 - Failed to read response:', e.message);
             }
             
             res.json({
                 authUrl: authUrl,
-                status: testResponse.status,
-                headers: Object.fromEntries(testResponse.headers.entries()),
-                body: responseData,
+                tests: [
+                    {
+                        name: 'Basic JSON login',
+                        status: testResponse.status,
+                        body: responseData1
+                    },
+                    {
+                        name: 'Username field',
+                        status: testResponse2.status,
+                        body: responseData2
+                    },
+                    {
+                        name: 'Form data',
+                        status: testResponse3.status,
+                        body: responseData3
+                    }
+                ],
                 timestamp: new Date().toISOString()
             });
         } catch (error) {
