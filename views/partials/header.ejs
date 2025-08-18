@@ -38,8 +38,16 @@
       </nav>
     </div>
     <div class="drawer-footer" style="margin-top:auto;padding:16px;border-top:1px solid var(--border);display:grid;gap:10px">
-      <a href="/login" class="btn" style="justify-content:center">Log in</a>
-      <a href="/signup" class="btn primary" style="justify-content:center">Get started</a>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <% if (typeof userHasAccess !== 'undefined' && userHasAccess) { %>
+          <a href="/dashboard" class="btn" style="justify-content:center">Dashboard</a>
+        <% } %>
+        <span class="btn" style="cursor:default;opacity:.85;justify-content:center;border:none;background:transparent;color:var(--text);font-weight:600;font-size:16px;">Signed in: <%= user.email %></span>
+        <a href="/logout" class="btn" style="justify-content:center">Log out</a>
+      <% } else { %>
+        <a href="/login" class="btn" style="justify-content:center">Log in</a>
+        <a href="/signup" class="btn primary" style="justify-content:center">Get started</a>
+      <% } %>
     </div>
   </div>
 </div>
