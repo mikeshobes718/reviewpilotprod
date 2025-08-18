@@ -776,13 +776,13 @@
         });
 
         // Test endpoint to verify API is working
-        app.get('/api/automation/test', (req, res) => {
+        app.get('/api/automation/test', csrfProtection, (req, res) => {
             console.log('[TEST-AUTOMATION] Test endpoint hit');
             res.json({ message: 'Automation API is working', timestamp: new Date().toISOString() });
         });
 
         // New simple automation API endpoints
-        app.get('/api/automation/get-settings', async (req, res) => {
+        app.get('/api/automation/get-settings', csrfProtection, async (req, res) => {
             try {
                 console.log('[GET-AUTOMATION-SETTINGS] Request received');
                 console.log('[GET-AUTOMATION-SETTINGS] Session:', req.session);
@@ -820,7 +820,7 @@
             }
         });
 
-        app.post('/api/automation/save-settings', async (req, res) => {
+        app.post('/api/automation/save-settings', csrfProtection, async (req, res) => {
             try {
                 console.log('[SAVE-AUTOMATION-SETTINGS] Request received');
                 console.log('[SAVE-AUTOMATION-SETTINGS] Session:', req.session);
