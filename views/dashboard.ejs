@@ -587,6 +587,7 @@
                   
                   // Backfill button
                   if (e.target.id === 'backfillButton') {
+                    console.log('[AUTOMATION-NEW] Backfill button clicked!');
                     const daysInput = document.getElementById('backfillDays');
                     const days = daysInput ? parseInt(daysInput.value) || 30 : 30;
                     console.log('[AUTOMATION-NEW] Running backfill for', days, 'days');
@@ -596,6 +597,7 @@
                       // Get CSRF token from meta tag or form
                       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                                       document.querySelector('input[name="_csrf"]')?.value || '';
+                      console.log('[AUTOMATION-NEW] CSRF token found:', csrfToken ? 'YES' : 'NO', 'Length:', csrfToken.length);
                       
                       const response = await fetch('/integrations/square/backfill', {
                         method: 'POST',
@@ -606,8 +608,11 @@
                         body: `days=${days}&_csrf=${csrfToken}`
                       });
                       
+                      console.log('[AUTOMATION-NEW] Backfill response status:', response.status);
+                      
                       if (response.ok) {
                         const result = await response.json();
+                        console.log('[AUTOMATION-NEW] Backfill success:', result);
                         showStatus(`✅ Backfill complete! Processed: ${result.processed || 'unknown'}`, true);
                       } else {
                         const errorText = await response.text();
@@ -622,13 +627,14 @@
                   
                   // Daily sync button
                   if (e.target.id === 'dailySyncButton') {
-                    console.log('[AUTOMATION-NEW] Running daily sync');
+                    console.log('[AUTOMATION-NEW] Daily sync button clicked!');
                     showStatus('🔄 Running daily sync...', true);
                     
                     try {
                       // Get CSRF token from meta tag or form
                       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                                       document.querySelector('input[name="_csrf"]')?.value || '';
+                      console.log('[AUTOMATION-NEW] CSRF token found:', csrfToken ? 'YES' : 'NO', 'Length:', csrfToken.length);
                       
                       const response = await fetch('/integrations/square/sync-daily', {
                         method: 'POST',
@@ -639,8 +645,11 @@
                         body: `_csrf=${csrfToken}`
                       });
                       
+                      console.log('[AUTOMATION-NEW] Daily sync response status:', response.status);
+                      
                       if (response.ok) {
                         const result = await response.json();
+                        console.log('[AUTOMATION-NEW] Daily sync success:', result);
                         showStatus(`✅ Daily sync complete! Processed: ${result.processed || 'unknown'}`, true);
                       } else {
                         const errorText = await response.text();

@@ -3301,8 +3301,8 @@
             if (!needsPlaceId) {
                 qrPngPath = path.join(outDir, 'qr.png');
                 qrSvgPath = path.join(outDir, 'qr.svg');
-                await QRCode.toFile(qrPngPath, `https://${shortLink}`, { scale: 8, margin: 1 });
-                const svgStr = await QRCode.toString(`https://${shortLink}`, { type: 'svg', margin: 1 });
+                await QRCode.toFile(qrPngPath, `https://${shortLink}`, { scale: 12, margin: 2, errorCorrectionLevel: 'H' });
+                const svgStr = await QRCode.toString(`https://${shortLink}`, { type: 'svg', margin: 2, errorCorrectionLevel: 'H' });
                 fs.writeFileSync(qrSvgPath, svgStr, 'utf8');
             }
 
@@ -3330,14 +3330,14 @@
                     const doc = new PDFDocument({ size: 'LETTER', margins: { top: 36, left: 36, right: 36, bottom: 36 } });
                     doc.pipe(fs.createWriteStream(stickerPdfPath)).on('finish', resolve);
                     const png = fs.readFileSync(qrPngPath);
-                    const cols = 3, rows = 8; // 24 stickers
+                    const cols = 2, rows = 6; // 12 stickers (larger, fewer per page)
                     const cellW = (612 - 72) / cols; // page width - margins
                     const cellH = (792 - 72) / rows; // page height - margins
                     for (let r = 0; r < rows; r++) {
-                        for (let c = 0; c < cols; c++) {
-                            const x = 36 + c * cellW + (cellW - 120) / 2;
-                            const y = 36 + r * cellH + (cellH - 120) / 2;
-                            doc.image(png, x, y, { width: 120, height: 120 });
+                        for (c = 0; c < cols; c++) {
+                            const x = 36 + c * cellW + (cellW - 150) / 2;
+                            const y = 36 + r * cellH + (cellH - 150) / 2;
+                            doc.image(png, x, y, { width: 150, height: 150 });
                         }
                     }
                     doc.end();
