@@ -1015,7 +1015,7 @@
         };
 
         // Backfill recent payments (default 30 days; up to 90)
-        app.post('/integrations/square/backfill', requireMerchantAuth, csrfProtection, async (req, res) => {
+        app.post('/integrations/square/backfill', requireMerchantAuth, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const businessRef = db.collection('businesses').doc(uid);
@@ -1044,7 +1044,7 @@
         });
 
         // Daily incremental sync (last 24h)
-        app.post('/integrations/square/sync-daily', requireMerchantAuth, csrfProtection, async (req, res) => {
+        app.post('/integrations/square/sync-daily', requireMerchantAuth, async (req, res) => {
             try {
                 const uid = req.session.user.uid;
                 const businessRef = db.collection('businesses').doc(uid);

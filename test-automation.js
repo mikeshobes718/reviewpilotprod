@@ -4,7 +4,7 @@ async function testAutomation() {
   console.log('🚀 Starting automation testing...');
   
   const browser = await puppeteer.launch({ 
-    headless: false, // Set to false to see what's happening
+    headless: true, // Set to true for headless testing
     defaultViewport: null,
     args: ['--start-maximized']
   });
@@ -55,11 +55,6 @@ async function testAutomation() {
           // Get the text content
           const settingsText = await page.evaluate(el => el.textContent, currentSettings);
           console.log('📊 Current settings text:', settingsText);
-          
-          // Check if it shows "Loading..."
-          if (settingsText.includes('Loading...')) {
-            console.log('⚠️ Settings still showing "Loading..." - checking console for errors');
-          }
         }
         
         // Check for the save button
@@ -73,41 +68,72 @@ async function testAutomation() {
             const isChecked = await page.evaluate(el => el.checked, checkbox);
             console.log('☑️ Checkbox checked:', isChecked);
           }
+        }
+        
+        // TEST BACKFILL BUTTON
+        console.log('🧪 Testing Backfill button...');
+        const backfillButton = await page.$('#backfillButton');
+        if (backfillButton) {
+          console.log('✅ Found backfill button');
           
-          // Try to click save button and see what happens
-          console.log('🖱️ Clicking save button...');
-          await saveButton.click();
+          // Click backfill button and capture console logs
+          const consoleLogs = [];
+          page.on('console', msg => {
+            consoleLogs.push(msg.text());
+            console.log('📝 Console:', msg.text());
+          });
           
-          // Wait a moment for any response
-          await page.waitForTimeout(2000);
+          await backfillButton.click();
+          console.log('🖱️ Clicked backfill button');
           
-          // Check for error messages
-          const errorElement = await page.$('#saveStatus');
-          if (errorElement) {
-            const errorText = await page.evaluate(el => el.textContent, errorElement);
-            console.log('❌ Save status:', errorText);
+          // Wait for any response
+          await page.waitForTimeout(3000);
+          
+          // Check for status messages
+          const statusElement = await page.$('#saveStatus');
+          if (statusElement) {
+            const statusText = await page.evaluate(el => el.textContent, statusElement);
+            console.log('📊 Status after backfill:', statusText);
           }
           
-          // Check browser console for any errors
-          const consoleLogs = await page.evaluate(() => {
-            return window.consoleLogs || [];
-          });
-          console.log('📝 Console logs:', consoleLogs);
-          
+          console.log('📝 All console logs during backfill:', consoleLogs);
         } else {
-          console.log('❌ Save button not found');
+          console.log('❌ Backfill button not found');
+        }
+        
+        // TEST DAILY SYNC BUTTON
+        console.log('🧪 Testing Daily Sync button...');
+        const dailySyncButton = await page.$('#dailySyncButton');
+        if (dailySyncButton) {
+          console.log('✅ Found daily sync button');
+          
+          // Click daily sync button and capture console logs
+          const syncConsoleLogs = [];
+          page.on('console', msg => {
+            syncConsoleLogs.push(msg.text());
+            console.log('📝 Console:', msg.text());
+          });
+          
+          await dailySyncButton.click();
+          console.log('🖱️ Clicked daily sync button');
+          
+          // Wait for any response
+          await page.waitForTimeout(3000);
+          
+          // Check for status messages
+          const syncStatusElement = await page.$('#saveStatus');
+          if (syncStatusElement) {
+            const syncStatusText = await page.evaluate(el => el.textContent, syncStatusElement);
+            console.log('📊 Status after daily sync:', syncStatusText);
+          }
+          
+          console.log('📝 All console logs during daily sync:', syncConsoleLogs);
+        } else {
+          console.log('❌ Daily sync button not found');
         }
         
       } else {
         console.log('❌ Automated Sending section not found');
-      }
-      
-      // Check for any JavaScript errors
-      const errors = await page.evaluate(() => {
-        return window.errors || [];
-      });
-      if (errors.length > 0) {
-        console.log('🚨 JavaScript errors:', errors);
       }
       
     } else {
@@ -118,12 +144,9 @@ async function testAutomation() {
     console.error('💥 Test failed:', error);
   }
   
-  // Keep browser open for manual inspection
-  console.log('🔍 Test complete. Browser will stay open for manual inspection...');
-  console.log('Press Ctrl+C to close...');
-  
-  // Don't close browser - let user inspect manually
-  // await browser.close();
+  // Close browser
+  await browser.close();
+  console.log('🔍 Test complete.');
 }
 
 // Run the test
