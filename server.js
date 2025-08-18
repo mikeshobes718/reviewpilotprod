@@ -1679,6 +1679,10 @@
             }
             
             console.log(`[HOME] Final user value for template:`, user);
+            console.log(`[HOME] req.session.user:`, req.session?.user);
+            console.log(`[HOME] res.locals.user:`, res.locals?.user);
+            console.log(`[HOME] All cookies:`, req.cookies);
+            console.log(`[HOME] Session ID:`, req.sessionID);
             
             // Check if this is a mobile request
             const userAgent = req.headers['user-agent'] || '';
