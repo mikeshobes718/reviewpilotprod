@@ -41,6 +41,27 @@
         console.log('[CLIENT-DEBUG] Cookie clear failed:', e);
       }
       
+      // Check what's actually in the DOM
+      console.log('[CLIENT-DEBUG] Checking DOM state...');
+      const heroActions = document.querySelector('.hero-actions');
+      const ctaActions = document.querySelector('.cta-actions');
+      
+      if (heroActions) {
+        console.log('[CLIENT-DEBUG] Hero actions HTML:', heroActions.innerHTML);
+        const dashboardBtn = heroActions.querySelector('a[href="/dashboard"]');
+        const signupBtn = heroActions.querySelector('a[href="/signup"]');
+        console.log('[CLIENT-DEBUG] Hero Dashboard button:', dashboardBtn);
+        console.log('[CLIENT-DEBUG] Hero Signup button:', signupBtn);
+      }
+      
+      if (ctaActions) {
+        console.log('[CLIENT-DEBUG] CTA actions HTML:', ctaActions.innerHTML);
+        const dashboardBtn2 = ctaActions.querySelector('a[href="/dashboard"]');
+        const signupBtn2 = ctaActions.querySelector('a[href="/signup"]');
+        console.log('[CLIENT-DEBUG] CTA Dashboard button:', dashboardBtn2);
+        console.log('[CLIENT-DEBUG] CTA Signup button:', signupBtn2);
+      }
+      
       console.log('[CLIENT-DEBUG] Session clearing complete');
     })();
   </script>
