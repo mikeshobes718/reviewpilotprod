@@ -19,8 +19,16 @@
         <div class="hero-actions">
           <% if (user) { %>
             <a class="btn primary" href="/dashboard">Go to Dashboard</a>
+            <!-- DEBUG INFO -->
+            <div style="font-size: 12px; color: #666; margin-top: 8px;">
+              Debug: User session detected (UID: <%= user.uid %>)
+            </div>
           <% } else { %>
             <a class="btn primary" href="/signup">Start free</a>
+            <!-- DEBUG INFO -->
+            <div style="font-size: 12px; color: #666; margin-top: 8px;">
+              Debug: No user session
+            </div>
           <% } %>
           <a class="btn secondary" href="/pricing">See pricing</a>
         </div>

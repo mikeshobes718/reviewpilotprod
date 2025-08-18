@@ -22,6 +22,15 @@
     if(toggle){ toggle.addEventListener('click', function(){ var isOpen = !(overlay && overlay.classList.contains('open')); setDrawer(isOpen); }); }
     if(overlay){ overlay.addEventListener('click', function(e){ if (e.target === overlay) setDrawer(false); }); }
     if(drawerClose){ drawerClose.addEventListener('click', function(){ setDrawer(false); }); }
+    
+    // Close mobile menu when any menu item is clicked
+    var mobileMenuLinks = document.querySelectorAll('#drawer a, #drawer .btn');
+    mobileMenuLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        console.log('[MOBILE-MENU] Menu item clicked, closing drawer');
+        setDrawer(false);
+      });
+    });
 
     // Fade-in on scroll
     var sections = document.querySelectorAll('.fade-section');

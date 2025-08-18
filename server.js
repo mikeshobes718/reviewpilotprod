@@ -1634,23 +1634,35 @@
             // Get fresh user data from request (don't rely on cached session)
             // Only consider user logged in if they have a valid session with UID
             let user = null;
+            console.log(`[HOME] Session check - req.session:`, !!req.session);
+            console.log(`[HOME] Session user:`, req.session?.user);
+            
             if (req.session && req.session.user && req.session.user.uid) {
+                console.log(`[HOME] Found session user with UID: ${req.session.user.uid}`);
+                
                 // Additional safety check: verify the user document exists
                 try {
                     const userDoc = await db.collection('businesses').doc(req.session.user.uid).get();
                     if (userDoc.exists) {
                         user = req.session.user;
+                        console.log(`[HOME] User document verified, setting user:`, user);
                     } else {
                         console.log(`[HOME] Invalid session: user document not found for UID: ${req.session.user.uid}`);
                         // Clear invalid session
                         req.session.user = null;
+                        console.log(`[HOME] Invalid session cleared`);
                     }
                 } catch (error) {
                     console.log(`[HOME] Error verifying user session: ${error.message}`);
                     // Clear invalid session
                     req.session.user = null;
+                    console.log(`[HOME] Error session cleared`);
                 }
+            } else {
+                console.log(`[HOME] No valid session found`);
             }
+            
+            console.log(`[HOME] Final user value for template:`, user);
             
             return res.render('index', {
                 csrfToken: req.csrfToken(),
