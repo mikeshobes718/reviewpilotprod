@@ -1328,30 +1328,37 @@
                         const jwt = require('jsonwebtoken');
                         const decoded = jwt.decode(raw);
                         
-                        // Reject expired or invalid JWT tokens
-                        if (decoded && decoded.sub && decoded.exp && decoded.exp * 1000 > Date.now()) {
-                            // Reject stale JWTs issued before logout invalidation
-                            if (decoded.iat && sessionInvalidationTime > 0 && decoded.iat * 1000 < sessionInvalidationTime) {
-                                console.log(`[MIDDLEWARE] Rejected JWT issued before logout: iat=${decoded.iat * 1000}, invalidation=${sessionInvalidationTime}`);
-                            } else {
-                                // SECURITY: Verify the user actually exists in database before creating session
-                                try {
-                                    const userDoc = await db.collection('businesses').doc(decoded.sub).get();
-                                    if (userDoc.exists) {
-                                        req.session.user = {
-                                            uid: decoded.sub,
-                                            email: decoded.email || decoded.username || null,
-                                            displayName: decoded.name || null
-                                        };
-                                        console.log(`[MIDDLEWARE] Valid session created for UID: ${decoded.sub}`);
-                                    } else {
-                                        console.log(`[MIDDLEWARE] JWT token references non-existent user: ${decoded.sub}`);
-                                        // Don't create session for non-existent users
-                                    }
-                                } catch (dbError) {
-                                    console.log(`[MIDDLEWARE] Database error verifying user: ${dbError.message}`);
-                                    // Don't create session if we can't verify the user
+                                                // Reject ANY JWT token without proper expiration field
+                        if (!decoded || !decoded.sub || !decoded.exp || decoded.exp * 1000 <= Date.now()) {
+                            console.log(`[MIDDLEWARE] Rejecting invalid JWT: sub=${decoded?.sub}, exp=${decoded?.exp}`);
+                            // Clear the invalid cookie
+                            res.clearCookie('session');
+                            return next();
+                        }
+                        
+                        console.log(`[MIDDLEWARE] JWT has valid expiration: ${decoded.exp}`);
+                        
+                        // Reject stale JWTs issued before logout invalidation
+                        if (decoded.iat && sessionInvalidationTime > 0 && decoded.iat * 1000 < sessionInvalidationTime) {
+                            console.log(`[MIDDLEWARE] Rejected JWT issued before logout: iat=${decoded.iat * 1000}, invalidation=${sessionInvalidationTime}`);
+                        } else {
+                            // SECURITY: Verify the user actually exists in database before creating session
+                            try {
+                                const userDoc = await db.collection('businesses').doc(decoded.sub).get();
+                                if (userDoc.exists) {
+                                    req.session.user = {
+                                        uid: decoded.sub,
+                                        email: decoded.email || decoded.username || null,
+                                        displayName: decoded.name || null
+                                    };
+                                    console.log(`[MIDDLEWARE] Valid session created for UID: ${decoded.sub}`);
+                                } else {
+                                    console.log(`[MIDDLEWARE] JWT token references non-existent user: ${decoded.sub}`);
+                                    // Don't create session for non-existent users
                                 }
+                            } catch (dbError) {
+                                console.log(`[MIDDLEWARE] Database error verifying user: ${dbError.message}`);
+                                // Don't create session if we can't verify the user
                             }
                         }
                     } catch(_) {}
