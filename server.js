@@ -1695,15 +1695,22 @@
             const selectedRange = isPro ? (requestedRange || 'all') : '30d';
             // Fetch reviews with index, fallback to indexless query if needed
             let feedback = [];
+            console.log(`[PIPELINE-READ] Fetching data for loggedInUserId: ${uid}`);
+            
             try {
                 const feedbackSnapshot = await db.collection('reviews')
                     .where('userId', '==', uid)
                     .orderBy('createdAt', 'desc')
                     .get();
                 feedback = feedbackSnapshot.docs.map(doc => doc.data());
+                console.log(`[PIPELINE-READ] SUCCESS: Found ${feedback.length} reviews using indexed query.`);
             } catch (e) {
                 try {
-                    console.warn('reviews query failed, falling back to indexless fetch:', e && (e.code || e.message || String(e)));
+                    console.warn('[PIPELINE-READ] Indexed query failed, falling back to indexless fetch:', e && (e.code || e.message || String(e)));
+                    if (e.message && e.message.includes('FAILED_PRECONDITION')) {
+                        console.error('[PIPELINE-READ] FAILED_PRECONDITION: The required composite index (userId asc, createdAt desc) is missing or building. Check Firebase Console.');
+                    }
+                    
                     const fallbackSnap = await db.collection('reviews')
                         .where('userId', '==', uid)
                         .get();
@@ -1714,8 +1721,9 @@
                         const tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
                         return tb - ta;
                     });
+                    console.log(`[PIPELINE-READ] Fallback query found ${feedback.length} reviews.`);
                 } catch (e2) {
-                    console.warn('reviews indexless fallback also failed:', e2 && (e2.code || e2.message || String(e2)));
+                    console.warn('[PIPELINE-READ] Indexless fallback also failed:', e2 && (e2.code || e2.message || String(e2)));
                     feedback = [];
                 }
             }
@@ -1733,6 +1741,8 @@
                 if (r === 5 && (f.type === 'positive' || f.type === 'contact')) conversions++;
             });
             const avg = total ? (sum / total).toFixed(2) : '0.00';
+            
+            console.log(`[PIPELINE-READ] SUCCESS: Found ${feedback.length} reviews. Stats count: ${total}.`);
 
             // Billing details (renewal / cancel info)
             const businessData = businessDoc.data();
@@ -2552,30 +2562,99 @@
     app.post('/api/v1/reviews', feedbackLimiter, csrfProtection, async (req, res) => {
         try {
             const { businessId, rating, comment } = req.body;
+            console.log(`[PIPELINE-WRITE] Incoming: businessId=${businessId} rating=${rating}`);
+            
             if (!businessId || !rating) {
+                console.error(`[PIPELINE-WRITE] ERROR: Missing businessId or rating. Body: ${JSON.stringify(req.body)}`);
                 return res.status(400).json({ error: 'Missing businessId or rating' });
             }
 
             const businessDoc = await db.collection('businesses').doc(businessId).get();
             if (!businessDoc.exists) {
+                console.error(`[PIPELINE-WRITE] ERROR: Business not found for businessId: ${businessId}`);
                 return res.status(404).json({ error: 'Business not found' });
             }
+            
             // CRITICAL: Attribute review to the owner userId
-            const userId = businessDoc.data().userId || businessDoc.id;
+            // The businessId IS the canonical Auth UID (from the short link resolver)
+            const canonicalAuthUid = businessId;
+            console.log(`[PIPELINE-WRITE] Using canonical Auth UID: ${canonicalAuthUid}`);
 
-            await db.collection('reviews').add({
+            const newReview = {
                 businessId,
-                userId,
+                userId: canonicalAuthUid, // CRITICAL: Use canonical UID
                 rating: parseInt(rating, 10),
                 comment: (typeof comment === 'string' && comment.trim().length) ? comment.trim() : null,
+                // CRITICAL: Use server timestamp to guarantee correct type and timezone independence
                 createdAt: FieldValue.serverTimestamp(),
                 source: 'shortlink'
-            });
+            };
+
+            const docRef = await db.collection('reviews').add(newReview);
+            console.log(`[PIPELINE-WRITE] SUCCESS: Written doc ${docRef.id} with userId: ${canonicalAuthUid}`);
+
+            // Update stats atomically on the business doc
+            try {
+                const businessRef = db.collection('businesses').doc(canonicalAuthUid);
+                await db.runTransaction(async (transaction) => {
+                    const businessSnap = await transaction.get(businessRef);
+                    
+                    if (!businessSnap.exists) {
+                        console.error(`[AGGREGATION] ERROR: Business doc not found for UID: ${canonicalAuthUid}`);
+                        return;
+                    }
+
+                    const businessData = businessSnap.data() || {};
+                    const stats = businessData.stats || {
+                        totalFeedback: 0,
+                        totalRatingSum: 0,
+                        averageRating: 0.00,
+                        fiveStarConversions: 0,
+                        histogram: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+                    };
+
+                    const ratingValue = parseInt(rating, 10);
+                    if (ratingValue >= 1 && ratingValue <= 5) {
+                        stats.totalFeedback += 1;
+                        stats.totalRatingSum += ratingValue;
+                        stats.averageRating = stats.totalFeedback ? (stats.totalRatingSum / stats.totalFeedback) : 0;
+                        stats.histogram[ratingValue] = (stats.histogram[ratingValue] || 0) + 1;
+                        
+                        if (ratingValue === 5) {
+                            stats.fiveStarConversions += 1;
+                        }
+                    }
+
+                    transaction.update(businessRef, { 
+                        stats: stats,
+                        updatedAt: FieldValue.serverTimestamp()
+                    });
+                    console.log(`[AGGREGATION] SUCCESS: Updated stats for ${canonicalAuthUid}. Total: ${stats.totalFeedback}`);
+                });
+            } catch (aggError) {
+                console.error(`[AGGREGATION] Transaction failed for UID: ${canonicalAuthUid}`, aggError);
+            }
 
             res.status(201).json({ success: true });
         } catch (error) {
-            console.error('Error in /api/v1/reviews:', error);
-            res.status(500).json({ error: 'Internal server error' });
+            console.error('[PIPELINE-WRITE] ERROR Firestore:', error);
+            res.status(500).json({ error: 'Failed to submit review.' });
+        }
+    });
+
+    // Alias endpoint matching consultant spec: POST /api/reviews/submit
+    app.post('/api/reviews/submit', feedbackLimiter, csrfProtection, async (req, res) => {
+        try {
+            const { targetBusinessId, rating, comment } = req.body || {};
+            if (!targetBusinessId || !rating) {
+                return res.status(400).json({ error: 'Missing targetBusinessId or rating' });
+            }
+            // Reuse main handler by shaping request
+            req.body = { businessId: targetBusinessId, rating, comment };
+            return app._router.handle(req, res, () => {});
+        } catch (e) {
+            console.error('[PIPELINE-WRITE] submit alias error:', e && (e.message || e));
+            return res.status(500).json({ error: 'server_error' });
         }
     });
 
@@ -2640,6 +2719,103 @@
             });
         } catch (e) {
             console.error('[DEBUG] business doc error:', e);
+            res.status(500).json({ error: 'server_error' });
+        }
+    });
+
+    // CRITICAL: Diagnostic endpoint for pipeline analysis (ID trace)
+    app.get('/api/admin/debug/pipeline', requireLogin, async (req, res) => {
+        try {
+            const uid = (req.session && req.session.user && req.session.user.uid) ? req.session.user.uid : null;
+            if (!uid) return res.status(401).json({ error: 'unauthorized' });
+            
+            res.setHeader('Cache-Control', 'no-store');
+            console.log(`[DIAGNOSTIC] Starting analysis for UID: ${uid}`);
+            
+            const diagnostics = { 
+                targetUid: uid, 
+                results: {}, 
+                errors: {},
+                timestamp: new Date().toISOString()
+            };
+
+            // Strategy 1: Attribution Check (Simple equality filter)
+            // If this is empty, the userId used during write does not match targetUid
+            try {
+                const snap1 = await db.collection('reviews').where('userId', '==', uid).limit(5).get();
+                diagnostics.results.attributionCheck = snap1.docs.map(doc => {
+                    const data = doc.data();
+                    return { 
+                        id: doc.id, 
+                        userId: data.userId,
+                        rating: data.rating,
+                        comment: data.comment,
+                        createdAt: data.createdAt,
+                        businessId: data.businessId
+                    };
+                });
+                console.log(`[DIAGNOSTIC] Attribution check found ${snap1.docs.length} reviews`);
+            } catch (error) {
+                diagnostics.errors.attributionCheck = error.message;
+                console.error('[DIAGNOSTIC] Attribution check error:', error);
+            }
+
+            // Strategy 2: Dashboard Query Check (Requires composite index)
+            // If Strategy 1 works but this fails/is empty, the index is missing or timestamps are wrong
+            try {
+                const snap2 = await db.collection('reviews')
+                    .where('userId', '==', uid)
+                    .orderBy('createdAt', 'desc')
+                    .limit(5)
+                    .get();
+                
+                diagnostics.results.dashboardQuery = snap2.docs.map(doc => {
+                    const data = doc.data();
+                    // Normalize timestamp for frontend
+                    if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                        data.createdAt = data.createdAt.toDate().toISOString();
+                    }
+                    return { 
+                        id: doc.id, 
+                        userId: data.userId,
+                        rating: data.rating,
+                        comment: data.comment,
+                        createdAt: data.createdAt,
+                        businessId: data.businessId
+                    };
+                });
+                console.log(`[DIAGNOSTIC] Dashboard query found ${snap2.docs.length} reviews`);
+            } catch (error) {
+                diagnostics.errors.dashboardQuery = error.message;
+                if (error.message.includes('FAILED_PRECONDITION')) {
+                    console.error('[DIAGNOSTIC] FAILED_PRECONDITION: Index is missing or building.');
+                }
+                console.error('[DIAGNOSTIC] Dashboard query error:', error);
+            }
+
+            // Strategy 3: Business Document Check
+            try {
+                const businessDoc = await db.collection('businesses').doc(uid).get();
+                if (businessDoc.exists) {
+                    const businessData = businessDoc.data();
+                    diagnostics.results.businessDoc = {
+                        exists: true,
+                        shortSlug: businessData.shortSlug,
+                        googlePlaceId: businessData.googlePlaceId,
+                        stats: businessData.stats || null
+                    };
+                } else {
+                    diagnostics.results.businessDoc = { exists: false };
+                }
+            } catch (error) {
+                diagnostics.errors.businessDoc = error.message;
+            }
+
+            console.log(`[DIAGNOSTIC] Analysis complete for UID: ${uid}`);
+            res.status(200).json(diagnostics);
+
+        } catch (error) {
+            console.error(`[DIAGNOSTIC] ERROR: ${error.message}`);
             res.status(500).json({ error: 'server_error' });
         }
     });
