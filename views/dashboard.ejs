@@ -430,8 +430,8 @@
                               <p style="margin: 8px 0;"><strong>Auto-send:</strong> <span id="currentAutoSend">Loading...</span></p>
                               <p style="margin: 8px 0;"><strong>Delay:</strong> <span id="currentDelay">Loading...</span></p>
                               <p style="margin: 8px 0;"><strong>Channel:</strong> <span id="currentChannel">Loading...</span></p>
-                            </div>
-                          </div>
+            </div>
+          </div>
               
                           <!-- Simple Form -->
                           <form id="automationForm" style="margin-bottom: 20px;">
@@ -458,7 +458,7 @@
                               </div>
                             </div>
                             
-                            <button type="button" id="saveButton" class="btn primary" style="text-align: center !important; display: flex; justify-content: center; align-items: center;">
+                            <button type="button" id="saveButton" class="btn primary" style="display: flex; justify-content: center; align-items: center; width: 100%;">
                               Save Settings
                             </button>
                             
@@ -600,9 +600,10 @@
                       const response = await fetch('/integrations/square/backfill', {
                         method: 'POST',
                         headers: { 
-                          'Content-Type': 'application/x-www-form-urlencoded'
+                          'Content-Type': 'application/x-www-form-urlencoded',
+                          'X-CSRF-Token': csrfToken
                         },
-                        body: `days=${days}`
+                        body: `days=${days}&_csrf=${csrfToken}`
                       });
                       
                       if (response.ok) {
@@ -632,9 +633,10 @@
                       const response = await fetch('/integrations/square/sync-daily', {
                         method: 'POST',
                         headers: { 
-                          'Content-Type': 'application/x-www-form-urlencoded'
+                          'Content-Type': 'application/x-www-form-urlencoded',
+                          'X-CSRF-Token': csrfToken
                         },
-                        body: ''
+                        body: `_csrf=${csrfToken}`
                       });
                       
                       if (response.ok) {
