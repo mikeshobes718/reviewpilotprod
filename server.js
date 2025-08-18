@@ -776,7 +776,7 @@
         });
 
         // Simple form-based automation save route
-        app.post('/save-automation', csrfProtection, async (req, res) => {
+        app.post('/save-automation', async (req, res) => {
             try {
                 console.log('[SAVE-AUTOMATION] Form submission received:', { body: req.body });
                 
@@ -1842,14 +1842,21 @@
             if (r.ok) {
                 // SECURITY: Only set session if we have a valid response with userId
                 let validUserId = null;
+                let responseData = null;
                 try { 
-                    const data = await r.clone().json(); 
-                    if (data && data.userId) validUserId = data.userId; 
-                } catch(_) {}
+                    responseData = await r.clone().json(); 
+                    console.log('[LOGIN] API response data:', responseData);
+                    if (responseData && responseData.userId) validUserId = responseData.userId; 
+                } catch(e) {
+                    console.log('[LOGIN] Failed to parse API response:', e.message);
+                }
+                
+                console.log('[LOGIN] Valid user ID:', validUserId);
                 
                 if (validUserId) {
                     // Only create session for valid authenticated users
                     req.session.user = { uid: validUserId, email: email.toLowerCase(), displayName: '' };
+                    console.log('[LOGIN] Session created for UID:', validUserId);
                     return req.session.save((err) => { 
                         if (err) console.warn('session save error:', err); 
                         res.setHeader('Cache-Control','no-store'); 
@@ -1858,6 +1865,7 @@
                 }
                 
                 // If no valid userId, don't create session - redirect to login
+                console.log('[LOGIN] No valid user ID, redirecting to login with error');
                 res.setHeader('Cache-Control','no-store');
                 return res.redirect('/login?error=invalid_auth');
             }
