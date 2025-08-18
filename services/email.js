@@ -141,14 +141,16 @@ function buildEmailHtml(templateName, params = {}) {
             return { subject, html: wrap(subject, pre, inner) };
         }
         case 'Review Request': {
-            const subject = 'Quick favor — would you review your visit?';
-            const pre = 'It takes 30 seconds and helps us a ton.';
+            const fromName = params.businessName || 'our team';
+            const subject = `A quick favor from ${fromName} ⭐`;
+            const pre = 'Your feedback means a lot and takes about 30 seconds.';
             const inner = [
-                h2('Thanks for your visit!'),
-                p('If we made your day, would you mind leaving us a quick 5‑star review? It takes about 30 seconds.'),
+                h2(`How was your experience at ${params.businessName || 'our business'}?`),
+                p('If we made your day, would you mind leaving a quick 5‑star review? It helps others discover us and only takes a moment.'),
                 `<tr><td align="center" style="padding:24px 32px 0 32px;">${button('Leave a Review', params.reviewUrl || '#')}</td></tr>`,
-                p(`Or copy this link: <a href="${params.reviewUrl || '#'}" style="color:${brand}; text-decoration:underline;">${params.reviewUrl || '#'}</a>`),
-                p('Thank you!')
+                p(`If the button doesn’t work, copy this link:<br><a href="${params.reviewUrl || '#'}" style="color:${brand}; text-decoration:underline;">${params.reviewUrl || '#'}</a>`),
+                (params.unsubscribeUrl ? p(`Prefer not to receive emails like this? <a href="${params.unsubscribeUrl}" style="color:${brand}; text-decoration:underline;">Unsubscribe</a>.`) : ''),
+                p('Thank you for your support!')
             ].join('');
             return { subject, html: wrap(subject, pre, inner) };
         }

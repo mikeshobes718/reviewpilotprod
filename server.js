@@ -4,7 +4,7 @@
     require('dotenv').config();
     const express = require('express');
     const { initializeApp, cert } = require('firebase-admin/app');
-    const { getFirestore } = require('firebase-admin/firestore');
+    const { getFirestore, FieldValue } = require('firebase-admin/firestore');
     // Firebase Admin Auth is not used for end-user auth anymore
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
     const session = require('express-session');
@@ -150,6 +150,15 @@
                 await db.collection('businesses').doc(merchantUid).collection('events').add({ type, payload: payload||{}, ts: new Date().toISOString() });
             } catch(_) {}
         }
+        const UNSUBSCRIBE_SECRET = process.env.UNSUBSCRIBE_SECRET || process.env.SESSION_SECRET || 'dev-unsubscribe';
+        function buildUnsubscribeUrl(uid, contactLower){
+            try {
+                const payload = `${uid}:${contactLower}`;
+                const sig = require('crypto').createHmac('sha256', UNSUBSCRIBE_SECRET).update(payload).digest('base64url');
+                const c = Buffer.from(contactLower, 'utf8').toString('base64url');
+                return `${appUrl}/u?uid=${encodeURIComponent(uid)}&c=${encodeURIComponent(c)}&sig=${encodeURIComponent(sig)}`;
+            } catch (_) { return null; }
+        }
         async function sendReviewRequest({ merchantUid, customer, channel, shortLink }){
             try {
                 const email = (customer && customer.email) ? String(customer.email).trim() : null;
@@ -170,8 +179,16 @@
                     });
                     if (sentRecently) { await logEvent(merchantUid, 'send_skipped', { reason: 'throttled' }); return; }
                 } catch(_){ }
+                // Fetch business meta for email personalization and unsubscribe
+                let businessName = null;
+                try {
+                    const bSnap = await db.collection('businesses').doc(merchantUid).get();
+                    businessName = (bSnap.exists && bSnap.data() && bSnap.data().businessName) ? bSnap.data().businessName : null;
+                } catch(_) { }
+                const unsubscribeUrl = email ? buildUnsubscribeUrl(merchantUid, email.toLowerCase()) : null;
+
                 if (preferred === 'email') {
-                    await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                    await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink, businessName, unsubscribeUrl } });
                     await logEvent(merchantUid, 'send_email', { email, shortLink });
                 } else {
                     try {
@@ -183,7 +200,7 @@
                             await tw.messages.create({ to: phone, from, body: `Thanks for your visit! Would you leave us a quick 5-star review? ${shortLink}` });
                             await logEvent(merchantUid, 'send_sms', { phone, shortLink });
                         } else if (email) {
-                            await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                            await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink, businessName, unsubscribeUrl } });
                             await logEvent(merchantUid, 'send_email', { email, shortLink, fallbackFrom: 'sms' });
                         } else {
                             await logEvent(merchantUid, 'send_skipped', { reason: 'sms_unavailable' });
@@ -191,7 +208,7 @@
                     } catch (e) {
                         await logEvent(merchantUid, 'send_error', { message: 'twilio_fail', detail: String(e && e.message || e) });
                         if (email) {
-                            await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink } });
+                            await sendEmail({ to: email, template: 'Review Request', data: { reviewUrl: shortLink, businessName, unsubscribeUrl } });
                             await logEvent(merchantUid, 'send_email', { email, shortLink, fallbackFrom: 'sms' });
                         }
                     }
@@ -318,7 +335,6 @@
             } catch (_) { return null; }
         }
         function getUserIdFromRequest(req) {
-            try { if (req.session && req.session.user && req.session.user.uid) return req.session.user.uid; } catch(_) {}
             try {
                 const raw = req.cookies && req.cookies.session;
                 if (raw) {
@@ -327,30 +343,31 @@
                     if (d && d.sub) return d.sub;
                 }
             } catch(_) {}
+            // Fallback to session if present, but do not require it
+            try { if (req.session && req.session.user && req.session.user.uid) return req.session.user.uid; } catch(_) {}
             return null;
         }
 
         // --- Auth guards (define before routes use them) ---
         const requireLogin = (req, res, next) => {
-            try {
-                if (!(req.session && req.session.user)) {
-                    const raw = req.cookies && req.cookies.session;
-                    if (raw) {
-                        try { const jwt = require('jsonwebtoken'); const decoded = jwt.decode(raw); if (decoded && decoded.sub) { req.session.user = { uid: decoded.sub, email: null, displayName: null }; } } catch(_) {}
-                    }
-                }
-            } catch(_) {}
-            if (req.session && req.session.user) return next();
-            try { console.warn('requireLogin redirect: no session.user; cookies:', Object.keys(req.cookies||{})); } catch(_) {}
+            const uid = getUserIdFromRequest(req);
+            if (uid) {
+                // Optionally backfill req.session.user for downstream code that still reads it
+                try { req.session.user = req.session.user || { uid, email: null, displayName: null }; } catch(_) {}
+                return next();
+            }
             return res.redirect(302, '/login');
         };
         const requireAccess = async (req, res, next) => {
             try {
-                if (!req.session || !req.session.user) return res.redirect(302, '/login');
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.redirect(302, '/login');
+
+                // Check subscription/trial access
                 let status = null;
                 let trialEndsAt = null;
                 try {
-                    const doc = await db.collection('businesses').doc(req.session.user.uid).get();
+                    const doc = await db.collection('businesses').doc(uid).get();
                     if (doc.exists) {
                         const data = doc.data() || {};
                         status = data.subscriptionStatus || null;
@@ -361,7 +378,10 @@
                 const isActive = status === 'active';
                 const isTrial = status === 'trial' && trialEndsAt && (new Date(trialEndsAt) > now);
                 const hasAccess = isActive || isTrial;
-                if (!hasAccess) return res.redirect(302, '/pricing');
+                if (!hasAccess) {
+                    if (!uid) return res.redirect(302, '/login');
+                    return res.redirect(302, '/pricing');
+                }
                 return next();
             } catch (_) { return res.redirect(302, '/pricing'); }
         };
@@ -552,9 +572,10 @@
         });
 
         // Onboarding status (dynamic, single source of truth)
-        app.get('/api/onboarding/status', requireLogin, async (req, res) => {
+        app.get('/api/onboarding/status', async (req, res) => {
             try {
-                const uid = req.session.user.uid;
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ hasPlaceId:false, hasShortLink:false, posConnected:false, sentFirst:false });
                 const ref = db.collection('businesses').doc(uid);
                 const doc = await ref.get();
                 const b = doc.exists ? (doc.data() || {}) : {};
@@ -1093,14 +1114,17 @@
     // cookieParser already mounted above
     const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined;
     app.use(session({
+        name: 'connect.sid',
         secret: process.env.SESSION_SECRET || 'a-super-secret-key-that-you-should-change',
         resave: false,
         saveUninitialized: false,
+        proxy: true,
         cookie: {
-            secure: process.env.NODE_ENV === 'production',
+            secure: true,
             httpOnly: true,
             sameSite: 'lax',
-            domain: COOKIE_DOMAIN
+            domain: COOKIE_DOMAIN,
+            maxAge: 30 * 24 * 60 * 60 * 1000
         }
     }));
 
@@ -1288,6 +1312,66 @@
 
     // AUTH ROUTES
     app.get('/healthz', (req, res) => res.json({ ok: true, env: process.env.NODE_ENV || 'development' }));
+
+    // Lightweight admin guard based on configured emails
+    const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+        .split(',')
+        .map(s => s.trim().toLowerCase())
+        .filter(Boolean);
+    const requireAdmin = (req, res, next) => {
+        try {
+            if (!(req.session && req.session.user)) {
+                return res.status(401).send('unauthenticated');
+            }
+            const email = ((req.session.user && req.session.user.email) || '').toLowerCase();
+            if (!email || !ADMIN_EMAILS.length || !ADMIN_EMAILS.includes(email)) {
+                return res.status(403).send('forbidden');
+            }
+            return next();
+        } catch (_) {
+            return res.status(403).send('forbidden');
+        }
+    };
+
+    // Ops: status overview (admin-only)
+    app.get('/ops/status', requireLogin, requireAdmin, async (req, res) => {
+        const result = { ok: true };
+        const checks = {};
+        try {
+            checks.env = process.env.NODE_ENV || 'development';
+            checks.time = new Date().toISOString();
+            checks.slackConfigured = !!(process.env.SLACK_WEBHOOK_URL);
+            checks.redisReady = !!(typeof reviewQueue !== 'undefined' && reviewQueue);
+            checks.firestore = 'unknown';
+            try {
+                const testSnap = await db.collection('businesses').limit(1).get();
+                checks.firestore = testSnap ? 'ok' : 'unknown';
+            } catch (e) {
+                checks.firestore = 'error';
+            }
+            checks.googleMapsKeyPresent = !!process.env.GOOGLE_MAPS_API_KEY;
+            checks.kmsKeyConfigured = !!process.env.KMS_KEY_ID;
+            checks.postmarkConfigured = !!process.env.POSTMARK_SERVER_TOKEN;
+            checks.twilioConfigured = !!(process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN);
+            checks.squareConfigured = !!(process.env.SQUARE_APP_ID && process.env.SQUARE_APP_SECRET);
+            checks.authApiBase = (process.env.API_GATEWAY_BASE_URL || process.env.AUTH_API_BASE || '') || null;
+            return res.json({ ok: true, checks });
+        } catch (e) {
+            return res.status(500).json({ ok: false, error: 'status_error' });
+        }
+    });
+
+    // Ops: manual Slack test alert (admin-only)
+    app.post('/ops/test-alert', requireLogin, requireAdmin, async (req, res) => {
+        try {
+            const userEmail = (req.session.user && req.session.user.email) || 'unknown';
+            const env = process.env.NODE_ENV || 'development';
+            await notifyAlert('Manual test alert', { env, userEmail, at: new Date().toISOString() });
+            return res.json({ ok: true });
+        } catch (e) {
+            return res.status(500).json({ ok: false });
+        }
+    });
     // Simple in-memory cache for homepage stats (15 minutes)
     let __homepageStatsCache = { at: 0, data: { avg: '4.8', convPercent: '62' } };
     app.get('/', csrfProtection, async (req, res) => {
@@ -1351,7 +1435,7 @@
         try {
             const { businessName, email, password, confirmPassword } = req.body || {};
             if (!businessName || !email || !password || !confirmPassword) {
-        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
                 return res.status(400).render('signup', { csrfToken: token, error: 'All fields are required.', user: req.session.user || null });
             }
             if (password !== confirmPassword) {
@@ -1367,7 +1451,7 @@
             }
             let msg = 'Could not create account.';
             try { const j = await r.json(); if (j && j.error) msg = String(j.error); } catch(_){ }
-            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
+        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
             return res.status(r.status || 400).render('signup', { csrfToken: token, error: msg, user: req.session.user || null });
         } catch (e) {
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
@@ -1400,8 +1484,12 @@
                         if (process.env.COOKIE_DOMAIN) parts.push(`Domain=${process.env.COOKIE_DOMAIN}`);
                         return parts.join('; ');
                     };
-                    const val = sanitize(rawSetCookie);
-                    res.setHeader('Set-Cookie', val);
+                    // Some gateways return multiple Set-Cookie entries in a single header when using fetch
+                    const cookies = rawSetCookie.includes(',') && !/Expires=/i.test(rawSetCookie)
+                        ? rawSetCookie.split(',')
+                        : [rawSetCookie];
+                    const sanitized = cookies.map(sanitize);
+                    res.setHeader('Set-Cookie', sanitized);
                 } catch(_) {}
             }
             if (r.ok) {
@@ -1415,6 +1503,22 @@
                         const decoded = jwt.decode(m[1]);
                         const sub = decoded && decoded.sub ? decoded.sub : null;
                         bridgedUserId = sub || bridgedUserId;
+                    }
+                    // If we still could not derive a user id from cookie (opaque session cookie), ask the Auth API
+                    if (!bridgedUserId) {
+                        try {
+                            const sessionPair = (rawSetCookie && rawSetCookie.match(/session=([^;]+)/)) ? `session=${rawSetCookie.match(/session=([^;]+)/)[1]}` : null;
+                            if (sessionPair) {
+                                const meResp = await fetch(getAuthApiBase() + '/me', {
+                                    method: 'GET',
+                                    headers: { 'Accept': 'application/json', 'Cookie': sessionPair }
+                                });
+                                if (meResp.ok) {
+                                    const meJson = await meResp.json().catch(()=>({}));
+                                    bridgedUserId = meJson && (meJson.userId || meJson.sub || meJson.id || meJson.uid) || null;
+                                }
+                            }
+                        } catch(_) { /* ignore */ }
                     }
                     if (bridgedUserId) {
                         // Ensure a minimal business doc exists for this UID so dashboard can load
@@ -1433,10 +1537,11 @@
                             }
                         } catch (_) { /* non-fatal */ }
                         req.session.user = { uid: bridgedUserId, email: (email || '').toLowerCase(), displayName: null };
-                        return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); return res.redirect('/dashboard'); });
+                        return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); res.setHeader('Cache-Control','no-store'); return res.redirect('/dashboard'); });
                     }
                 } catch (_) { /* ignore bridge errors */ }
-                return res.redirect('/dashboard');
+                res.setHeader('Cache-Control','no-store');
+            return res.redirect('/dashboard');
             }
             let msg = 'Invalid email or password.';
             try { const j = await r.json(); if (j && j.error) msg = String(j.error); } catch(_){ }
@@ -1494,6 +1599,15 @@
         res.setHeader('Set-Cookie', 'session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax');
         return res.redirect('/login');
     });
+    // Recovery: GET /logout clears cookies without CSRF (useful to break redirect loops)
+    app.get('/logout', (req, res) => {
+        try { if (req.session) req.session.destroy(()=>{}); } catch(_){ }
+        res.setHeader('Set-Cookie', [
+            'session=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax',
+            'connect.sid=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax'
+        ]);
+        return res.redirect('/login');
+    });
     // Phase 4.1: Auth view routes (GET)
     app.get('/signup', csrfProtection, (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -1506,6 +1620,7 @@
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
+        // Always render the login form; avoid auto-redirects to prevent loops
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         const q = req.query || {};
         let hint = null;
@@ -1532,411 +1647,37 @@
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         res.render('reset-password', { csrfToken: token, token: tokenParam, email: emailParam || '', user: req.session.user || null });
     });
-    app.get('/dashboard', requireAccess, (req, res, next) => { next(); });
-    // Verify email (custom auth) - GET handler to consume token & email
-    app.get('/verify', csrfProtection, async (req, res) => {
-        try {
-            const tokenPlain = (req.query && req.query.token) || '';
-            const email = (req.query && req.query.email) || '';
-            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-            res.set('Pragma', 'no-cache');
-            res.set('Expires', '0');
-            if (!tokenPlain || !email) return res.status(400).render('verify', { csrfToken: req.csrfToken(), email, error: 'Invalid link.', user: req.session.user || null });
-            // Forward to API
-            const base = process.env.API_GATEWAY_BASE_URL || process.env.AUTH_API_BASE || '';
-            const url = (base || 'https://becb9v5qw8.execute-api.us-east-1.amazonaws.com/prod') + '/verify-email';
-            const r = await fetch(url, { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify({ token: tokenPlain, email }) });
-            if (r.ok) return res.redirect('/login?verified=1');
-            return res.status(400).render('verify', { csrfToken: req.csrfToken(), email, error: 'Verification failed. Request a new link from Login → Forgot password.', user: req.session.user || null });
-        } catch (e) {
-            return res.status(500).render('verify', { csrfToken: req.csrfToken(), email: (req.query && req.query.email) || '', error: 'Server error. Try again.', user: req.session.user || null });
-        }
-    });
-    app.post('/signup', async (req, res) => {
-        try {
-            const { businessName, email, password } = req.body || {};
-            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            const clean = (v) => (typeof v === 'string' ? v.trim() : '');
-            const nameClean = clean(businessName);
-            const passClean = clean(password);
-            const emailRaw = clean(email);
-            let decodedEmail = emailRaw;
-            try { decodedEmail = decodeURIComponent(emailRaw); } catch (_) { /* ignore */ }
-            decodedEmail = decodedEmail.replace(/\s+/g, '');
-
-            if (!nameClean || !decodedEmail || !passClean) {
-                return res.status(400).render('signup', { csrfToken: token, error: 'Missing fields' });
-            }
-
-            // If this is an AJAX request, prefer JSON responses
-            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json'));
-
-            // Duplicate email pre-check in our database
-            try {
-                const existingSnap = await db.collection('businesses').where('email', '==', decodedEmail).limit(1).get();
-                if (!existingSnap.empty) {
-                    if (isAjax) {
-                        return res.status(409).json({ error: 'EMAIL_ALREADY_REGISTERED' });
-                    } else {
-                        return res.status(409).render('signup', { csrfToken: token, error: 'An account with this email already exists. Please <a href="/login">log in</a> instead.' });
-                    }
-                }
-            } catch (_) { /* non-fatal: continue to signup */ }
-
-            const signUpRes = await cognito.send(new SignUpCommand({
-                ClientId: COGNITO_CLIENT_ID,
-                Username: decodedEmail,
-                Password: passClean,
-                UserAttributes: [
-                    { Name: 'email', Value: decodedEmail },
-                    { Name: 'name', Value: nameClean }
-                ]
-            }));
-            const userSub = signUpRes?.UserSub;
-
-            const customer = await stripe.customers.create({ email: decodedEmail, name: nameClean });
-
-            if (userSub) {
-                await db.collection('businesses').doc(userSub).set({
-                    businessName: nameClean,
-                    email: decodedEmail,
-                    googlePlaceId: null,
-                    stripeCustomerId: customer.id,
-                    subscriptionStatus: 'incomplete',
-                createdAt: new Date().toISOString(),
-            });
-                const base = (nameClean || 'merchant').replace(/[^A-Za-z0-9]/g, '').slice(0,6).toUpperCase();
-                const rand = Math.random().toString(36).slice(2,5).toUpperCase();
-                await db.collection('businesses').doc(userSub).set({ shortSlug: `${base}${rand}` }, { merge: true });
-                // Non-fatal email send
-                try {
-                    const verificationUrl = `${(process.env.APP_BASE_URL || '')}/confirm?email=${encodeURIComponent(decodedEmail)}`;
-                    await sendEmail({ to: decodedEmail, template: 'Email Address Verification', data: { businessName: nameClean, verificationUrl } });
-                } catch (_) { /* ignore email errors */ }
-            }
-
-            if (isAjax) {
-                return res.json({ redirect: `/verify?email=${encodeURIComponent(decodedEmail)}` });
-            }
-            return res.redirect(`/verify?email=${encodeURIComponent(decodedEmail)}`);
-        } catch (error) {
-            console.error('Signup error:', error && (error.message || error));
-            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            let userMsg = 'Signup failed. Try a different email.';
-            let passwordMsg = null;
-            const errName = (error && (error.name || error.code)) || '';
-            const errText = (error && (error.message || '')) || '';
-            const isAjax = req.xhr || (req.headers['x-requested-with'] === 'XMLHttpRequest') || (req.headers.accept && req.headers.accept.includes('application/json'));
-            if (errName === 'UsernameExistsException') {
-                if (isAjax) {
-                    return res.status(409).json({ error: 'EMAIL_ALREADY_REGISTERED' });
-                }
-                return res.status(409).render('signup', { csrfToken: token, error: 'An account with this email already exists. Please <a href="/login">log in</a> instead.' });
-            }
-            if (errName === 'InvalidPasswordException' || /Password.*symbol|Password.*requirements|conform with policy|complex/i.test(errText)) {
-                passwordMsg = 'Password must include at least one symbol (!@#$%).';
-                userMsg = null;
-            }
-            if (isAjax) {
-                return res.status(400).json({ error: userMsg ? 'GENERIC_SIGNUP_FAILED' : 'PASSWORD_POLICY', message: userMsg || passwordMsg || 'Signup failed' });
-            }
-            return res.status(400).render('signup', { csrfToken: token, error: userMsg, passwordError: passwordMsg });
-        }
-    });
-
-    // New confirmation landing route (legacy alias)
-    app.get('/confirm', (req, res) => {
-            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        const email = (req.query && req.query.email) || '';
-        return res.render('verify', { csrfToken: token, email, user: req.session.user || null });
-    });
-
-    // (legacy explicit verify page removed)
-
-    // Verify email endpoint (confirm signup with code)
-    app.post('/verify-email', csrfProtection, async (req, res) => {
-        try {
-            const { email, verificationCode } = req.body || {};
-            if (!email || !verificationCode) {
-                return res.status(400).json({ error: 'MISSING_FIELDS' });
-            }
-            try {
-                await cognito.send(new ConfirmSignUpCommand({
-                    ClientId: COGNITO_CLIENT_ID,
-                    Username: email,
-                    ConfirmationCode: String(verificationCode).trim()
-                }));
-            } catch (err) {
-                const name = (err && (err.name || err.code)) || '';
-                let errorCode = 'VERIFY_FAILED';
-                if (name === 'CodeMismatchException') errorCode = 'CODE_MISMATCH';
-                else if (name === 'ExpiredCodeException') errorCode = 'CODE_EXPIRED';
-                else if (name === 'UserNotFoundException') errorCode = 'USER_NOT_FOUND';
-                else if (name === 'NotAuthorizedException') errorCode = 'ALREADY_CONFIRMED';
-                console.error('verify-email error:', err);
-                return res.status(400).json({ error: errorCode, message: err && err.message ? err.message : 'Verification failed' });
-            }
-            return res.json({ ok: true });
-        } catch (e) {
-            console.error('verify-email server error:', e);
-            return res.status(500).json({ error: 'SERVER_ERROR' });
-        }
-    });
-
-    // Legacy path retained for compatibility
-    app.get('/verify-email', (req, res) => {
-        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        const email = req.query && req.query.email ? req.query.email : '';
-        res.render('confirm', { csrfToken: token, email, user: req.session.user || null });
-    });
-    // (superseded above)
-    app.post('/login', async (req, res) => {
-        try {
-            const { email, password } = req.body || {};
-            if (!email || !password) return res.status(400).render('login', { csrfToken: req.csrfToken(), error: 'Missing email or password.' });
-            let authRes = await cognito.send(new InitiateAuthCommand({
-                AuthFlow: 'USER_PASSWORD_AUTH',
-                ClientId: COGNITO_CLIENT_ID,
-                AuthParameters: { USERNAME: email, PASSWORD: password }
-            }));
-            // Handle NEW_PASSWORD_REQUIRED challenge
-            if (authRes && authRes.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                req.session.cognitoNewPassword = { session: authRes.Session, username: email };
-                return res.redirect('/new-password');
-            }
-            const accessToken = authRes?.AuthenticationResult?.AccessToken;
-            if (!accessToken) throw new Error('Invalid login');
-            const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken }));
-            const sub = me?.Username;
-            const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
-            if (attrs && String(attrs.email_verified) !== 'true') {
-                // Enforce verification: block login until verified
-                return res.redirect(`/verify?email=${encodeURIComponent(attrs.email || email)}`);
-            }
-
-            // On first Cognito login, if this merchant previously existed (Firebase UID),
-            // clone their business doc by matching email so they keep their data.
-            try {
-                const hasDoc = await db.collection('businesses').doc(sub).get();
-                if (!hasDoc.exists && attrs.email) {
-                    const legacy = await db.collection('businesses').where('email', '==', attrs.email).limit(1).get();
-                    if (!legacy.empty) {
-                        await db.collection('businesses').doc(sub).set(legacy.docs[0].data());
-                    }
-                }
-            } catch (_) { /* non-fatal */ }
-            req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
-            console.log(`✅ Cognito login session created for: ${email}`);
-            // Send Welcome email on first verified login (once)
-            try {
-                const ref = db.collection('businesses').doc(sub);
-                const doc = await ref.get();
-                const b = doc.exists ? doc.data() : {};
-                if (!b || !b.welcomeSent) {
-                    await sendEmail({
-                        to: attrs.email || email,
-                        template: 'Welcome / Account Creation',
-                        data: { businessName: attrs.name || '', loginUrl: `${(process.env.APP_BASE_URL||'')}/dashboard` }
-                    });
-                    await ref.set({ welcomeSent: true }, { merge: true });
-                }
-            } catch (e) { console.warn('postmark welcome send failed', e?.message || e); }
-            // Optional: New device login alert (basic heuristic: check user-agent hash vs last)
-            try {
-                const ua = (req.headers['user-agent'] || '').slice(0,200);
-                const uaHash = require('crypto').createHash('sha256').update(ua).digest('hex');
-                const ref = db.collection('businesses').doc(sub);
-                const snap = await ref.get();
-                const prev = snap.exists ? (snap.data().lastUaHash || null) : null;
-                if (uaHash && uaHash !== prev) {
-                    await sendEmail({
-                        to: attrs.email || email,
-                        template: 'New Device Login Alert',
-                        data: {
-                            businessName: attrs.name || '',
-                            loginTime: new Date().toISOString(),
-                            loginLocation: 'Unknown',
-                            loginDevice: ua || 'Unknown',
-                            resetUrl: `${(process.env.APP_BASE_URL || '')}/reset-password`
-                        }
-                    });
-                    await ref.set({ lastUaHash: uaHash }, { merge: true });
-                }
-            } catch (e) { console.warn('postmark device alert failed', e?.message || e); }
-            return req.session.save((err) => {
-                if (err) console.warn('session save error (login):', err);
-            return res.redirect('/dashboard');
-            });
-        } catch (error) {
-            const errMsg = (error && (error.name || error.code || error.message)) || '';
-            console.error('❌ Cognito login error:', errMsg);
-            if (['NotAuthorizedException','UserNotFoundException','UserNotConfirmedException','InvalidParameterException'].includes(errMsg)) {
-                try {
-                    const { email } = req.body || {};
-                    const snap = await db.collection('businesses').where('email', '==', email).limit(1).get();
-                    if (!snap.empty) {
-                        try {
-                            await cognito.send(new AdminCreateUserCommand({ UserPoolId: COGNITO_USER_POOL_ID, Username: email, UserAttributes: [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }, { Name: 'name', Value: snap.docs[0].data().businessName || '' }] }));
-                        } catch(_){}
-                        try { await cognito.send(new AdminSetUserPasswordCommand({ UserPoolId: COGNITO_USER_POOL_ID, Username: email, Password: (req.body && req.body.password) || '', Permanent: true })); } catch(_){ }
-                        try { await cognito.send(new AdminConfirmSignUpCommand({ UserPoolId: COGNITO_USER_POOL_ID, Username: email })); } catch(_){ }
-                        // Retry auth
-                        const authRes = await cognito.send(new InitiateAuthCommand({
-                            AuthFlow: 'USER_PASSWORD_AUTH',
-                            ClientId: COGNITO_CLIENT_ID,
-                            AuthParameters: { USERNAME: email, PASSWORD: (req.body && req.body.password) || '' }
-                        }));
-                        if (authRes && authRes.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                            req.session.cognitoNewPassword = { session: authRes.Session, username: email };
-                            return res.redirect('/new-password');
-                        }
-                        const accessToken2 = authRes?.AuthenticationResult?.AccessToken;
-                        if (accessToken2) {
-                            const me = await cognito.send(new GetUserCommand({ AccessToken: accessToken2 }));
-                            const sub = me?.Username; const attrs = Object.fromEntries((me?.UserAttributes || []).map(a => [a.Name, a.Value]));
-                            if (attrs && String(attrs.email_verified) !== 'true') {
-                                return res.redirect(`/verify?email=${encodeURIComponent(attrs.email || email)}`);
-                            }
-                            req.session.user = { uid: sub, email: attrs.email || email, displayName: attrs.name || null };
-                            return req.session.save((err) => {
-                                if (err) console.warn('session save error (fallback login):', err);
-                                return res.redirect('/dashboard');
-                            });
-                        }
-                    }
-                } catch (e2) { console.warn('auto-signup fallback failed', e2?.message || e2); }
-            }
-            const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-            let userMsg = 'Invalid email or password.';
-            let resendLink = null;
-            let showHint = true;
-            if (/Password.*requirements|Password.*minimum|Password.*complex/i.test(errMsg)) {
-                userMsg = 'Password does not meet complexity requirements.';
-            }
-            if (/UserNotConfirmed/i.test(errMsg)) {
-                userMsg = 'Your account is not confirmed. Please check your email for a verification link.';
-                const { email } = req.body || {};
-                if (email) resendLink = `/resend-confirmation?email=${encodeURIComponent(email)}`;
-                showHint = false;
-            }
-            if (/NotAuthorizedException/i.test(errMsg)) {
-                userMsg = 'Incorrect email or password.';
-            }
-            return res.status(200).render('login', { csrfToken: token, error: userMsg, hint: showHint ? errMsg : null, resendLink });
-        }
-    });
-
-    // Removed Firebase token session endpoint; server handles Cognito login
-    app.get('/logout', (req, res) => {
-        req.session.destroy(() => res.redirect('/login'));
-    });
-
-    // Password reset
-    app.get('/reset-password', csrfProtection, (req, res) => {
-        res.render('reset', { csrfToken: req.csrfToken(), sent: false, error: null, user: req.session.user || null });
-    });
-    app.post('/reset-password', csrfProtection, async (req, res) => {
-        try {
-            const { email } = req.body || {};
-            // Prefer branded email: generate password reset link with continue URL to our handler
-            try {
-                await cognito.send(new ForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email }));
-            } catch (error) {
-                try { console.error('CRITICAL FORGOT_PASSWORD ERROR:', error); } catch(_) { console.error('CRITICAL FORGOT_PASSWORD ERROR (string):', String(error)); }
-                throw error;
-            }
-            try {
-                await sendEmail({
-                    to: email,
-                    template: 'Password Reset Request',
-                    data: { businessName: '', resetUrl: `${(process.env.APP_BASE_URL || '')}/reset-password` }
-                });
-            } catch (e) { console.warn('postmark reset send failed', e?.message || e); }
-            return res.render('reset', { csrfToken: req.csrfToken(), sent: true, error: null, email });
-        } catch (e) {
-            console.error('Reset exception:', e);
-            return res.status(500).render('reset', { csrfToken: req.csrfToken(), sent: false, error: 'Unexpected error. Try again.' });
-        }
-    });
-
-    // Link-based password update page (inside app lifecycle)
-    app.get('/update-password', csrfProtection, (req, res) => {
-        const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        const email = (req.query && req.query.email) || '';
-        const code = (req.query && req.query.code) || '';
-        return res.render('update-password', { csrfToken: token, email, code, error: null, user: req.session.user || null });
-    });
-    app.post('/update-password', csrfProtection, async (req, res) => {
-        try {
-            const { email, code, newPassword, confirmPassword } = req.body || {};
-            if (!email || !code || !newPassword || newPassword !== confirmPassword) {
-                return res.status(400).render('update-password', { csrfToken: req.csrfToken(), email, code, error: 'Please enter matching passwords.' });
-            }
-            try {
-                await cognito.send(new ConfirmForgotPasswordCommand({ ClientId: COGNITO_CLIENT_ID, Username: email, ConfirmationCode: code, Password: newPassword }));
-            } catch (error) {
-                console.error('CRITICAL CONFIRM_FORGOT_PASSWORD ERROR:', error);
-                return res.status(400).render('update-password', { csrfToken: req.csrfToken(), email, code, error: 'Could not update password. Check your link and try again.' });
-            }
-            return res.redirect('/login');
-        } catch (e) {
-            console.error('update-password server error:', e);
-            return res.status(500).render('update-password', { csrfToken: req.csrfToken(), email: (req.body && req.body.email) || '', code: (req.body && req.body.code) || '', error: 'Unexpected error. Try again.' });
-        }
-    });
-
-    // Firebase Action handler (password reset)
-    app.get('/auth/action', csrfProtection, async (req, res) => {
-        try {
-            const { mode, oobCode } = req.query || {};
-            if (mode !== 'resetPassword' || !oobCode) {
-                return res.status(400).send('Invalid action');
-            }
-            const apiKey = process.env.FIREBASE_API_KEY;
-            // Verify code to get email
-            const v = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${apiKey}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ oobCode })
-            });
-            const vjson = await v.json();
-            if (!v.ok || !vjson.email) {
-                return res.status(400).send('This password reset link is invalid or expired.');
-            }
-            return res.render('action', { csrfToken: req.csrfToken(), oobCode, email: vjson.email });
-        } catch (e) { console.error('action get error', e); return res.status(500).send('Server error'); }
-    });
-    app.post('/auth/action', csrfProtection, async (req, res) => {
-        try {
-            const apiKey = process.env.FIREBASE_API_KEY;
-            const { oobCode, newPassword } = req.body || {};
-            if (!oobCode || !newPassword) return res.status(400).send('Missing fields');
-            const c = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${apiKey}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ oobCode, newPassword })
-            });
-            const cjson = await c.json().catch(()=>({}));
-            if (!c.ok) {
-                const msg = (cjson && cjson.error && cjson.error.message) || 'Could not reset password.';
-                return res.status(400).render('action', { csrfToken: req.csrfToken(), oobCode, email: '', error: msg });
-            }
-            try {
-                // Send confirmation email
-                const email = cjson && cjson.email ? cjson.email : '';
-                await sendEmail({
-                    to: email,
-                    template: 'Password Changed Confirmation',
-                    data: { businessName: '', loginUrl: `${(process.env.APP_BASE_URL||'')}/login`, changedAt: new Date().toISOString() }
-                });
-            } catch (e) { console.warn('postmark password changed failed', e?.message || e); }
-            return res.redirect('/login');
-        } catch (e) { console.error('action post error', e); return res.status(500).send('Server error'); }
-    });
-
-    // DASHBOARD & SETTINGS ROUTES
     app.get('/dashboard', requireAccess, csrfProtection, async (req, res) => {
         try {
-            const businessDoc = await db.collection('businesses').doc(req.session.user.uid).get();
+            // Force no-cache headers to prevent browser caching issues
+            res.set({
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            });
+            
+            const uid = getUserIdFromRequest(req);
+            console.log(`[DASHBOARD START] uid=${uid}`);
+            let knownPlaceId = null;
+            
+            // Force fresh read from Firestore - no caching
+            let businessDoc = await db.collection('businesses').doc(uid).get();
+            
+            // Fallback: some accounts may have business docs keyed differently. Try email lookup.
+            if (!businessDoc.exists) {
+                const email = (req.session.user && req.session.user.email) || null;
+                console.log(`[DASHBOARD FALLBACK] uid doc not found, trying email=${email}`);
+                if (email) {
+                    const q = await db.collection('businesses').where('email','==', email).limit(1).get();
+                    if (!q.empty) {
+                        businessDoc = q.docs[0];
+                        console.log(`[DASHBOARD FALLBACK] found by email, docId=${businessDoc.id}`);
+                    }
+                }
+            }
             if (!businessDoc.exists) throw new Error('No business data found.');
+            const businessRef = db.collection('businesses').doc(businessDoc.id);
+            knownPlaceId = (businessDoc.data() || {}).googlePlaceId || null;
             // Inputs for analytics (Pro can filter; Free defaults)
             const isPro = (businessDoc.data().subscriptionStatus === 'active');
             const now = Date.now();
@@ -1952,10 +1693,32 @@
                 cutoffMs = thirtyDaysAgo; // Free always 30 days
             }
             const selectedRange = isPro ? (requestedRange || 'all') : '30d';
-            // basic fetch: we may filter client-side after fetch
-            const businessRef = db.collection('businesses').doc(req.session.user.uid);
-            const feedbackSnapshot = await businessRef.collection('feedback').orderBy('createdAt', 'desc').get();
-            let feedback = feedbackSnapshot.docs.map(doc => doc.data());
+            // Fetch reviews with index, fallback to indexless query if needed
+            let feedback = [];
+            try {
+                const feedbackSnapshot = await db.collection('reviews')
+                    .where('userId', '==', uid)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                feedback = feedbackSnapshot.docs.map(doc => doc.data());
+            } catch (e) {
+                try {
+                    console.warn('reviews query failed, falling back to indexless fetch:', e && (e.code || e.message || String(e)));
+                    const fallbackSnap = await db.collection('reviews')
+                        .where('userId', '==', uid)
+                        .get();
+                    feedback = fallbackSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Sort by createdAt desc client-side
+                    feedback.sort((a, b) => {
+                        const ta = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+                        const tb = b.createdAt && b.createdAt.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+                        return tb - ta;
+                    });
+                } catch (e2) {
+                    console.warn('reviews indexless fallback also failed:', e2 && (e2.code || e2.message || String(e2)));
+                    feedback = [];
+                }
+            }
             if (cutoffMs) {
                 feedback = feedback.filter(f => { try { return (new Date(f.createdAt).getTime()) >= cutoffMs; } catch(_) { return false; } });
             }
@@ -2010,6 +1773,7 @@
             }
             // Onboarding checklist
             const bizData = businessDoc.data() || {};
+            console.log(`[DASHBOARD READ] uid=${req.session.user.uid}, docId=${businessDoc.id}, googlePlaceId=${bizData.googlePlaceId}, hasGooglePlaceId=${!!bizData.googlePlaceId}`);
             let posConnected = !!(bizData.posConnection && bizData.posConnection.isConnected);
             if (!posConnected && bizData.square && bizData.square.access) posConnected = true;
             let sentFirst = false;
@@ -2031,6 +1795,7 @@
                 posConnected,
                 sentFirst
             };
+            const onboardingDismissed = !!bizData.onboardingDismissed;
             const squareSettings = bizData.squareSettings || { autoSend: false, delayMinutes: 0, channel: 'email' };
 
             // Trial days left for UI
@@ -2043,6 +1808,12 @@
                 }
             } catch(_) {}
 
+            // Force a fresh calculation of hasGooglePlaceId right before render
+            const currentGooglePlaceId = bizData.googlePlaceId || null;
+            const hasGooglePlaceId = !!(currentGooglePlaceId && currentGooglePlaceId.trim().length > 0);
+            
+            console.log(`[DASHBOARD RENDER] hasGooglePlaceId=${hasGooglePlaceId}, googlePlaceId="${currentGooglePlaceId}"`);
+
             res.render('dashboard', {
                 business: businessDoc.data(),
                 user: req.session.user,
@@ -2052,6 +1823,8 @@
                 analytics: { total, avg, counts, conversions, planTier: isPro ? 'pro' : 'free' },
                 billing,
                 onboarding,
+                onboardingDismissed,
+                hasGooglePlaceId: hasGooglePlaceId,
                 squareSettings,
                 recentEvents,
                 trialDaysLeft,
@@ -2064,14 +1837,16 @@
             try {
                 const placeholderAnalytics = { total: 0, avg: '0.00', counts: { 1:0, 2:0, 3:0, 4:0, 5:0 }, conversions: 0 };
                 return res.render('dashboard', {
-                    business: { businessName: '', email: (req.session.user && req.session.user.email) || '', subscriptionStatus: 'none' },
+                    business: { businessName: '', email: (req.session.user && req.session.user.email) || '', subscriptionStatus: 'none', googlePlaceId: knownPlaceId },
                     user: req.session.user,
                     feedback: [],
                     appUrl: appUrl,
                     csrfToken: req.csrfToken(),
                     analytics: placeholderAnalytics,
                     billing: null,
-                    onboarding: { hasPlaceId: false, hasShortLink: false, posConnected: false, sentFirst: false },
+                    onboarding: { hasPlaceId: !!knownPlaceId, hasShortLink: !!knownPlaceId, posConnected: false, sentFirst: false },
+                    onboardingDismissed: false,
+                    hasGooglePlaceId: !!(knownPlaceId && String(knownPlaceId).trim().length > 0),
                     squareSettings: { autoSend: false, delayMinutes: 0, channel: 'email' },
                     recentEvents: [],
                     pageError: null
@@ -2173,19 +1948,26 @@
         } catch (e) { console.error('Refund error', e); res.status(500).json({ ok:false }); }
     });
 
-    app.post('/update-settings', requireLogin, csrfProtection, async (req, res) => {
+    app.post('/api/settings/dismiss-onboarding', requireLogin, csrfProtection, async (req, res) => {
         try {
-            const { googlePlaceId } = req.body;
-            const clean = (googlePlaceId || '').trim() || null; // allow clearing
             await db.collection('businesses').doc(req.session.user.uid).set({
-                googlePlaceId: clean
+                onboardingDismissed: true
             }, { merge: true });
-            console.log(`✅ Settings updated for user: ${req.session.user.uid}`);
-            res.redirect('/dashboard');
+            res.json({ ok: true });
         } catch (error) {
-            console.error("❌ Error updating settings:", error);
-            res.status(500).send("Error updating settings.");
+            console.error("❌ Error dismissing onboarding:", error);
+            res.status(500).json({ ok: false });
         }
+    });
+
+    // Weekly reports configuration
+    app.post('/report-settings', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const { enabled, frequency, email } = req.body || {};
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            await ref.set({ reportSettings: { enabled: !!enabled, frequency: frequency || 'weekly', email: email || null, updatedAt: new Date().toISOString() } }, { merge: true });
+            res.redirect('/dashboard');
+        } catch (e) { console.error('report-settings', e); res.status(500).send('server'); }
     });
 
     // PAYMENT ROUTES
@@ -2240,6 +2022,47 @@
             Object.keys(counts).sort().forEach(k => { docPdf.fontSize(12).fillColor('#333').text(`${k}★: ${counts[k]}`); });
             docPdf.end();
         } catch (e) { console.error('export pdf', e); res.status(500).send('server'); }
+    });
+
+    // --- Debug: isolated database write test page ---
+    app.get('/debug/save-test', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            const snap = await ref.get();
+            const testData = snap.exists ? ((snap.data() || {}).testData || null) : null;
+            return res.render('debug-save-test', { csrfToken: req.csrfToken(), user: req.session.user || null, testData });
+        } catch (e) {
+            console.error('debug save-test read error', e && (e.stack || e.message || e));
+            return res.status(500).send('debug page error');
+        }
+    });
+    app.get('/api/debug/read-test', requireLogin, async (req, res) => {
+        try {
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            const snap = await ref.get();
+            const testData = snap.exists ? ((snap.data() || {}).testData || null) : null;
+            return res.json({ ok: true, testData });
+        } catch (e) {
+            return res.status(500).json({ ok: false, error: String(e && (e.stack || e.message || e)) });
+        }
+    });
+    app.post('/api/debug/save-test', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const body = req.body || {};
+            const value = (typeof body.value === 'string') ? body.value : (typeof body.testData === 'string' ? body.testData : '');
+            const toSave = String(value);
+            const ref = db.collection('businesses').doc(req.session.user.uid);
+            await ref.set({ testData: toSave, updatedAt: new Date().toISOString() }, { merge: true });
+            // Verify write
+            const verify = await ref.get();
+            const roundTrip = verify.exists ? ((verify.data() || {}).testData || null) : null;
+            if (roundTrip !== toSave) {
+                return res.status(500).json({ ok: false, error: 'Verification failed: stored value did not match' });
+            }
+            return res.json({ ok: true, testData: roundTrip });
+        } catch (e) {
+            return res.status(500).json({ ok: false, error: String(e && (e.stack || e.message || e)) });
+        }
     });
 
     app.post('/analytics/report-settings', requireLogin, csrfProtection, async (req, res) => {
@@ -2463,27 +2286,29 @@
             const businessData = { ...doc.data(), uid: doc.id };
 
             // Enrich with Google Places official name
-            let placeDisplayName = null;
+            let placeDisplayName = businessData.businessName || null; // Start with Firestore name as fallback
             try {
                 const placeId = businessData.googlePlaceId;
                 const apiKey = process.env.GOOGLE_MAPS_API_KEY || null;
                 if (placeId && apiKey) {
-                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, { headers: { 'X-Goog-Api-Key': apiKey, 'X-Goog-FieldMask': 'displayName' } });
+                    const detailsResp = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}?fields=displayName`, { headers: { 'X-Goog-Api-Key': apiKey, 'X-Goog-FieldMask': 'displayName' } });
                     if (detailsResp.ok) {
                         const dj = await detailsResp.json();
-                        if (dj && dj.displayName) {
-                            placeDisplayName = (dj.displayName.text || dj.displayName || '').toString();
+                        if (dj && dj.displayName && dj.displayName.text) {
+                            placeDisplayName = dj.displayName.text;
                         }
                     } else {
-                        const txt = await detailsResp.text().catch(()=>String(detailsResp.status));
-                        console.warn('places details http', detailsResp.status, txt);
+                        const errorText = await detailsResp.text().catch(() => `Status: ${detailsResp.status}`);
+                        console.warn(`Google Places API error for ${placeId}: ${errorText}`);
                     }
                 }
             } catch (e) {
-                console.warn('places details error', e && (e.message || e));
+                console.error(`Error fetching Google Place details for ${businessData.googlePlaceId}:`, e);
             }
-            // Fallbacks
-            if (!placeDisplayName) placeDisplayName = businessData.businessName || null;
+            // Final fallback if everything else fails
+            if (!placeDisplayName) {
+                placeDisplayName = (businessData.googlePlaceId ? `Business ID: ${businessData.googlePlaceId.slice(0, 10)}…` : 'A valued business');
+            }
 
             res.render('rate', {
                 business: businessData,
@@ -2500,6 +2325,7 @@
     // Dedicated limiter for feedback submissions
     const feedbackLimiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
 
+    /* DECOMMISSIONED in favor of /api/v1/reviews
     app.post('/submit-feedback/:businessId', feedbackLimiter, csrfProtection, async (req, res) => {
         try {
             const businessId = req.params.businessId;
@@ -2553,6 +2379,26 @@
                 return res.status(400).json({ message: 'Invalid input.', details: error.issues });
             }
             res.status(500).json({ message: 'Failed to submit feedback.' });
+        }
+    });
+    */
+
+    // Public unsubscribe handler (?uid=..&c=..&sig=..)
+    app.get('/u', async (req, res) => {
+        try {
+            const uid = String(req.query.uid || '');
+            const c = String(req.query.c || '');
+            const sig = String(req.query.sig || '');
+            if (!uid || !c || !sig) return res.status(400).send('bad_request');
+            const contactLower = Buffer.from(c, 'base64url').toString('utf8');
+            const payload = `${uid}:${contactLower}`;
+            const exp = require('crypto').createHmac('sha256', UNSUBSCRIBE_SECRET).update(payload).digest('base64url');
+            if (sig !== exp) return res.status(400).send('invalid');
+            const key = Buffer.from(contactLower).toString('base64');
+            await db.collection('businesses').doc(uid).collection('optouts').doc(key).set({ at: new Date().toISOString() }, { merge: true });
+            return res.status(200).send('You have been unsubscribed.');
+        } catch (e) {
+            return res.status(500).send('server_error');
         }
     });
 
@@ -2700,6 +2546,101 @@
             return res.redirect(302, dest);
         } catch (e) {
             return next();
+        }
+    });
+
+    app.post('/api/v1/reviews', feedbackLimiter, csrfProtection, async (req, res) => {
+        try {
+            const { businessId, rating, comment } = req.body;
+            if (!businessId || !rating) {
+                return res.status(400).json({ error: 'Missing businessId or rating' });
+            }
+
+            const businessDoc = await db.collection('businesses').doc(businessId).get();
+            if (!businessDoc.exists) {
+                return res.status(404).json({ error: 'Business not found' });
+            }
+            // CRITICAL: Attribute review to the owner userId
+            const userId = businessDoc.data().userId || businessDoc.id;
+
+            await db.collection('reviews').add({
+                businessId,
+                userId,
+                rating: parseInt(rating, 10),
+                comment: (typeof comment === 'string' && comment.trim().length) ? comment.trim() : null,
+                createdAt: FieldValue.serverTimestamp(),
+                source: 'shortlink'
+            });
+
+            res.status(201).json({ success: true });
+        } catch (error) {
+            console.error('Error in /api/v1/reviews:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // --- Canonical settings endpoint ---
+    app.post('/api/settings', requireLogin, csrfProtection, async (req, res) => {
+        try {
+            const uid = (req.session && req.session.user && req.session.user.uid) ? req.session.user.uid : null;
+            if (!uid) return res.status(401).json({ ok: false, error: 'unauthorized' });
+
+            const ref = db.collection('businesses').doc(uid);
+            const payload = req.body || {};
+            const updates = {};
+            
+            // Validate and add googlePlaceId to updates
+            if (typeof payload.googlePlaceId === 'string') {
+                const cleanId = payload.googlePlaceId.trim();
+                if (cleanId.length > 5) { // Basic validation
+                    updates.googlePlaceId = cleanId;
+                    // Also set shortSlug if it doesn't exist
+                    const existingSnap = await ref.get();
+                    const existingData = existingSnap.exists ? existingSnap.data() : {};
+                    if (!existingData.shortSlug) {
+                        updates.shortSlug = cleanId;
+                    }
+                }
+            }
+
+            if (Object.keys(updates).length === 0) {
+                return res.status(400).json({ ok: false, error: 'no_valid_settings_provided' });
+            }
+
+            updates.updatedAt = new Date().toISOString();
+
+            await ref.set(updates, { merge: true });
+            
+            // Verify write with detailed logging
+            const verifySnap = await ref.get();
+            const storedData = verifySnap.exists ? verifySnap.data() : {};
+            
+            console.log(`[SETTINGS SAVE] uid=${uid}, attempted=${payload.googlePlaceId}, stored=${storedData.googlePlaceId}, docExists=${verifySnap.exists}`);
+            
+            res.json({ ok: true, settings: storedData, hasGooglePlaceId: !!storedData.googlePlaceId });
+
+        } catch (e) {
+            console.error('[/api/settings] error:', e);
+            res.status(500).json({ ok: false, error: 'server_error' });
+        }
+    });
+
+    // Debug endpoint to inspect current user's business document
+    app.get('/api/debug/business-doc', requireLogin, async (req, res) => {
+        try {
+            const uid = req.session.user.uid;
+            const ref = db.collection('businesses').doc(uid);
+            const snap = await ref.get();
+            
+            res.json({
+                uid,
+                exists: snap.exists,
+                data: snap.exists ? snap.data() : null,
+                hasGooglePlaceId: snap.exists ? !!(snap.data() || {}).googlePlaceId : false
+            });
+        } catch (e) {
+            console.error('[DEBUG] business doc error:', e);
+            res.status(500).json({ error: 'server_error' });
         }
     });
     })().catch((err) => {

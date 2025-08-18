@@ -24,6 +24,8 @@
             transform: scale(1.2);
         }
         .star.selected { color: var(--accent) }
+        .google-ctx { display:flex; align-items:center; justify-content:center; gap:8px; font-size: 12px; color: var(--muted); margin: 8px 0 16px }
+        .google-g { width: 14px; height: 14px; display:inline-block; }
         h2 { font-size: 20px; font-weight: 700 }
         p { color: var(--muted); line-height:1.6; margin-bottom: 16px }
         form {
@@ -70,21 +72,23 @@
                 <span class="star" data-value="4">★</span>
                 <span class="star" data-value="5">★</span>
             </div>
+            <div class="google-ctx">
+              <svg class="google-g" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6 1.54 7.38 2.83l5.02-4.9C33.64 4.46 29.27 3 24 3 14.91 3 7.05 8.58 3.67 16.17l5.93 4.6C11.57 15.28 17.34 9.5 24 9.5z"/>
+                <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.21-.43-4.72H24v9h12.68c-.55 2.96-2.24 5.46-4.76 7.14l7.29 5.66C43.93 37.78 46.5 31.61 46.5 24.5z"/>
+                <path fill="#FBBC05" d="M9.6 28.77a14.5 14.5 0 010-9.54l-5.93-4.6a23.94 23.94 0 000 18.74l5.93-4.6z"/>
+                <path fill="#34A853" d="M24 46c6.48 0 11.92-2.13 15.89-5.79l-7.29-5.66c-2.02 1.36-4.61 2.18-8.6 2.18-6.66 0-12.42-5.78-14.4-13.01l-5.93 4.6C7.05 39.42 14.91 46 24 46z"/>
+                <path fill="none" d="M0 0h48v48H0z"/>
+              </svg>
+              <span>Help them shine on Google</span>
+            </div>
         </div>
 
-        <!-- 1-3 Star Feedback Form -->
-        <div id="contact-section" class="hidden" style="margin-top:16px">
-            <h2 id="contact-title">Tell us a bit about you</h2>
-            <p id="contact-subtitle">Please share your contact info. If your rating is 4 or below, also tell us how we can improve.</p>
-            <form id="contact-form">
-                <input type="text" id="name" placeholder="Your Name" required>
-                <input type="email" id="email" placeholder="Your Email" required>
-                <input type="tel" id="phone" placeholder="Your Phone (Optional)">
-                <div id="feedback-wrapper" class="hidden">
-                    <textarea id="feedback-text" placeholder="How could we have made it a 5-star experience?" rows="4"></textarea>
-                </div>
-                <button type="submit" class="btn-primary">Submit</button>
-            </form>
+        <!-- Feedback (shown for 1–4 stars) -->
+        <div id="feedback-section" class="hidden" style="margin-top:16px; text-align:left">
+            <label for="feedback-text" style="display:block; font-weight:600; margin-bottom:6px">What would make this a 5‑star experience next time?</label>
+            <textarea id="feedback-text" placeholder="Your feedback helps us improve." rows="5"></textarea>
+            <button id="action-button" class="btn-primary" type="button" style="margin-top:10px; width:100%">Submit Feedback</button>
         </div>
 
         <!-- Thank You Message -->

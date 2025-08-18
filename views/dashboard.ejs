@@ -81,6 +81,14 @@
           40% { background:#e8f5e9; }
           100% { background: var(--card); }
         }
+        /* Business name badge */
+        .name-badge{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; background: var(--bg); font-weight:700; color: var(--text); margin: -6px 0 12px 0 }
+        .name-badge .dot{ width:8px; height:8px; background: var(--accent); border-radius:50% }
+        /* Aesthetic inline help link next to Place ID label */
+        .help-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color: var(--muted); text-decoration:none; background: var(--bg); transition: border-color .15s ease, color .15s ease, background-color .15s ease, box-shadow .2s ease, transform .15s ease }
+        .help-chip:hover{ border-color: var(--accent); color: var(--accent); background: rgba(16,185,129,.06); box-shadow: 0 0 0 3px rgba(16,185,129,.15); transform: translateY(-1px) }
+        .help-chip:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(16,185,129,.25) }
+        .help-chip .g-icon{ width:14px; height:14px; display:inline-block }
     </style>
 </head>
 <body>
@@ -90,6 +98,9 @@
       <div class="container">
         <% if (typeof analytics !== 'undefined') { %>
         <h1 class="page-heading">Dashboard</h1>
+        <% if (business && (business.businessName || business.googlePlaceId)) { %>
+          <div class="name-badge"><span class="dot" aria-hidden="true"></span><span><%= business.businessName || ('Place ' + business.googlePlaceId.slice(0,6) + '…') %></span></div>
+        <% } %>
         <div class="card base-card" style="margin-bottom:16px">
           <h2>Insights</h2>
           <% if (analytics && analytics.planTier === 'free') { %>
@@ -104,13 +115,13 @@
                 <option value="30d" <%= (typeof selectedRange !== 'undefined' && selectedRange==='30d') ? 'selected' : '' %>>Last 30 days</option>
                 <option value="90d" <%= (typeof selectedRange !== 'undefined' && selectedRange==='90d') ? 'selected' : '' %>>Last 90 days</option>
               </select>
-            </form>
-          <% } %>
-          <div class="kpis">
-            <div class="kpi"><div class="label">Total feedback</div><div class="value"><%= analytics.total %></div></div>
-            <div class="kpi"><div class="label">Average rating</div><div class="value"><%= analytics.avg %></div></div>
-            <div class="kpi"><div class="label">5★ conversions</div><div class="value"><%= analytics.conversions %></div></div>
-          </div>
+                </form>
+            <% } %>
+            <div class="kpis">
+              <div class="kpi"><div class="label">Total feedback</div><div class="value"><%= analytics.total %></div></div>
+              <div class="kpi"><div class="label">Average rating</div><div class="value"><%= analytics.avg %></div></div>
+              <div class="kpi"><div class="label">5★ conversions</div><div class="value"><%= analytics.conversions %></div></div>
+            </div>
           <div style="margin-top:1rem">
             <div id="distChart" style="display:grid;gap:6px"></div>
             <% if (analytics && analytics.planTier === 'pro') { %>
@@ -124,40 +135,31 @@
               </div>
             <% } %>
           </div>
-        </div>
-        <% } %>
+          </div>
+          <% } %>
         <div class="grid" id="settings-link">
           <div class="column">
             <div class="card base-card">
-              <h2>Customer Feedback</h2>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Rating</th>
-                      <th>Name</th>
-                      <th>Contact</th>
-                      <th>Details</th>
-                      <th>Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                <h2>Customer Feedback</h2>
+                    <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rating</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                     <% if (feedback.length > 0) { %>
-                      <% feedback.forEach(item => { %>
-                        <tr>
-                          <td><span class="rating-star"><%= item.rating %> ★</span></td>
-                          <td><%= item.name %></td>
-                          <td>
-                            <%= item.email %>
-                            <% if (item.phone) { %><br><%= item.phone %><% } %>
-                          </td>
-                          <td><%= item.feedback || '-' %></td>
-                          <td><%= new Date(item.createdAt).toLocaleDateString() %></td>
-                        </tr>
-                      <% }); %>
+                            <% feedback.forEach(item => { %>
+                                <tr>
+                                    <td><span class="rating-star"><%= item.rating %> ★</span></td>
+                                    <td><%= new Date(item.createdAt).toLocaleDateString() %></td>
+                                </tr>
+                            <% }); %>
                     <% } else { %>
                       <tr>
-                        <td colspan="5" style="text-align:center; padding:32px 16px;">
+                        <td colspan="2" style="text-align:center; padding:32px 16px;">
                           <div style="display:flex; flex-direction:column; align-items:center; gap:14px; color: var(--muted)">
                             <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                               <rect x="7" y="18" width="74" height="50" rx="8" stroke="#E5E7EB" stroke-width="2"/>
@@ -188,9 +190,18 @@
               <% } %>
               <form action="/update-settings" method="POST">
                 <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-                <div style="display:flex; align-items:center; gap:8px">
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
                   <label for="googlePlaceId" style="margin:0">Your Google Place ID:</label>
-                  <a href="https://developers.google.com/maps/documentation/places/web-service/place-id#find-id" target="_blank" rel="noopener noreferrer" title="Find your ID with Google's tool" aria-label="Where do I find this?" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border:1px solid var(--border);border-radius:50%;font-size:12px;color:var(--muted);text-decoration:none">?</a>
+                  <a class="help-chip" href="https://developers.google.com/maps/documentation/places/web-service/place-id#find-id" target="_blank" rel="noopener noreferrer">
+                    <svg class="g-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path fill="#EA4335" d="M24 9.5c3.54 0 6 1.54 7.38 2.83l5.02-4.9C33.64 4.46 29.27 3 24 3 14.91 3 7.05 8.58 3.67 16.17l5.93 4.6C11.57 15.28 17.34 9.5 24 9.5z"/>
+                      <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.21-.43-4.72H24v9h12.68c-.55 2.96-2.24 5.46-4.76 7.14l7.29 5.66C43.93 37.78 46.5 31.61 46.5 24.5z"/>
+                      <path fill="#FBBC05" d="M9.6 28.77a14.5 14.5 0 010-9.54l-5.93-4.6a23.94 23.94 0 000 18.74l5.93-4.6z"/>
+                      <path fill="#34A853" d="M24 46c6.48 0 11.92-2.13 15.89-5.79l-7.29-5.66c-2.02 1.36-4.61 2.18-8.6 2.18-6.66 0-12.42-5.78-14.4-13.01l-5.93 4.6C7.05 39.42 14.91 46 24 46z"/>
+                      <path fill="none" d="M0 0h48v48H0z"/>
+                    </svg>
+                    Find your Place ID
+                  </a>
                 </div>
                 <input type="text" id="googlePlaceId" name="googlePlaceId" value="<%= business.googlePlaceId || '' %>" placeholder="Enter your Google Place ID here" <%= (business && business.googlePlaceId) ? 'readonly style="background:#F9FAFB;color:#6B7280"' : '' %> required>
                 <% if (business && business.googlePlaceId) { %>
@@ -272,41 +283,58 @@
                     <% } else { %>
                       <tr><td colspan="3" style="text-align:center; color: var(--muted); padding:18px">No recent activity yet.</td></tr>
                     <% } %>
-                  </tbody>
-                </table>
+                        </tbody>
+                    </table>
               </div>
             </div>
 
-            <div class="card base-card">
-              <h2>Onboarding Checklist</h2>
+            <% if (typeof onboardingDismissed === 'undefined' || !onboardingDismissed) { %>
+            <div class="card base-card" id="onboardingBanner">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <h2>Onboarding Checklist</h2>
+                <button id="dismissOnboarding" type="button" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:0;">&times;</button>
+              </div>
               <ul id="obList" style="list-style:none;padding:0;margin:0;color:var(--muted);line-height:1.9">
                 <li>Loading…</li>
               </ul>
             </div>
+            <% } %>
 
             <div class="card base-card">
               <h2>Review Collection Kit</h2>
-              <div class="sub-row" style="margin-bottom:10px">
-                <div style="flex:1">
-                  <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Short link</div>
-                  <div class="link-box" id="kitShortLink" style="word-break:break-all">Loading…</div>
-                  <div class="btns" style="display:flex; gap:.5rem; margin-top:.5rem;">
-                    <button class="btn btn-secondary" id="kitCopyLink" type="button">Copy</button>
+              <div id="kitActiveState" style="<%= hasGooglePlaceId ? '' : 'display:none' %>">
+                <div class="sub-row" style="margin-bottom:10px">
+                  <div style="flex:1">
+                    <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Short link</div>
+                    <div class="link-box" id="kitShortLink" style="word-break:break-all">Loading…</div>
+                    <div class="btns" style="display:flex; gap:.5rem; margin-top:.5rem;">
+                      <button class="btn btn-secondary" id="kitCopyLink" type="button">Copy</button>
+                    </div>
+                  </div>
+                  <div>
+                    <img id="kitQrPreview" alt="QR code" class="qr-placeholder" src=""/>
                   </div>
                 </div>
-                <div>
-                  <img id="kitQrPreview" alt="QR code" class="qr-placeholder" src=""/>
+                <div class="sub-row">
+                  <a id="btnSignPdf" class="btn btn-secondary" href="#" download>Download Countertop Sign (PDF)</a>
+                  <a id="btnStickerPdf" class="btn btn-secondary" href="#" download>Download Sticker Sheet (PDF)</a>
+                </div>
+                <div style="margin-top:14px">
+                  <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Suggested receipt text</div>
+                  <textarea id="kitReceiptText" readonly style="width:100%; min-height:92px; padding:12px; border:1px solid var(--border); border-radius:8px; background: var(--bg);"></textarea>
+                  <div style="margin-top:.5rem">
+                    <button class="btn btn-secondary" id="kitCopyReceipt" type="button">Copy Text</button>
+                  </div>
                 </div>
               </div>
-              <div class="sub-row">
-                <a id="btnSignPdf" class="btn btn-secondary" href="#" download>Download Countertop Sign (PDF)</a>
-                <a id="btnStickerPdf" class="btn btn-secondary" href="#" download>Download Sticker Sheet (PDF)</a>
-              </div>
-              <div style="margin-top:14px">
-                <div style="font-weight:600; color: var(--text-secondary); margin-bottom:.25rem;">Suggested receipt text</div>
-                <textarea id="kitReceiptText" readonly style="width:100%; min-height:92px; padding:12px; border:1px solid var(--border); border-radius:8px; background: var(--bg);"></textarea>
-                <div style="margin-top:.5rem">
-                  <button class="btn btn-secondary" id="kitCopyReceipt" type="button">Copy Text</button>
+              <div id="kitEmptyState" style="<%= hasGooglePlaceId ? 'display:none' : '' %>">
+                <div style="text-align: center; padding: 20px;">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted); margin-bottom: 12px;">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <p style="color: var(--muted); margin-bottom: 16px;">Add your Google Place ID in Settings to unlock your Review Collection Kit.</p>
+                  <button id="completeSetupBtn" class="btn-primary">Complete Setup</button>
                 </div>
               </div>
             </div>
@@ -331,7 +359,7 @@
                   </div>
                 <% } %>
                 <a href="/billing-portal" class="btn btn-secondary" style="margin-top:12px">Manage Billing</a>
-              <% } else { %>
+                <% } else { %>
                 <% if (typeof pageError !== 'undefined' && pageError) { %>
                   <div class="notice-banner" style="background:#FEF2F2;color:#991B1B">Error: <%= pageError %></div>
                 <% } %>
@@ -450,6 +478,9 @@
               pid.style.background='';
               pid.style.color='';
               pid.focus();
+              var prev = pid.style.boxShadow;
+              pid.style.boxShadow = '0 0 0 4px rgba(16,185,129,.35)';
+              setTimeout(function(){ pid.style.boxShadow = prev; }, 1200);
             });
           }
         }catch(_){ }
@@ -632,6 +663,71 @@
         // Live onboarding status fetch + interactive checklist linking to settings input
         ;(async function(){
           try{
+            // Reactive save for Google Place ID via JSON endpoint
+            const settingsForm = document.querySelector('form[action="/update-settings"]');
+            if (settingsForm) {
+              settingsForm.addEventListener('submit', async function(e){
+                e.preventDefault();
+                const pidInput = document.getElementById('googlePlaceId');
+                const placeId = pidInput ? (pidInput.value || '').trim() : '';
+                const csrf = '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>';
+                if (!placeId) { alert('Please enter a Google Place ID'); return; }
+                try{
+                  const r = await fetch('/api/settings', {
+                    method:'POST',
+                    headers:{ 'Content-Type':'application/json', 'Accept':'application/json', 'x-csrf-token': csrf, 'X-Requested-With':'XMLHttpRequest' },
+                    credentials:'same-origin',
+                    body: JSON.stringify({ googlePlaceId: placeId })
+                  });
+                  const j = await r.json().catch(()=>({}));
+                  if (r.ok && j && j.ok) {
+                    var emptyState = document.getElementById('kitEmptyState');
+                    var activeState = document.getElementById('kitActiveState');
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (activeState) activeState.style.display = '';
+                    if (pidInput) { pidInput.setAttribute('readonly','readonly'); pidInput.style.background = '#F9FAFB'; pidInput.style.color = '#6B7280'; }
+                    try { if (typeof fetchKit === 'function') fetchKit(); } catch(_){}
+                    try{ const ob1 = document.getElementById('ob-placeid'); if (ob1) ob1.innerHTML = '✅ 1. Add your Google Place ID'; }catch(_){ }
+                  } else {
+                    alert('Could not save Place ID.');
+                  }
+                }catch(err){ console.error('place-id save failed', err); alert('Save failed'); }
+              });
+            }
+            const completeSetupBtn = document.getElementById('completeSetupBtn');
+            if (completeSetupBtn) {
+              completeSetupBtn.addEventListener('click', () => {
+                const settingsCard = document.getElementById('settingsCard');
+                if (settingsCard) {
+                  settingsCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  settingsCard.classList.add('is-highlighted');
+                  setTimeout(() => {
+                    settingsCard.classList.remove('is-highlighted');
+                  }, 2500);
+                }
+              });
+            }
+
+            const banner = document.getElementById('onboardingBanner');
+            const dismissBtn = document.getElementById('dismissOnboarding');
+            if (banner && dismissBtn) {
+                dismissBtn.addEventListener('click', async () => {
+                    try {
+                        const resp = await fetch('/api/settings/dismiss-onboarding', {
+                            method: 'POST',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>',
+                            credentials: 'same-origin'
+                        });
+                        if (resp.ok) {
+                            banner.style.display = 'none';
+                        }
+                    } catch (e) {
+                        console.error('Failed to dismiss onboarding', e);
+                    }
+                });
+            }
+
             const ul = document.getElementById('obList');
             if (!ul) return;
             const r = await fetch('/api/onboarding/status', { credentials:'same-origin' });

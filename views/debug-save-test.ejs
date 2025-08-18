@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug • Save Test</title>
+  <style>
+    body{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin:0; padding:24px; background:#fafafa; color:#111 }
+    .card{ background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:20px; max-width:680px }
+    label{ display:block; font-weight:600; margin:12px 0 6px }
+    input[type=text]{ width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:14px }
+    button{ background:#10B981; color:#fff; border:none; border-radius:8px; padding:10px 14px; font-weight:700; cursor:pointer; margin-top:12px }
+    pre{ background:#f6f8fa; padding:12px; border-radius:8px; border:1px solid #e5e7eb; overflow:auto }
+    .muted{ color:#6b7280 }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Debug: Firestore Save Test</h1>
+    <div>
+      <label>Current Value of 'testData' in Firestore:</label>
+      <pre id="current"><%= (typeof testData !== 'undefined' && testData !== null) ? String(testData) : '(null)' %></pre>
+    </div>
+    <form id="saveForm">
+      <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
+      <label>New Data to Save:</label>
+      <input id="inputVal" type="text" placeholder="Type any string to save to testData" />
+      <button id="btnSave" type="submit">Run Save Test</button>
+    </form>
+    <div>
+      <label>Test Result:</label>
+      <pre id="result" class="muted">(not run)</pre>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('saveForm');
+      const input = document.getElementById('inputVal');
+      const current = document.getElementById('current');
+      const result = document.getElementById('result');
+      async function readBack(){
+        try{
+          const r = await fetch('/api/debug/read-test', { credentials:'same-origin' });
+          const j = await r.json().catch(()=>({}));
+          if (j && j.ok){ current.textContent = (j.testData === null || typeof j.testData === 'undefined') ? '(null)' : String(j.testData); }
+        }catch(_){ }
+      }
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+        const val = input.value || '';
+        result.textContent = 'Running…';
+        try{
+          const csrf = form.querySelector('input[name=_csrf]') ? form.querySelector('input[name=_csrf]').value : '';
+          const r = await fetch('/api/debug/save-test', {
+            method:'POST',
+            headers:{ 'Content-Type':'application/json', 'Accept':'application/json', 'x-csrf-token': csrf, 'X-Requested-With':'XMLHttpRequest' },
+            credentials:'same-origin',
+            body: JSON.stringify({ value: val })
+          });
+          const j = await r.json().catch(()=>({}));
+          if (r.ok && j && j.ok){
+            result.textContent = 'SUCCESS';
+            await readBack();
+          } else {
+            result.textContent = 'FAILED\n' + JSON.stringify(j||{}, null, 2);
+          }
+        }catch(err){
+          result.textContent = 'FAILED\n' + String(err && (err.stack || err.message || err));
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
+
