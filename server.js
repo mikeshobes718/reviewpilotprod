@@ -2559,40 +2559,7 @@
         }
     });
 
-    // CLEAN ROOM: Standardized Review Submission Endpoint
-    app.post('/api/reviews/submit', async (req, res) => {
-        // 'targetBusinessId' must be the canonical Auth UID passed from the frontend
-        const { rating, comment, targetBusinessId } = req.body;
 
-        console.log(`[CLEANROOM-WRITE] Incoming: UID=${targetBusinessId}, Rating=${rating}`);
-
-        // 1. Strict Validation
-        const parsedRating = parseInt(rating, 10);
-        if (!targetBusinessId || !parsedRating || parsedRating < 1 || parsedRating > 5) {
-            console.error(`[CLEANROOM-WRITE] Validation Failed. Body: ${JSON.stringify(req.body)}`);
-            return res.status(400).json({ error: "Invalid submission data." });
-        }
-
-        try {
-            const newReview = {
-                // CRITICAL: Attribution Key (must match owner's Auth UID)
-                userId: targetBusinessId,
-                rating: parsedRating,
-                comment: comment || null,
-                // CRITICAL: Server Timestamp for reliable indexing/ordering
-                createdAt: FieldValue.serverTimestamp(),
-                source: 'cleanroom-v1'
-            };
-
-            const docRef = await db.collection('reviews').add(newReview);
-            console.log(`[CLEANROOM-WRITE] SUCCESS: Written doc ${docRef.id} for UID: ${targetBusinessId}`);
-            res.status(201).json({ success: true });
-
-        } catch (error) {
-            console.error("[CLEANROOM-WRITE] ERROR Firestore:", error);
-            res.status(500).json({ error: "Server error during submission." });
-        }
-    });
 
     // Clean Room Implementation: The Write Path (Review Submission Endpoint)
     app.post('/api/reviews/submit', async (req, res) => {
@@ -2691,6 +2658,64 @@
         } catch (error) {
             console.error('[LEGACY-WRITE] ERROR:', error);
             res.status(500).json({ error: 'Failed to submit review.' });
+        }
+    });
+
+    // TEST ENDPOINT: Submit a test review to verify pipeline
+    app.post('/api/test/review', async (req, res) => {
+        try {
+            const { uid, rating, comment } = req.body;
+            if (!uid || !rating) {
+                return res.status(400).json({ error: 'Missing uid or rating' });
+            }
+
+            console.log(`[TEST-REVIEW] Creating test review for UID: ${uid}, Rating: ${rating}`);
+
+            const newReview = {
+                userId: uid,
+                rating: parseInt(rating, 10),
+                comment: comment || 'Test review from admin endpoint',
+                createdAt: FieldValue.serverTimestamp(),
+                source: 'test-endpoint'
+            };
+
+            const docRef = await db.collection('reviews').add(newReview);
+            console.log(`[TEST-REVIEW] SUCCESS: Created test review ${docRef.id}`);
+
+            // Update stats
+            try {
+                const businessRef = db.collection('businesses').doc(uid);
+                await db.runTransaction(async (transaction) => {
+                    const businessSnap = await transaction.get(businessRef);
+                    if (!businessSnap.exists) {
+                        console.error(`[TEST-REVIEW] Business doc not found for UID: ${uid}`);
+                        return;
+                    }
+
+                    const businessData = businessSnap.data() || {};
+                    const stats = businessData.stats || {
+                        totalFeedback: 0, totalRatingSum: 0, averageRating: 0.00,
+                        fiveStarConversions: 0, histogram: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+                    };
+
+                    const ratingValue = parseInt(rating, 10);
+                    stats.totalFeedback += 1;
+                    stats.totalRatingSum += ratingValue;
+                    stats.averageRating = parseFloat((stats.totalRatingSum / stats.totalFeedback).toFixed(2));
+                    stats.histogram[ratingValue] = (stats.histogram[ratingValue] || 0) + 1;
+                    if (ratingValue === 5) stats.fiveStarConversions += 1;
+
+                    transaction.update(businessRef, { stats, updatedAt: FieldValue.serverTimestamp() });
+                    console.log(`[TEST-REVIEW] Stats updated for ${uid}. Total: ${stats.totalFeedback}`);
+                });
+            } catch (aggError) {
+                console.error(`[TEST-REVIEW] Stats update failed:`, aggError);
+            }
+
+            res.json({ success: true, reviewId: docRef.id });
+        } catch (error) {
+            console.error('[TEST-REVIEW] ERROR:', error);
+            res.status(500).json({ error: 'Test review failed' });
         }
     });
 
