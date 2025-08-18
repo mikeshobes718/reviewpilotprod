@@ -6,6 +6,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in • Reviews &amp; Marketing</title>
      <%- include('partials/head') %>
+     <style>
+       /* Mobile-specific optimizations for login page */
+       @media (max-width: 768px) {
+         .auth-grid {
+           min-height: auto;
+           padding: 20px 16px;
+         }
+         
+         .auth-card {
+           margin: 20px auto;
+           padding: 24px 20px;
+         }
+         
+         .auth-card .brand {
+           margin-bottom: 8px;
+         }
+         
+         .auth-card .brand img {
+           height: 24px;
+         }
+         
+         .form-container h2 {
+           font-size: 28px;
+           margin-bottom: 6px;
+         }
+         
+         .form-container p.sub-headline {
+           font-size: 14px;
+           margin-bottom: 24px;
+         }
+         
+         .form-container .form-field {
+           margin-bottom: 16px;
+         }
+         
+         .form-container label {
+           font-size: 13px;
+           margin-bottom: 6px;
+         }
+         
+         .form-container input {
+           padding: 12px;
+           font-size: 16px;
+         }
+         
+         .form-container .button-container {
+           margin-top: 8px;
+         }
+         
+         .form-container .primary-action {
+           padding: 14px 24px;
+           font-size: 15px;
+         }
+         
+         .form-container .form-footer-link {
+           margin-top: 20px;
+           font-size: 14px;
+         }
+         
+         /* Reduce spacing between elements */
+         .form-container > * + * {
+           margin-top: 16px;
+         }
+         
+         .form-container .form-field + .form-field {
+           margin-top: 12px;
+         }
+       }
+     </style>
   </head>
   <body class="auth-bg">
     <%- include('partials/header') %>
