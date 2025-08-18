@@ -1323,11 +1323,13 @@
         try {
             if (!req.session.user) {
                 const raw = req.cookies && req.cookies.session;
-                if (raw) {
+                if (raw && raw !== 'expired') {
                     try {
                         const jwt = require('jsonwebtoken');
                         const decoded = jwt.decode(raw);
-                        if (decoded && decoded.sub) {
+                        
+                        // Reject expired or invalid JWT tokens
+                        if (decoded && decoded.sub && decoded.exp && decoded.exp * 1000 > Date.now()) {
                             // Reject stale JWTs issued before logout invalidation
                             if (decoded.iat && sessionInvalidationTime > 0 && decoded.iat * 1000 < sessionInvalidationTime) {
                                 console.log(`[MIDDLEWARE] Rejected JWT issued before logout: iat=${decoded.iat * 1000}, invalidation=${sessionInvalidationTime}`);
@@ -1717,11 +1719,21 @@
             }
         });
         
-        // Clear any cookies that might be causing issues
+        // Clear ALL cookies that might be causing issues
         res.clearCookie('connect.sid');
         res.clearCookie('session');
+        res.clearCookie('session', { path: '/' });
+        res.clearCookie('session', { path: '/', domain: process.env.COOKIE_DOMAIN });
         
-        console.log('[LOGOUT] Redirecting to home');
+        // Set session cookie to expired value
+        res.cookie('session', 'expired', { 
+            expires: new Date(0), 
+            path: '/',
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+        });
+        
+        console.log('[LOGOUT] All cookies cleared, redirecting to home');
         res.redirect('/');
     });
     
