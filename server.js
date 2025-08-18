@@ -2559,102 +2559,112 @@
         }
     });
 
-    app.post('/api/v1/reviews', feedbackLimiter, csrfProtection, async (req, res) => {
+    // CLEAN ROOM: Standardized Review Submission Endpoint
+    app.post('/api/reviews/submit', async (req, res) => {
+        // 'targetBusinessId' must be the canonical Auth UID passed from the frontend
+        const { rating, comment, targetBusinessId } = req.body;
+
+        console.log(`[CLEANROOM-WRITE] Incoming: UID=${targetBusinessId}, Rating=${rating}`);
+
+        // 1. Strict Validation
+        const parsedRating = parseInt(rating, 10);
+        if (!targetBusinessId || !parsedRating || parsedRating < 1 || parsedRating > 5) {
+            console.error(`[CLEANROOM-WRITE] Validation Failed. Body: ${JSON.stringify(req.body)}`);
+            return res.status(400).json({ error: "Invalid submission data." });
+        }
+
         try {
-            const { businessId, rating, comment } = req.body;
-            console.log(`[PIPELINE-WRITE] Incoming: businessId=${businessId} rating=${rating}`);
-            
-            if (!businessId || !rating) {
-                console.error(`[PIPELINE-WRITE] ERROR: Missing businessId or rating. Body: ${JSON.stringify(req.body)}`);
-                return res.status(400).json({ error: 'Missing businessId or rating' });
-            }
-
-            const businessDoc = await db.collection('businesses').doc(businessId).get();
-            if (!businessDoc.exists) {
-                console.error(`[PIPELINE-WRITE] ERROR: Business not found for businessId: ${businessId}`);
-                return res.status(404).json({ error: 'Business not found' });
-            }
-            
-            // CRITICAL: Attribute review to the owner userId
-            // The businessId IS the canonical Auth UID (from the short link resolver)
-            const canonicalAuthUid = businessId;
-            console.log(`[PIPELINE-WRITE] Using canonical Auth UID: ${canonicalAuthUid}`);
-
             const newReview = {
-                businessId,
-                userId: canonicalAuthUid, // CRITICAL: Use canonical UID
-                rating: parseInt(rating, 10),
-                comment: (typeof comment === 'string' && comment.trim().length) ? comment.trim() : null,
-                // CRITICAL: Use server timestamp to guarantee correct type and timezone independence
+                // CRITICAL: Attribution Key (must match owner's Auth UID)
+                userId: targetBusinessId,
+                rating: parsedRating,
+                comment: comment || null,
+                // CRITICAL: Server Timestamp for reliable indexing/ordering
                 createdAt: FieldValue.serverTimestamp(),
-                source: 'shortlink'
+                source: 'cleanroom-v1'
             };
 
             const docRef = await db.collection('reviews').add(newReview);
-            console.log(`[PIPELINE-WRITE] SUCCESS: Written doc ${docRef.id} with userId: ${canonicalAuthUid}`);
+            console.log(`[CLEANROOM-WRITE] SUCCESS: Written doc ${docRef.id} for UID: ${targetBusinessId}`);
+            res.status(201).json({ success: true });
 
-            // Update stats atomically on the business doc
-            try {
-                const businessRef = db.collection('businesses').doc(canonicalAuthUid);
-                await db.runTransaction(async (transaction) => {
-                    const businessSnap = await transaction.get(businessRef);
-                    
-                    if (!businessSnap.exists) {
-                        console.error(`[AGGREGATION] ERROR: Business doc not found for UID: ${canonicalAuthUid}`);
-                        return;
-                    }
+        } catch (error) {
+            console.error("[CLEANROOM-WRITE] ERROR Firestore:", error);
+            res.status(500).json({ error: "Server error during submission." });
+        }
+    });
 
-                    const businessData = businessSnap.data() || {};
-                    const stats = businessData.stats || {
-                        totalFeedback: 0,
-                        totalRatingSum: 0,
-                        averageRating: 0.00,
-                        fiveStarConversions: 0,
-                        histogram: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-                    };
-
-                    const ratingValue = parseInt(rating, 10);
-                    if (ratingValue >= 1 && ratingValue <= 5) {
-                        stats.totalFeedback += 1;
-                        stats.totalRatingSum += ratingValue;
-                        stats.averageRating = stats.totalFeedback ? (stats.totalRatingSum / stats.totalFeedback) : 0;
-                        stats.histogram[ratingValue] = (stats.histogram[ratingValue] || 0) + 1;
-                        
-                        if (ratingValue === 5) {
-                            stats.fiveStarConversions += 1;
-                        }
-                    }
-
-                    transaction.update(businessRef, { 
-                        stats: stats,
-                        updatedAt: FieldValue.serverTimestamp()
-                    });
-                    console.log(`[AGGREGATION] SUCCESS: Updated stats for ${canonicalAuthUid}. Total: ${stats.totalFeedback}`);
-                });
-            } catch (aggError) {
-                console.error(`[AGGREGATION] Transaction failed for UID: ${canonicalAuthUid}`, aggError);
+    // Legacy endpoint for backward compatibility
+    app.post('/api/v1/reviews', feedbackLimiter, csrfProtection, async (req, res) => {
+        try {
+            const { businessId, rating, comment } = req.body;
+            console.log(`[LEGACY-WRITE] Incoming: businessId=${businessId} rating=${rating}`);
+            
+            if (!businessId || !rating) {
+                console.error(`[LEGACY-WRITE] ERROR: Missing businessId or rating. Body: ${JSON.stringify(req.body)}`);
+                return res.status(400).json({ error: 'Missing businessId or rating' });
             }
 
-            res.status(201).json({ success: true });
+            // Forward to clean room endpoint
+            req.body = { targetBusinessId: businessId, rating, comment };
+            return app._router.handle(req, res, () => {});
         } catch (error) {
-            console.error('[PIPELINE-WRITE] ERROR Firestore:', error);
+            console.error('[LEGACY-WRITE] ERROR:', error);
             res.status(500).json({ error: 'Failed to submit review.' });
         }
     });
 
-    // Alias endpoint matching consultant spec: POST /api/reviews/submit
-    app.post('/api/reviews/submit', feedbackLimiter, csrfProtection, async (req, res) => {
+    // CLEAN ROOM: Dashboard Pipeline Data API
+    app.get('/api/dashboard/pipeline-data', requireLogin, async (req, res) => {
+        // CRITICAL: The UID from the authentication middleware
+        const loggedInUserId = req.session.user.uid;
+
+        console.log(`[CLEANROOM-READ] Fetching data for UID: ${loggedInUserId}`);
+        // Prevent browser caching
+        res.setHeader('Cache-Control', 'no-store');
+
         try {
-            const { targetBusinessId, rating, comment } = req.body || {};
-            if (!targetBusinessId || !rating) {
-                return res.status(400).json({ error: 'Missing targetBusinessId or rating' });
+            // 1. Fetch Insights (Aggregated Stats)
+            const businessDocRef = db.collection('businesses').doc(loggedInUserId);
+            const businessDoc = await businessDocRef.get();
+
+            if (!businessDoc.exists) {
+                console.error(`[CLEANROOM-READ] ERROR: Business document not found for UID: ${loggedInUserId}`);
+                return res.status(404).json({ error: "Business profile not found." });
             }
-            // Reuse main handler by shaping request
-            req.body = { businessId: targetBusinessId, rating, comment };
-            return app._router.handle(req, res, () => {});
-        } catch (e) {
-            console.error('[PIPELINE-WRITE] submit alias error:', e && (e.message || e));
-            return res.status(500).json({ error: 'server_error' });
+
+            // Provide default structure if stats object is missing
+            const stats = businessDoc.data().stats || {
+                 totalFeedback: 0, averageRating: 0.00, fiveStarConversions: 0, histogram: {}
+            };
+
+            // 2. Fetch Customer Feedback (Recent Reviews)
+            // This query REQUIRES the composite index (userId ASC, createdAt DESC).
+            const query = db.collection('reviews')
+                .where('userId', '==', loggedInUserId)
+                .orderBy('createdAt', 'desc')
+                .limit(25); // Fetching the most recent 25 reviews
+
+            const snapshot = await query.get();
+            const reviews = snapshot.docs.map(doc => {
+                const data = doc.data();
+                // Normalize Firestore timestamp for frontend compatibility (ISO String)
+                if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                    data.createdAt = data.createdAt.toDate().toISOString();
+                }
+                return { id: doc.id, ...data };
+            });
+
+            console.log(`[CLEANROOM-READ] SUCCESS: Found ${reviews.length} reviews. Stats count: ${stats.totalFeedback}.`);
+            res.json({ stats, reviews });
+
+        } catch (error) {
+            console.error(`[CLEANROOM-READ] ERROR: ${error.message}`);
+            // CRITICAL: Detect indexing failure
+            if (error.message.includes('FAILED_PRECONDITION')) {
+                console.error("[CLEANROOM-READ] CRITICAL INDEX FAILURE: Composite index (userId ASC, createdAt DESC) is missing or building. Check Firebase Console.");
+            }
+            res.status(500).json({ error: "Failed to load data.", details: error.message });
         }
     });
 

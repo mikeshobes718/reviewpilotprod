@@ -951,6 +951,97 @@
         }catch(e){ console.error('dist chart error', e); }
       })();
     </script>
+
+    <!-- CLEAN ROOM: Dashboard Pipeline Data Rendering -->
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("[CLEANROOM-RENDER] Fetching pipeline data...");
+
+        // Fetch data from the Clean Room API endpoint
+        fetch('/api/dashboard/pipeline-data')
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(`API Error: ${response.statusText}. Details: ${errData.details || 'N/A'}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("[CLEANROOM-RENDER] Data received:", data);
+                renderInsights(data.stats);
+                renderCustomerFeedback(data.reviews);
+            })
+            .catch(error => {
+                console.error("[CLEANROOM-RENDER] Fetch error:", error);
+            });
+
+        function renderInsights(stats) {
+            if (!stats) return;
+            
+            // Update the existing KPI elements
+            const totalFeedback = document.querySelector('.kpi:nth-child(1) .value');
+            const averageRating = document.querySelector('.kpi:nth-child(2) .value');
+            const fiveStarConversions = document.querySelector('.kpi:nth-child(3) .value');
+            
+            if (totalFeedback) totalFeedback.textContent = stats.totalFeedback || 0;
+            if (averageRating) averageRating.textContent = stats.averageRating || '0.00';
+            if (fiveStarConversions) fiveStarConversions.textContent = stats.fiveStarConversions || 0;
+            
+            console.log("[CLEANROOM-RENDER] Insights updated:", stats);
+        }
+
+        function renderCustomerFeedback(reviews) {
+            const container = document.querySelector('.table-wrap tbody');
+            if (!container) return;
+            
+            if (!reviews || reviews.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="2" style="text-align:center; padding:32px 16px;">
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:14px; color: var(--muted)">
+                                <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <rect x="7" y="18" width="74" height="50" rx="8" stroke="#E5E7EB" stroke-width="2"/>
+                                    <rect x="16" y="28" width="56" height="6" rx="3" fill="#E5E7EB"/>
+                                    <rect x="16" y="40" width="42" height="6" rx="3" fill="#E5E7EB"/>
+                                    <circle cx="70" cy="43" r="3" fill="#E5E7EB"/>
+                                </svg>
+                                <div>Your customer feedback will appear here.</div>
+                                <button id="btnFirstRequest" type="button" class="btn-primary">Send Your First Request</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Render the list/table if reviews exist
+            let html = '';
+            reviews.forEach(review => {
+                const date = new Date(review.createdAt).toLocaleDateString();
+                const comment = review.comment ? review.comment.substring(0, 150) : 'N/A';
+                html += `
+                    <tr>
+                        <td><span class="rating-star">${review.rating} ★</span></td>
+                        <td>${comment}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            });
+            
+            // Update table headers to include comment column
+            const thead = container.parentElement.querySelector('thead tr');
+            if (thead && thead.children.length === 2) {
+                const commentHeader = document.createElement('th');
+                commentHeader.textContent = 'Comment';
+                thead.appendChild(commentHeader);
+            }
+            
+            container.innerHTML = html;
+            console.log(`[CLEANROOM-RENDER] Customer feedback updated: ${reviews.length} reviews`);
+        }
+    });
+    </script>
 </body>
 </html>
 
