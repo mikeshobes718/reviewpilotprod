@@ -1945,7 +1945,12 @@
                 try { 
                     responseData = await r.clone().json(); 
                     console.log('[LOGIN] API response data:', responseData);
-                    if (responseData && responseData.userId) validUserId = responseData.userId; 
+                    // Check for userId in various possible fields
+                if (responseData) {
+                    validUserId = responseData.userId || responseData.user_id || responseData.id || responseData.sub || responseData.uid;
+                    console.log('[LOGIN] Looking for user ID in response:', responseData);
+                    console.log('[LOGIN] Found user ID:', validUserId);
+                } 
                 } catch(e) {
                     console.log('[LOGIN] Failed to parse API response:', e.message);
                 }
@@ -1970,8 +1975,36 @@
                     });
                 }
                 
-                // If no valid userId, don't create session - redirect to login
-                console.log('[LOGIN] No valid user ID, redirecting to login with error');
+                // Fallback: if API says OK but no userId, try to find user by email
+                if (responseData && responseData.ok === true) {
+                    console.log('[LOGIN] API returned OK but no userId, trying to find user by email');
+                    try {
+                        const userQuery = await db.collection('businesses').where('email', '==', email.toLowerCase()).limit(1).get();
+                        if (!userQuery.empty) {
+                            const userDoc = userQuery.docs[0];
+                            const fallbackUserId = userDoc.id;
+                            console.log('[LOGIN] Found user by email, using fallback UID:', fallbackUserId);
+                            
+                            req.session.user = { uid: fallbackUserId, email: email.toLowerCase(), displayName: '' };
+                            return req.session.save((err) => { 
+                                if (err) {
+                                    console.warn('[LOGIN] Fallback session save error:', err); 
+                                    return res.redirect('/login?error=session_error');
+                                }
+                                console.log('[LOGIN] Fallback session saved successfully, redirecting to dashboard');
+                                res.setHeader('Cache-Control','no-store'); 
+                                return res.redirect('/dashboard'); 
+                            });
+                        } else {
+                            console.log('[LOGIN] No user found in database for email:', email);
+                        }
+                    } catch (dbError) {
+                        console.log('[LOGIN] Database error during fallback lookup:', dbError.message);
+                    }
+                }
+                
+                // If no valid userId and fallback failed, don't create session - redirect to login
+                console.log('[LOGIN] No valid user ID and fallback failed, redirecting to login with error');
                 res.setHeader('Cache-Control','no-store');
                 return res.redirect('/login?error=invalid_auth');
             }
