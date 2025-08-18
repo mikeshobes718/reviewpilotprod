@@ -1619,7 +1619,25 @@
             }
             
             // Get fresh user data from request (don't rely on cached session)
-            const user = req.session.user || null;
+            // Only consider user logged in if they have a valid session with UID
+            let user = null;
+            if (req.session && req.session.user && req.session.user.uid) {
+                // Additional safety check: verify the user document exists
+                try {
+                    const userDoc = await db.collection('businesses').doc(req.session.user.uid).get();
+                    if (userDoc.exists) {
+                        user = req.session.user;
+                    } else {
+                        console.log(`[HOME] Invalid session: user document not found for UID: ${req.session.user.uid}`);
+                        // Clear invalid session
+                        req.session.user = null;
+                    }
+                } catch (error) {
+                    console.log(`[HOME] Error verifying user session: ${error.message}`);
+                    // Clear invalid session
+                    req.session.user = null;
+                }
+            }
             
             return res.render('index', {
                 csrfToken: req.csrfToken(),
@@ -1653,6 +1671,16 @@
         res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • Reviews & Marketing', user: req.session.user || null, subscriptionStatus, isActive, validTrial, trialEndsAt });
     });
     app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • Reviews & Marketing', user: req.session.user || null }));
+    
+    // Logout route to clear invalid sessions
+    app.get('/logout', (req, res) => {
+        req.session.destroy((err) => {
+            if (err) {
+                console.log('[LOGOUT] Error destroying session:', err);
+            }
+        });
+        res.redirect('/');
+    });
 
     // Phase 4.2: BFF auth POST routes → API Gateway (custom auth backend)
     const AUTH_API_BASE = process.env.API_GATEWAY_BASE_URL || process.env.AUTH_API_BASE || '';
