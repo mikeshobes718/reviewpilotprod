@@ -11,10 +11,8 @@
     <a href="/pricing" class="btn">Pricing</a>
     <a href="/#how-it-works" class="btn">How It Works</a>
     <% if (typeof user !== 'undefined' && user) { %>
-      <!-- Show dashboard button if user has access OR if we're on dashboard page (fallback) -->
-      <% if ((typeof userHasAccess !== 'undefined' && userHasAccess) || (typeof currentPage !== 'undefined' && currentPage === 'dashboard')) { %>
-        <a href="/dashboard" class="btn">Dashboard</a>
-      <% } %>
+      <!-- Always show dashboard button when user is logged in -->
+      <a href="/dashboard" class="btn">Dashboard</a>
       <span class="btn" style="cursor:default;opacity:.85;">Signed in: <%= user.email %></span>
       <a href="/logout" class="btn">Log out</a>
     <% } else { %>
@@ -40,10 +38,8 @@
     </div>
     <div class="drawer-footer" style="margin-top:auto;padding:16px;border-top:1px solid var(--border);display:grid;gap:10px">
       <% if (typeof user !== 'undefined' && user) { %>
-        <!-- Show dashboard button if user has access OR if we're on dashboard page (fallback) -->
-        <% if ((typeof userHasAccess !== 'undefined' && userHasAccess) || (typeof currentPage !== 'undefined' && currentPage === 'dashboard')) { %>
-          <a href="/dashboard" class="btn" style="justify-content:center">Dashboard</a>
-        <% } %>
+        <!-- Always show dashboard button when user is logged in -->
+        <a href="/dashboard" class="btn" style="justify-content:center">Dashboard</a>
         <span class="btn" style="cursor:default;opacity:.85;justify-content:center;border:none;background:transparent;color:var(--text);font-weight:600;font-size:16px;">Signed in: <%= user.email %></span>
         <a href="/logout" class="btn" style="justify-content:center">Log out</a>
       <% } else { %>
