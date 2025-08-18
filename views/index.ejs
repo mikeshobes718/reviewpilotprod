@@ -8,38 +8,10 @@
   <style> * { box-sizing: border-box; } </style>
   <script>document.documentElement.classList.remove('no-js');</script>
   
-  <!-- AGGRESSIVE CLIENT-SIDE SESSION CLEARING -->
+  <!-- TARGETED CLIENT-SIDE DEBUGGING -->
   <script>
     (function() {
-      console.log('[CLIENT-DEBUG] Starting aggressive session clearing...');
-      
-      // Clear any localStorage that might contain user data
-      try {
-        localStorage.clear();
-        console.log('[CLIENT-DEBUG] localStorage cleared');
-      } catch(e) {
-        console.log('[CLIENT-DEBUG] localStorage clear failed:', e);
-      }
-      
-      // Clear any sessionStorage
-      try {
-        sessionStorage.clear();
-        console.log('[CLIENT-DEBUG] sessionStorage cleared');
-      } catch(e) {
-        console.log('[CLIENT-DEBUG] sessionStorage clear failed:', e);
-      }
-      
-      // Clear any cookies we can access
-      try {
-        document.cookie.split(";").forEach(function(c) { 
-          var eqPos = c.indexOf("=");
-          var name = eqPos > -1 ? c.substr(0, eqPos) : c;
-          document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-        });
-        console.log('[CLIENT-DEBUG] Cookies cleared');
-      } catch(e) {
-        console.log('[CLIENT-DEBUG] Cookie clear failed:', e);
-      }
+      console.log('[CLIENT-DEBUG] Starting targeted debugging...');
       
       // Check what's actually in the DOM
       console.log('[CLIENT-DEBUG] Checking DOM state...');
@@ -62,7 +34,7 @@
         console.log('[CLIENT-DEBUG] CTA Signup button:', signupBtn2);
       }
       
-      console.log('[CLIENT-DEBUG] Session clearing complete');
+      console.log('[CLIENT-DEBUG] DOM debugging complete');
     })();
   </script>
 </head>
