@@ -233,7 +233,7 @@
                           <circle cx="70" cy="43" r="3" fill="#E5E7EB"/>
                         </svg>
                         <div>Your customer feedback will appear here.</div>
-                        <button id="btnFirstRequestStatic" type="button" class="btn-primary">Send Your First Request</button>
+                        <button id="btnFirstRequestStatic" type="button" class="btn-primary" onclick="scrollToReviewKit()">Send Your First Request</button>
                       </div>
                     </td>
                   </tr>
@@ -1666,6 +1666,34 @@
             window.location.href = '/auth/pos/square/connect';
           });
         }
+        // Simple function that will actually work
+        window.scrollToReviewKit = function() {
+          console.log('[SCROLL-TO-REVIEW] Function called!');
+          alert('Button clicked! Scrolling to Review Collection Kit...');
+          
+          var reviewKitCard = document.getElementById('reviewKitCard');
+          console.log('[SCROLL-TO-REVIEW] Review Kit card element:', reviewKitCard);
+          
+          if (!reviewKitCard) {
+            console.log('[SCROLL-TO-REVIEW] Review Kit card not found!');
+            alert('Review Collection Kit section not found!');
+            return;
+          }
+          
+          console.log('[SCROLL-TO-REVIEW] Scrolling to Review Collection Kit...');
+          reviewKitCard.scrollIntoView({ behavior:'smooth', block:'center' });
+          
+          // After a short delay, apply highlight animation
+          setTimeout(function(){
+            console.log('[SCROLL-TO-REVIEW] Adding highlight class');
+            reviewKitCard.classList.add('is-highlighted');
+            setTimeout(function(){ 
+              console.log('[SCROLL-TO-REVIEW] Removing highlight class');
+              reviewKitCard.classList.remove('is-highlighted'); 
+            }, 2500);
+          }, 450);
+        };
+
         // Handle both first request buttons (now with unique IDs)
         // Wrap in DOMContentLoaded to ensure buttons are rendered first
         document.addEventListener('DOMContentLoaded', function() {
