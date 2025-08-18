@@ -2334,6 +2334,46 @@
         }
     });
 
+    // Test authentication API connectivity
+    app.get('/test-auth-api', async (req, res) => {
+        try {
+            const authUrl = getAuthApiBase() + '/login';
+            console.log('[TEST-AUTH] Testing connectivity to:', authUrl);
+            
+            const testResponse = await fetch(authUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: 'test@test.com', password: 'test' })
+            });
+            
+            console.log('[TEST-AUTH] Response status:', testResponse.status);
+            console.log('[TEST-AUTH] Response headers:', Object.fromEntries(testResponse.headers.entries()));
+            
+            let responseData = null;
+            try {
+                responseData = await testResponse.text();
+                console.log('[TEST-AUTH] Response body:', responseData);
+            } catch(e) {
+                console.log('[TEST-AUTH] Failed to read response:', e.message);
+            }
+            
+            res.json({
+                authUrl: authUrl,
+                status: testResponse.status,
+                headers: Object.fromEntries(testResponse.headers.entries()),
+                body: responseData,
+                timestamp: new Date().toISOString()
+            });
+        } catch (error) {
+            console.error('[TEST-AUTH] Error testing API:', error);
+            res.status(500).json({
+                error: error.message,
+                authUrl: getAuthApiBase() + '/login',
+                timestamp: new Date().toISOString()
+            });
+        }
+    });
+
     // Simple admin dashboard (owner-only) to view customers and issue refunds
     const ADMIN_EMAIL = process.env.ADMIN_EMAIL || '';
     app.get('/admin', async (req, res) => {

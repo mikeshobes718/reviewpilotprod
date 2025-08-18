@@ -1702,10 +1702,12 @@
           console.log('[FIRST-REQUEST] Button found, adding click handler');
           firstReq.addEventListener('click', function(){
             console.log('[FIRST-REQUEST] Button clicked!');
+            alert('Button clicked! This will scroll to settings.');
             var settingsCard = document.getElementById('settingsCard');
             console.log('[FIRST-REQUEST] Settings card element:', settingsCard);
             if (!settingsCard) {
               console.log('[FIRST-REQUEST] Settings card not found!');
+              alert('Settings card not found!');
               return;
             }
             console.log('[FIRST-REQUEST] Scrolling to settings card...');
@@ -1722,6 +1724,7 @@
           });
         } else {
           console.log('[FIRST-REQUEST] Button not found!');
+          alert('First request button not found!');
         }
 
         // Disconnect Square
