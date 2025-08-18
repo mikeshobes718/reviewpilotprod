@@ -1697,34 +1697,39 @@
             window.location.href = '/auth/pos/square/connect';
           });
         }
-        var firstReq = document.getElementById('btnFirstRequest');
-        if (firstReq){
-          console.log('[FIRST-REQUEST] Button found, adding click handler');
-          firstReq.addEventListener('click', function(){
-            console.log('[FIRST-REQUEST] Button clicked!');
-            alert('Button clicked! This will scroll to settings.');
-            var settingsCard = document.getElementById('settingsCard');
-            console.log('[FIRST-REQUEST] Settings card element:', settingsCard);
-            if (!settingsCard) {
-              console.log('[FIRST-REQUEST] Settings card not found!');
-              alert('Settings card not found!');
-              return;
-            }
-            console.log('[FIRST-REQUEST] Scrolling to settings card...');
-            settingsCard.scrollIntoView({ behavior:'smooth', block:'center' });
-            // After a short delay, apply highlight animation
-            setTimeout(function(){
-              console.log('[FIRST-REQUEST] Adding highlight class');
-              settingsCard.classList.add('is-highlighted');
-              setTimeout(function(){ 
-                console.log('[FIRST-REQUEST] Removing highlight class');
-                settingsCard.classList.remove('is-highlighted'); 
-              }, 2500);
-            }, 450);
+        // Handle both first request buttons (there are two with the same ID, which is invalid HTML)
+        var firstReqButtons = document.querySelectorAll('#btnFirstRequest');
+        console.log('[FIRST-REQUEST] Found', firstReqButtons.length, 'buttons with ID btnFirstRequest');
+        
+        if (firstReqButtons.length > 0) {
+          firstReqButtons.forEach(function(button, index) {
+            console.log('[FIRST-REQUEST] Adding click handler to button', index + 1);
+            button.addEventListener('click', function(){
+              console.log('[FIRST-REQUEST] Button', index + 1, 'clicked!');
+              alert('Button clicked! This will scroll to settings.');
+              var settingsCard = document.getElementById('settingsCard');
+              console.log('[FIRST-REQUEST] Settings card element:', settingsCard);
+              if (!settingsCard) {
+                console.log('[FIRST-REQUEST] Settings card not found!');
+                alert('Settings card not found!');
+                return;
+              }
+              console.log('[FIRST-REQUEST] Scrolling to settings card...');
+              settingsCard.scrollIntoView({ behavior:'smooth', block:'center' });
+              // After a short delay, apply highlight animation
+              setTimeout(function(){
+                console.log('[FIRST-REQUEST] Adding highlight class');
+                settingsCard.classList.add('is-highlighted');
+                setTimeout(function(){ 
+                  console.log('[FIRST-REQUEST] Removing highlight class');
+                  settingsCard.classList.remove('is-highlighted'); 
+                }, 2500);
+              }, 450);
+            });
           });
         } else {
-          console.log('[FIRST-REQUEST] Button not found!');
-          alert('First request button not found!');
+          console.log('[FIRST-REQUEST] No buttons found!');
+          alert('First request buttons not found!');
         }
 
         // Disconnect Square
