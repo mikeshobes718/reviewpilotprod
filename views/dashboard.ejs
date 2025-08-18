@@ -430,8 +430,8 @@
                   <p style="margin: 8px 0;"><strong>Auto-send:</strong> <span id="currentAutoSend">Loading...</span></p>
                   <p style="margin: 8px 0;"><strong>Delay:</strong> <span id="currentDelay">Loading...</span></p>
                   <p style="margin: 8px 0;"><strong>Channel:</strong> <span id="currentChannel">Loading...</span></p>
-                </div>
-              </div>
+            </div>
+          </div>
               
               <!-- Simple Form -->
               <form id="automationForm" style="margin-bottom: 20px;">
@@ -500,11 +500,7 @@
                   console.log('[AUTOMATION-NEW] Page loaded, loading settings...');
                   
                   try {
-                    const response = await fetch('/api/automation/get-settings', {
-                      headers: { 
-                        'X-CSRF-Token': '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
-                      }
-                    });
+                    const response = await fetch('/api/automation/get-settings');
                     if (response.ok) {
                       const settings = await response.json();
                       console.log('[AUTOMATION-NEW] Settings loaded:', settings);
@@ -562,8 +558,7 @@
                       const response = await fetch('/api/automation/save-settings', {
                         method: 'POST',
                         headers: { 
-                          'Content-Type': 'application/json',
-                          'X-CSRF-Token': '<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
+                          'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(settings)
                       });
