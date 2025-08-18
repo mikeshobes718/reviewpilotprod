@@ -340,17 +340,24 @@
         function getUserIdFromRequest(req) {
             try {
                 const raw = req.cookies && req.cookies.session;
-                if (raw && raw !== 'INVALIDATED') {
+                if (raw && raw !== 'INVALIDATED' && raw !== 'expired') {
                     const jwt = require('jsonwebtoken');
                     const d = jwt.decode(raw);
-                    if (d && d.sub) {
-                        // Check if this JWT was issued before the logout invalidation
-                        if (d.iat && sessionInvalidationTime > 0 && d.iat * 1000 < sessionInvalidationTime) {
-                            console.log(`[AUTH] Rejected JWT issued before logout: iat=${d.iat * 1000}, invalidation=${sessionInvalidationTime}`);
-                            return null;
-                        }
-                        return d.sub;
+                    
+                    // Reject ANY JWT token without proper expiration field
+                    if (!d || !d.sub || !d.exp || d.exp * 1000 <= Date.now()) {
+                        console.log(`[AUTH] Rejecting invalid JWT in getUserIdFromRequest: sub=${d?.sub}, exp=${d?.exp}`);
+                        return null;
                     }
+                    
+                    // Check if this JWT was issued before the logout invalidation
+                    if (d.iat && sessionInvalidationTime > 0 && d.iat * 1000 < sessionInvalidationTime) {
+                        console.log(`[AUTH] Rejected JWT issued before logout: iat=${d.iat * 1000}, invalidation=${sessionInvalidationTime}`);
+                        return null;
+                    }
+                    
+                    console.log(`[AUTH] Valid JWT found in getUserIdFromRequest: sub=${d.sub}, exp=${d.exp}`);
+                    return d.sub;
                 }
             } catch(_) {}
             // Fallback to session if present, but do not require it
