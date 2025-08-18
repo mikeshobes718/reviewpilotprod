@@ -423,287 +423,246 @@
             <div class="card base-card">
               <h2>Automated Sending</h2>
               
-              <!-- SIMPLE AUTOMATION FORM -->
-              <form id="simpleAutomationForm" method="POST" action="/save-automation">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-                
-                <!-- Auto-send checkbox -->
-                <div style="margin-bottom: 16px;">
-                  <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                    <input type="checkbox" name="autoSend" value="true" <%= (squareSettings && squareSettings.autoSend) ? 'checked' : '' %> style="width: 18px; height: 18px;" />
-                    <span style="font-weight: 500;">Enable auto-send after payments</span>
-                  </label>
+              <!-- REBUILT AUTOMATION FORM - SIMPLE AND RELIABLE -->
+              <div class="automation-section">
+                <!-- Current Settings Display -->
+                <div class="current-settings" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                  <h4 style="margin: 0 0 10px 0; color: #495057;">Current Settings:</h4>
+                  <div id="currentSettingsDisplay">
+                    <p style="margin: 5px 0;"><strong>Auto-send:</strong> <span id="currentAutoSend">Loading...</span></p>
+                    <p style="margin: 5px 0;"><strong>Delay:</strong> <span id="currentDelay">Loading...</span></p>
+                    <p style="margin: 5px 0;"><strong>Channel:</strong> <span id="currentChannel">Loading...</span></p>
+                  </div>
                 </div>
                 
-                <!-- Settings row -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                  <!-- Delay input -->
-                  <div>
-                    <label for="delayMinutes" style="display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary);">
-                      Delay (minutes)
+                <!-- Simple Form -->
+                <form id="automationForm" style="margin-bottom: 20px;">
+                  <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                      <input type="checkbox" id="autoSendCheckbox" style="width: 18px; height: 18px;">
+                      <span>Enable auto-send after payments</span>
                     </label>
-                    <input 
-                      type="number" 
-                      name="delayMinutes"
-                      id="delayMinutes" 
-                      min="0" 
-                      max="10080" 
-                      value="<%= (squareSettings && squareSettings.delayMinutes != null) ? squareSettings.delayMinutes : 0 %>"
-                      style="
-                        width: 100%;
-                        padding: 10px 12px;
-                        border: 1px solid var(--border);
-                        border-radius: 8px;
-                        font-size: 14px;
-                        background: white;
-                      "
-                    />
                   </div>
                   
-                  <!-- Channel selection -->
-                  <div>
-                    <label for="channel" style="display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-secondary);">
-                      Preferred channel
-                    </label>
-                    <select 
-                      name="channel"
-                      id="channel" 
-                      style="
-                        width: 100%;
-                        padding: 10px 12px;
-                        border: 1px solid var(--border);
-                        border-radius: 8px;
-                        font-size: 14px;
-                        background: white;
-                        cursor: pointer;
-                      "
-                    >
-                      <option value="email" <%= (squareSettings && squareSettings.channel === 'email') ? 'selected' : '' %>>Email</option>
-                      <option value="sms" <%= (squareSettings && squareSettings.channel === 'sms') ? 'selected' : '' %>>SMS</option>
-                    </select>
+                  <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                    <div class="form-group">
+                      <label for="delayInput">Delay (minutes):</label>
+                      <input type="number" id="delayInput" min="0" max="10080" value="0" 
+                             style="width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="channelSelect">Preferred channel:</label>
+                      <select id="channelSelect" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                      </select>
+                    </div>
                   </div>
-                </div>
-                
-                <!-- Save button -->
-                <div style="margin-bottom: 20px;">
-                  <button 
-                    type="submit" 
-                    style="
-                      background: var(--accent);
-                      color: white;
-                      border: none;
-                      padding: 12px 24px;
-                      border-radius: 8px;
-                      font-weight: 600;
-                      cursor: pointer;
-                      font-size: 14px;
-                      transition: background-color 0.2s;
-                    "
-                    onmouseover="this.style.background='var(--accent-hover)'"
-                    onmouseout="this.style.background='var(--accent)'"
-                    onclick="console.log('[BUTTON] Save button clicked!')"
-                  >
-                    Save Automation
+                  
+                  <button type="button" id="saveButton" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                    Save Settings
                   </button>
-                </div>
-              </form>
-              
-              <!-- Sync tools section -->
-              <div style="border-top: 1px solid var(--border); margin: 20px 0 0; padding-top: 20px;">
-                <div style="font-weight: 600; color: var(--muted); margin-bottom: 12px; font-size: 14px;">Sync tools</div>
+                  
+                  <div id="saveStatus" style="margin-top: 10px; font-weight: bold;"></div>
+                </form>
                 
-                <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-                  <!-- Backfill -->
-                  <div style="display: flex; gap: 8px; align-items: center;">
-                    <input 
-                      type="number" 
-                      id="bfDays" 
-                      min="1" 
-                      max="90" 
-                      value="30" 
-                      style="
-                        width: 80px;
-                        padding: 8px 10px;
-                        border: 1px solid var(--border);
-                        border-radius: 6px;
-                        font-size: 14px;
-                        background: white;
-                      "
-                    />
-                    <button 
-                      id="btnBackfill" 
-                      type="button"
-                      style="
-                        background: var(--bg-secondary);
-                        color: var(--text);
-                        border: 1px solid var(--border);
-                        padding: 8px 16px;
-                        border-radius: 6px;
-                        font-size: 14px;
-                        cursor: pointer;
-                        transition: all 0.2s;
-                      "
-                      onmouseover="this.style.background='var(--border)'"
-                      onmouseout="this.style.background='var(--bg-secondary)'"
-                    >
+                <!-- Sync Tools -->
+                <div class="sync-tools">
+                  <h4 style="margin: 0 0 15px 0; color: #495057;">Sync Tools</h4>
+                  <div style="display: flex; gap: 15px; align-items: center;">
+                    <label>Days to backfill:</label>
+                    <input type="number" id="backfillDays" value="30" min="1" max="90" 
+                           style="width: 80px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button type="button" id="backfillButton" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
                       Run Backfill
                     </button>
+                    <button type="button" id="dailySyncButton" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+                      Run Daily Sync
+                    </button>
                   </div>
-                  
-                  <!-- Daily Sync -->
-                  <button 
-                    id="btnSyncDaily" 
-                    type="button"
-                    style="
-                      background: var(--bg-secondary);
-                      color: var(--text);
-                      border: 1px solid var(--border);
-                      padding: 8px 16px;
-                      border-radius: 6px;
-                      font-size: 14px;
-                      cursor: pointer;
-                      transition: all 0.2s;
-                    "
-                    onmouseover="this.style.background='var(--border)'"
-                    onmouseout="this.style.background='var(--bg-secondary)'"
-                  >
-                    Run Daily Sync
-                  </button>
                 </div>
               </div>
               
-              <!-- SIMPLE AUTOMATION JAVASCRIPT -->
+              <!-- REBUILT AUTOMATION JAVASCRIPT - SIMPLE AND RELIABLE -->
               <script>
                 (function() {
-                  console.log('[AUTOMATION-SIMPLE] Initializing simple automation form...');
+                  console.log('[AUTOMATION-REBUILT] Starting fresh automation system...');
                   
-                  // Get elements
-                  const form = document.getElementById('simpleAutomationForm');
-                  const autoSendCheckbox = document.getElementById('autoSend');
-                  const delayInput = document.getElementById('delayMinutes');
-                  const channelSelect = document.getElementById('channel');
+                  // Get all elements
+                  const elements = {
+                    autoSendCheckbox: document.getElementById('autoSendCheckbox'),
+                    delayInput: document.getElementById('delayInput'),
+                    channelSelect: document.getElementById('channelSelect'),
+                    saveButton: document.getElementById('saveButton'),
+                    saveStatus: document.getElementById('saveStatus'),
+                    backfillDays: document.getElementById('backfillDays'),
+                    backfillButton: document.getElementById('backfillButton'),
+                    dailySyncButton: document.getElementById('dailySyncButton'),
+                    currentAutoSend: document.getElementById('currentAutoSend'),
+                    currentDelay: document.getElementById('currentDelay'),
+                    currentChannel: document.getElementById('currentChannel')
+                  };
                   
-                  if (!form || !autoSendCheckbox || !delayInput || !channelSelect) {
-                    console.error('[AUTOMATION-SIMPLE] Missing required elements');
+                  // Check if all elements exist
+                  const missingElements = Object.entries(elements).filter(([name, element]) => !element);
+                  if (missingElements.length > 0) {
+                    console.error('[AUTOMATION-REBUILT] Missing elements:', missingElements.map(([name]) => name));
                     return;
                   }
                   
-                  console.log('[AUTOMATION-SIMPLE] All elements found');
+                  console.log('[AUTOMATION-REBUILT] All elements found, initializing...');
                   
-                  // Form validation only (no preventDefault)
-                  form.addEventListener('submit', function(e) {
-                    console.log('[AUTOMATION-SIMPLE] Form submitted');
-                    
-                    // Get form values
-                    const autoSend = autoSendCheckbox.checked;
-                    const delayMinutes = parseInt(delayInput.value) || 0;
-                    const channel = channelSelect.value;
-                    
-                    console.log('[AUTOMATION-SIMPLE] Form values:', { autoSend, delayMinutes, channel });
-                    
-                    // Validate
-                    if (delayMinutes < 0 || delayMinutes > 10080) {
-                      e.preventDefault();
-                      alert('Please enter a valid delay (0-10080 minutes)');
-                      return false;
+                  // Load current settings from server
+                  async function loadCurrentSettings() {
+                    try {
+                      console.log('[AUTOMATION-REBUILT] Loading current settings...');
+                      const response = await fetch('/api/automation/get-settings');
+                      
+                      if (response.ok) {
+                        const settings = await response.json();
+                        console.log('[AUTOMATION-REBUILT] Loaded settings:', settings);
+                        
+                        // Update form fields
+                        elements.autoSendCheckbox.checked = settings.autoSend || false;
+                        elements.delayInput.value = settings.delayMinutes || 0;
+                        elements.channelSelect.value = settings.channel || 'email';
+                        
+                        // Update display
+                        elements.currentAutoSend.textContent = settings.autoSend ? 'Enabled' : 'Disabled';
+                        elements.currentDelay.textContent = settings.delayMinutes + ' minutes';
+                        elements.currentChannel.textContent = settings.channel || 'email';
+                      } else {
+                        console.log('[AUTOMATION-REBUILT] No settings found, using defaults');
+                        updateDisplayWithDefaults();
+                      }
+                    } catch (error) {
+                      console.error('[AUTOMATION-REBUILT] Error loading settings:', error);
+                      updateDisplayWithDefaults();
                     }
-                    
-                    // Let the form submit naturally
-                    console.log('[AUTOMATION-SIMPLE] Form validation passed, submitting...');
+                  }
+                  
+                  function updateDisplayWithDefaults() {
+                    elements.currentAutoSend.textContent = 'Disabled';
+                    elements.currentDelay.textContent = '0 minutes';
+                    elements.currentChannel.textContent = 'email';
+                  }
+                  
+                  // Save settings
+                  async function saveSettings() {
+                    try {
+                      elements.saveButton.disabled = true;
+                      elements.saveButton.textContent = 'Saving...';
+                      elements.saveStatus.textContent = '';
+                      
+                      const settings = {
+                        autoSend: elements.autoSendCheckbox.checked,
+                        delayMinutes: parseInt(elements.delayInput.value) || 0,
+                        channel: elements.channelSelect.value
+                      };
+                      
+                      console.log('[AUTOMATION-REBUILT] Saving settings:', settings);
+                      
+                      const response = await fetch('/api/automation/save-settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(settings)
+                      });
+                      
+                      if (response.ok) {
+                        const result = await response.json();
+                        console.log('[AUTOMATION-REBUILT] Save successful:', result);
+                        
+                        elements.saveStatus.textContent = '✅ Settings saved successfully!';
+                        elements.saveStatus.style.color = '#28a745';
+                        
+                        // Update display
+                        elements.currentAutoSend.textContent = settings.autoSend ? 'Enabled' : 'Disabled';
+                        elements.currentDelay.textContent = settings.delayMinutes + ' minutes';
+                        elements.currentChannel.textContent = settings.channel;
+                        
+                        // Clear status after 3 seconds
+                        setTimeout(() => {
+                          elements.saveStatus.textContent = '';
+                        }, 3000);
+                      } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                      }
+                    } catch (error) {
+                      console.error('[AUTOMATION-REBUILT] Save failed:', error);
+                      elements.saveStatus.textContent = '❌ Failed to save: ' + error.message;
+                      elements.saveStatus.style.color = '#dc3545';
+                    } finally {
+                      elements.saveButton.disabled = false;
+                      elements.saveButton.textContent = 'Save Settings';
+                    }
+                  }
+                  
+                  // Event listeners
+                  elements.saveButton.addEventListener('click', saveSettings);
+                  
+                  elements.backfillButton.addEventListener('click', async function() {
+                    try {
+                      const days = parseInt(elements.backfillDays.value) || 30;
+                      console.log('[AUTOMATION-REBUILT] Running backfill for', days, 'days');
+                      
+                      elements.backfillButton.disabled = true;
+                      elements.backfillButton.textContent = 'Running...';
+                      
+                      const response = await fetch('/integrations/square/backfill?days=' + days, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
+                      });
+                      
+                      if (response.ok) {
+                        const result = await response.json();
+                        alert(`✅ Backfill complete!\n\nScanned: ${result.scanned || 'unknown'}\nProcessed: ${result.processed || 'unknown'}`);
+                      } else {
+                        alert('❌ Backfill failed. Please try again.');
+                      }
+                    } catch (error) {
+                      console.error('[AUTOMATION-REBUILT] Backfill error:', error);
+                      alert('❌ Backfill failed: ' + error.message);
+                    } finally {
+                      elements.backfillButton.disabled = false;
+                      elements.backfillButton.textContent = 'Run Backfill';
+                    }
                   });
                   
-                  // Backfill functionality
-                  const backfillBtn = document.getElementById('btnBackfill');
-                  const bfDaysInput = document.getElementById('bfDays');
-                  
-                  if (backfillBtn && bfDaysInput) {
-                      try {
-                        backfillBtn.disabled = true;
-                        backfillBtn.textContent = 'Backfilling...';
-                        
-                        const days = Math.max(1, Math.min(90, parseInt(bfDaysInput.value) || 30));
-                        const response = await fetch(`/integrations/square/backfill?days=${days}`, {
-                          method: 'POST',
-                          headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                          credentials: 'same-origin'
-                        });
-                        
-                        const result = await response.json().catch(() => ({}));
-                        if (result && result.ok) {
-                          alert(`Backfill complete. Scanned ${result.scanned}, processed ${result.processed}.`);
-                        } else {
-                          alert('Backfill finished.');
-                        }
-                      } catch (error) {
-                        console.error('Backfill error:', error);
-                        alert('Backfill failed. Please try again.');
-                      } finally {
-                        backfillBtn.disabled = false;
-                        backfillBtn.textContent = 'Run Backfill';
+                  elements.dailySyncButton.addEventListener('click', async function() {
+                    try {
+                      console.log('[AUTOMATION-REBUILT] Running daily sync');
+                      
+                      elements.dailySyncButton.disabled = true;
+                      elements.dailySyncButton.textContent = 'Running...';
+                      
+                      const response = await fetch('/integrations/square/sync-daily', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: '_csrf=<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>'
+                      });
+                      
+                      if (response.ok) {
+                        const result = await response.json();
+                        alert(`✅ Daily sync complete!\n\nProcessed: ${result.processed || 'unknown'}`);
+                      } else {
+                        alert('❌ Daily sync failed. Please try again.');
                       }
-                    });
-                  }
-                  
-                  // Daily sync functionality
-                  const syncBtn = document.getElementById('btnSyncDailyNew');
-                  
-                  if (syncBtn) {
-                    syncBtn.addEventListener('click', async function() {
-                      try {
-                        syncBtn.disabled = true;
-                        syncBtn.textContent = 'Syncing...';
-                        
-                        const response = await fetch('/integrations/square/sync-daily', {
-                          method: 'POST',
-                          headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                          credentials: 'same-origin'
-                        });
-                        
-                        const result = await response.json().catch(() => ({}));
-                        if (result && result.ok) {
-                          alert(`Daily sync complete. Scanned ${result.scanned}, processed ${result.processed}.`);
-                        } else {
-                          alert('Daily sync finished.');
-                        }
-                      } catch (error) {
-                        console.error('Daily sync error:', error);
-                        alert('Daily sync failed. Please try again.');
-                      } finally {
-                        syncBtn.disabled = false;
-                        syncBtn.textContent = 'Run Daily Sync';
-                      }
-                    });
-                  }
-                  
-                  // Helper function to show status messages
-                  function showStatus(message, type) {
-                    statusDiv.style.display = 'block';
-                    statusDiv.textContent = message;
-                    
-                    // Set colors based on type
-                    if (type === 'success') {
-                      statusDiv.style.background = '#D1FAE5';
-                      statusDiv.style.color = '#065F46';
-                      statusDiv.style.border = '1px solid #A7F3D0';
-                    } else if (type === 'error') {
-                      statusDiv.style.background = '#FEE2E2';
-                      statusDiv.style.color = '#991B1B';
-                      statusDiv.style.border = '1px solid #FCA5A5';
-                    } else if (type === 'loading') {
-                      statusDiv.style.background = '#DBEAFE';
-                      statusDiv.style.color = '#1E40AF';
-                      statusDiv.style.border = '1px solid #93C5FD';
+                    } catch (error) {
+                      console.error('[AUTOMATION-REBUILT] Daily sync error:', error);
+                      alert('❌ Daily sync failed: ' + error.message);
+                    } finally {
+                      elements.dailySyncButton.disabled = false;
+                      elements.dailySyncButton.textContent = 'Run Daily Sync';
                     }
-                    
-                    // Auto-hide success messages
-                    if (type === 'success') {
-                      setTimeout(() => {
-                        statusDiv.style.display = 'none';
-                      }, 5000);
-                    }
-                  }
+                  });
                   
-                  console.log('[AUTOMATION-NEW] Automation form initialized successfully!');
+                  // Initialize
+                  console.log('[AUTOMATION-REBUILT] Setting up event listeners...');
+                  loadCurrentSettings();
+                  
+                  console.log('[AUTOMATION-REBUILT] Automation system ready!');
                 })();
               </script>
             </div>

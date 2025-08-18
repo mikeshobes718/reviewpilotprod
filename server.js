@@ -775,6 +775,70 @@
             }
         });
 
+        // New simple automation API endpoints
+        app.get('/api/automation/get-settings', async (req, res) => {
+            try {
+                if (!req.session || !req.session.user) {
+                    return res.status(401).json({ error: 'Not authenticated' });
+                }
+                
+                const uid = req.session.user.uid;
+                const businessRef = db.collection('businesses').doc(uid);
+                const businessDoc = await businessRef.get();
+                
+                if (!businessDoc.exists) {
+                    return res.status(404).json({ error: 'Business not found' });
+                }
+                
+                const businessData = businessDoc.data();
+                const settings = businessData.squareSettings || {};
+                
+                res.json({
+                    autoSend: settings.autoSend || false,
+                    delayMinutes: settings.delayMinutes || 0,
+                    channel: settings.channel || 'email'
+                });
+            } catch (error) {
+                console.error('[GET-AUTOMATION-SETTINGS] Error:', error);
+                res.status(500).json({ error: 'Failed to load settings' });
+            }
+        });
+
+        app.post('/api/automation/save-settings', async (req, res) => {
+            try {
+                if (!req.session || !req.session.user) {
+                    return res.status(401).json({ error: 'Not authenticated' });
+                }
+                
+                const uid = req.session.user.uid;
+                const { autoSend, delayMinutes, channel } = req.body || {};
+                
+                // Validate input
+                if (typeof autoSend !== 'boolean') {
+                    return res.status(400).json({ error: 'Invalid autoSend value' });
+                }
+                
+                if (typeof delayMinutes !== 'number' || delayMinutes < 0 || delayMinutes > 10080) {
+                    return res.status(400).json({ error: 'Invalid delay value (0-10080 minutes)' });
+                }
+                
+                if (!['email', 'sms'].includes(channel)) {
+                    return res.status(400).json({ error: 'Invalid channel value' });
+                }
+                
+                const settings = { autoSend, delayMinutes, channel };
+                console.log('[SAVE-AUTOMATION-SETTINGS] Saving settings for UID:', uid, settings);
+                
+                const businessRef = db.collection('businesses').doc(uid);
+                await businessRef.set({ squareSettings: settings }, { merge: true });
+                
+                res.json({ success: true, message: 'Settings saved successfully' });
+            } catch (error) {
+                console.error('[SAVE-AUTOMATION-SETTINGS] Error:', error);
+                res.status(500).json({ error: 'Failed to save settings' });
+            }
+        });
+
         // Simple form-based automation save route
         app.post('/save-automation', async (req, res) => {
             try {
