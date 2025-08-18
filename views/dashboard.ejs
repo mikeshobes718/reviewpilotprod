@@ -1699,16 +1699,29 @@
         }
         var firstReq = document.getElementById('btnFirstRequest');
         if (firstReq){
+          console.log('[FIRST-REQUEST] Button found, adding click handler');
           firstReq.addEventListener('click', function(){
+            console.log('[FIRST-REQUEST] Button clicked!');
             var settingsCard = document.getElementById('settingsCard');
-            if (!settingsCard) return;
+            console.log('[FIRST-REQUEST] Settings card element:', settingsCard);
+            if (!settingsCard) {
+              console.log('[FIRST-REQUEST] Settings card not found!');
+              return;
+            }
+            console.log('[FIRST-REQUEST] Scrolling to settings card...');
             settingsCard.scrollIntoView({ behavior:'smooth', block:'center' });
             // After a short delay, apply highlight animation
             setTimeout(function(){
+              console.log('[FIRST-REQUEST] Adding highlight class');
               settingsCard.classList.add('is-highlighted');
-              setTimeout(function(){ settingsCard.classList.remove('is-highlighted'); }, 2500);
+              setTimeout(function(){ 
+                console.log('[FIRST-REQUEST] Removing highlight class');
+                settingsCard.classList.remove('is-highlighted'); 
+              }, 2500);
             }, 450);
           });
+        } else {
+          console.log('[FIRST-REQUEST] Button not found!');
         }
 
         // Disconnect Square
