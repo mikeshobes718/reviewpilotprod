@@ -706,11 +706,22 @@
             } catch (e) { console.error('save square settings', e); res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
         });
 
-        // New AJAX endpoint for automation settings (no CSRF, no redirects)
+        // New AJAX endpoint for automation settings (no CSRF required; relies on same-origin + JWT)
         app.post('/api/automation/save', async (req, res) => {
             try {
+                console.log('[AUTOMATION-SAVE] Request received:', {
+                    method: req.method,
+                    url: req.url,
+                    headers: req.headers,
+                    body: req.body,
+                    cookies: req.cookies,
+                    session: req.session
+                });
+                
                 // Get user ID from JWT token in cookie (same as getUserIdFromRequest)
                 const uid = getUserIdFromRequest(req);
+                console.log('[AUTOMATION-SAVE] getUserIdFromRequest result:', uid);
+                
                 if (!uid) {
                     console.log('[AUTOMATION-SAVE] No valid user ID found');
                     return res.status(401).json({ error: 'unauthorized' });
@@ -718,6 +729,7 @@
 
                 console.log(`[AUTOMATION-SAVE] Saving settings for UID: ${uid}`);
                 const { autoSend, delayMinutes, channel } = req.body || {};
+                console.log('[AUTOMATION-SAVE] Request body:', { autoSend, delayMinutes, channel });
                 
                 const settings = {
                     autoSend: !!autoSend,
@@ -725,9 +737,26 @@
                     channel: channel === 'sms' ? 'sms' : 'email'
                 };
                 
-                console.log(`[AUTOMATION-SAVE] Settings to save:`, settings);
+                console.log(`[AUTOMATION-SAVE] Processed settings:`, settings);
                 const { ref, id } = await resolveBusinessRef(req);
-                if (!ref) return res.status(400).json({ error: 'business_not_found' });
+                console.log('[AUTOMATION-SAVE] resolveBusinessRef result:', { ref: !!ref, id });
+                
+                // Debug: Check what's currently in the document before saving
+                if (ref) {
+                    try {
+                        const currentDoc = await ref.get();
+                        console.log(`[AUTOMATION-SAVE] Current document data:`, currentDoc.data());
+                        console.log(`[AUTOMATION-SAVE] Current squareSettings:`, currentDoc.data()?.squareSettings);
+                    } catch (e) {
+                        console.log(`[AUTOMATION-SAVE] Error reading current document:`, e.message);
+                    }
+                }
+                
+                if (!ref) {
+                    console.log('[AUTOMATION-SAVE] Business reference not found');
+                    return res.status(400).json({ error: 'business_not_found' });
+                }
+                
                 console.log(`[AUTOMATION-SAVE] Saving to business document: ${id}`);
                 await ref.set({ squareSettings: settings }, { merge: true });
                 console.log(`[AUTOMATION-SAVE] Settings saved successfully for UID: ${uid} to document: ${id}`);
@@ -736,6 +765,53 @@
             } catch (e) { 
                 console.error('[AUTOMATION-SAVE] Error saving settings:', e); 
                 res.status(500).json({ error: 'Failed to save settings' }); 
+            }
+        });
+
+        // Simple form-based automation save route
+        app.post('/save-automation', csrfProtection, async (req, res) => {
+            try {
+                console.log('[SAVE-AUTOMATION] Form submission received:', { body: req.body });
+                
+                if (!req.session || !req.session.user) {
+                    console.log('[SAVE-AUTOMATION] No session user, redirecting to login');
+                    return res.redirect('/login');
+                }
+                
+                const uid = req.session.user.uid;
+                console.log(`[SAVE-AUTOMATION] Saving automation for UID: ${uid}`);
+                
+                // Get form data
+                const autoSend = req.body.autoSend === 'true';
+                const delayMinutes = parseInt(req.body.delayMinutes) || 0;
+                const channel = req.body.channel || 'email';
+                
+                console.log('[SAVE-AUTOMATION] Form values:', { autoSend, delayMinutes, channel });
+                
+                // Validate
+                if (delayMinutes < 0 || delayMinutes > 10080) {
+                    console.log('[SAVE-AUTOMATION] Invalid delay value');
+                    return res.redirect('/dashboard?error=invalid_delay');
+                }
+                
+                // Save to database
+                const businessRef = db.collection('businesses').doc(uid);
+                await businessRef.set({
+                    squareSettings: {
+                        autoSend,
+                        delayMinutes,
+                        channel
+                    }
+                }, { merge: true });
+                
+                console.log(`[SAVE-AUTOMATION] Successfully saved automation settings for UID: ${uid}`);
+                
+                // Redirect back to dashboard with success message
+                res.redirect('/dashboard?success=automation_saved');
+                
+            } catch (error) {
+                console.error('[SAVE-AUTOMATION] Error:', error);
+                res.redirect('/dashboard?error=save_failed');
             }
         });
 
@@ -1648,79 +1724,26 @@
                 } catch(_) {}
             }
             if (r.ok) {
-                // Bridge session for current app until full migration: decode JWT 'session' cookie to set req.session.user
-                let bridgedUserId = null;
-                try { const data = await r.clone().json(); if (data && data.userId) bridgedUserId = data.userId; } catch(_) {}
-                try {
-                    const m = rawSetCookie && rawSetCookie.match(/session=([^;]+)/);
-                    if (!bridgedUserId && m && m[1]) {
-                        const jwt = require('jsonwebtoken');
-                        const decoded = jwt.decode(m[1]);
-                        const sub = decoded && decoded.sub ? decoded.sub : null;
-                        bridgedUserId = sub || bridgedUserId;
-                    }
-                    // If we still could not derive a user id from cookie (opaque session cookie), ask the Auth API
-                    if (!bridgedUserId) {
-                        try {
-                            const sessionPair = (rawSetCookie && rawSetCookie.match(/session=([^;]+)/)) ? `session=${rawSetCookie.match(/session=([^;]+)/)[1]}` : null;
-                            if (sessionPair) {
-                                const meResp = await fetch(getAuthApiBase() + '/me', {
-                                    method: 'GET',
-                                    headers: { 'Accept': 'application/json', 'Cookie': sessionPair }
-                                });
-                                if (meResp.ok) {
-                                    const meJson = await meResp.json().catch(()=>({}));
-                                    bridgedUserId = meJson && (meJson.userId || meJson.sub || meJson.id || meJson.uid) || null;
-                                }
-                            }
-                        } catch(_) { /* ignore */ }
-                    }
-                    if (bridgedUserId) {
-                        // Ensure a minimal business doc exists for this UID so dashboard can load
-                        try {
-                            const ref = db.collection('businesses').doc(bridgedUserId);
-                            const snap = await ref.get();
-                            
-                            // Fetch business name from DynamoDB if available
-                            let businessName = '';
-                            try {
-                                const { DynamoDBClient, GetItemCommand } = require('@aws-sdk/client-dynamodb');
-                                const ddb = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
-                                const ddbResponse = await ddb.send(new GetItemCommand({
-                                    TableName: process.env.USERS_TABLE || 'users',
-                                    Key: { UserId: { S: bridgedUserId } }
-                                }));
-                                if (ddbResponse.Item && ddbResponse.Item.BusinessName) {
-                                    businessName = ddbResponse.Item.BusinessName.S || '';
-                                }
-                            } catch (ddbError) {
-                                console.warn('Could not fetch business name from DynamoDB:', ddbError.message);
-                            }
-                            
-                            if (!snap.exists) {
-                                // Create new business document
-                                await ref.set({
-                                    businessName: businessName,
-                                    email: (email || '').toLowerCase(),
-                                    phone: phone || '',
-                                    googlePlaceId: null,
-                                    stripeCustomerId: null,
-                                    subscriptionStatus: 'none',
-                                    createdAt: new Date().toISOString(),
-                                });
-                            } else if (businessName && (!snap.data().businessName || snap.data().businessName === '')) {
-                                // Update existing document with business name if it's missing
-                                await ref.update({
-                                    businessName: businessName
-                                });
-                            }
-                        } catch (_) { /* non-fatal */ }
-                        req.session.user = { uid: bridgedUserId, email: (email || '').toLowerCase(), displayName: businessName };
-                        return req.session.save((err) => { if (err) console.warn('session save error (auth bridge):', err); res.setHeader('Cache-Control','no-store'); return res.redirect('/dashboard'); });
-                    }
-                } catch (_) { /* ignore bridge errors */ }
+                // SECURITY: Only set session if we have a valid response with userId
+                let validUserId = null;
+                try { 
+                    const data = await r.clone().json(); 
+                    if (data && data.userId) validUserId = data.userId; 
+                } catch(_) {}
+                
+                if (validUserId) {
+                    // Only create session for valid authenticated users
+                    req.session.user = { uid: validUserId, email: email.toLowerCase(), displayName: '' };
+                    return req.session.save((err) => { 
+                        if (err) console.warn('session save error:', err); 
+                        res.setHeader('Cache-Control','no-store'); 
+                        return res.redirect('/dashboard'); 
+                    });
+                }
+                
+                // If no valid userId, don't create session - redirect to login
                 res.setHeader('Cache-Control','no-store');
-            return res.redirect('/dashboard');
+                return res.redirect('/login?error=invalid_auth');
             }
             let msg = 'Invalid email or password.';
             try { const j = await r.json(); if (j && j.error) msg = String(j.error); } catch(_){ }
@@ -2111,6 +2134,11 @@
             };
             const onboardingDismissed = !!bizData.onboardingDismissed;
             const squareSettings = bizData.squareSettings || { autoSend: false, delayMinutes: 0, channel: 'email' };
+            
+            // Debug logging for automation settings
+            console.log(`[DASHBOARD AUTOMATION DEBUG] Document ID: ${businessDoc.id}`);
+            console.log(`[DASHBOARD AUTOMATION DEBUG] Raw bizData.squareSettings:`, bizData.squareSettings);
+            console.log(`[DASHBOARD AUTOMATION DEBUG] Final squareSettings:`, squareSettings);
 
             // Trial days left for UI
             let trialDaysLeft = null;
@@ -2145,7 +2173,8 @@
                 recentEvents,
                 trialDaysLeft,
                 selectedRange,
-                pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null
+                pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null,
+                pageSuccess: req.query && req.query.success ? req.query.success : null
             });
         } catch (error) {
             console.error("❌ Error fetching dashboard data (temporary fallback shown):", error);
@@ -2165,7 +2194,8 @@
                     hasGooglePlaceId: !!(knownPlaceId && String(knownPlaceId).trim().length > 0),
                     squareSettings: { autoSend: false, delayMinutes: 0, channel: 'email' },
                     recentEvents: [],
-                    pageError: null
+                    pageError: null,
+                    pageSuccess: null
                 });
             } catch (_) {
                 return res.redirect('/login');
@@ -2185,8 +2215,33 @@
                     showHelp: true
                 });
             }
-            const snap = await db.collection('businesses').limit(200).get();
-            const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            const snap = await db.collection('businesses').limit(300).get();
+            const items = await Promise.all(snap.docs.map(async d => {
+                const data = d.data() || {};
+                // Pull minimal billing info if available on the doc
+                let billing = null;
+                try {
+                    if (data.stripeCustomerId) {
+                        const subs = await stripe.subscriptions.list({ customer: data.stripeCustomerId, status: 'all', limit: 1 });
+                        if (subs.data && subs.data.length) {
+                            const sub = subs.data[0];
+                            const end = sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null;
+                            billing = { currentPeriodEnd: end, status: sub.status };
+                        }
+                    }
+                } catch(_) {}
+                return {
+                    id: d.id,
+                    businessName: data.businessName || '',
+                    email: (data.email || '').toLowerCase(),
+                    phone: data.phone || '',
+                    googlePlaceId: data.googlePlaceId || '',
+                    subscriptionStatus: data.subscriptionStatus || 'none',
+                    trialEndsAt: data.trialEndsAt || null,
+                    createdAt: data.createdAt || '',
+                    billing
+                };
+            }));
             res.render('admin', { items, user: req.session.user || null });
         } catch (e) {
             console.error('Admin error', e);

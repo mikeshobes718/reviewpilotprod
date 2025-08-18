@@ -8,16 +8,134 @@
 </head>
 <body>
   <%- include('partials/header') %>
-  <div class="container" style="max-width:1100px;margin:24px auto;">
-    <h1>Admin</h1>
-    <table class="table">
-      <thead><tr><th>Business ID</th><th>Name</th><th>Email</th></tr></thead>
-      <tbody>
-        <% items.forEach(function(item){ %>
-          <tr><td><%= item.id %></td><td><%= item.businessName || '' %></td><td><%= item.email || '' %></td></tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div class="container" style="max-width:1400px;margin:24px auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h1>Admin</h1>
+      <button id="exportCsv" class="btn btn-primary" style="background:var(--accent); color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">
+        📊 Export CSV
+      </button>
+    </div>
+    
+    <div style="overflow-x:auto; border:1px solid var(--border); border-radius:8px;">
+      <table class="table" style="min-width:1200px; margin:0;">
+        <thead style="background:var(--bg-secondary); position:sticky; top:0; z-index:10;">
+          <tr>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Business ID</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Name</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Email</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Phone</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Google Place ID</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Plan</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Renewal / Days Left</th>
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border);">Registered</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(function(item){ 
+               const plan = (item.subscriptionStatus || 'none');
+               // Capitalize first character of plan
+               const planDisplay = plan.charAt(0).toUpperCase() + plan.slice(1);
+               let renewalText = '';
+               let daysLeftText = '';
+               
+               if (item.billing && item.billing.currentPeriodEnd) {
+                 try {
+                   const renewalDate = new Date(item.billing.currentPeriodEnd);
+                   renewalText = renewalDate.toLocaleDateString();
+                   const now = new Date();
+                   const daysLeft = Math.ceil((renewalDate.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+                   if (daysLeft > 0) {
+                     daysLeftText = `(${daysLeft}d left)`;
+                   } else if (daysLeft === 0) {
+                     daysLeftText = '(expires today)';
+                   } else {
+                     daysLeftText = `(expired ${Math.abs(daysLeft)}d ago)`;
+                   }
+                 } catch (e) {
+                   renewalText = 'Invalid date';
+                   daysLeftText = '';
+                 }
+               } else if (plan === 'trial') {
+                 // Calculate trial days left from trialEndsAt
+                 if (item.trialEndsAt) {
+                   try {
+                     const trialEnd = new Date(item.trialEndsAt);
+                     const now = new Date();
+                     const daysLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (24 * 60 * 60 * 1000));
+                     if (daysLeft > 0) {
+                       renewalText = `Trial (${daysLeft}d left)`;
+                     } else if (daysLeft === 0) {
+                       renewalText = 'Trial (expires today)';
+                     } else {
+                       renewalText = `Trial (expired ${Math.abs(daysLeft)}d ago)`;
+                     }
+                   } catch (e) {
+                     renewalText = 'Trial (unknown)';
+                   }
+                 } else {
+                   renewalText = 'Trial (no end date)';
+                 }
+               } else if (plan === 'none') {
+                 renewalText = 'No plan';
+               } else if (plan === 'incomplete') {
+                 renewalText = 'Incomplete';
+               } else {
+                 renewalText = 'Unknown';
+               }
+               
+               const registered = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '';
+          %>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:12px; font-family:monospace; font-size:12px;"><%= item.id %></td>
+              <td style="padding:12px;"><%= item.businessName || '' %></td>
+              <td style="padding:12px;"><%= item.email || '' %></td>
+              <td style="padding:12px;"><%= item.phone || '' %></td>
+              <td style="padding:12px; max-width:240px; word-break:break-all; font-family:monospace; font-size:12px;"><%= item.googlePlaceId || '' %></td>
+              <td style="padding:12px;"><%= planDisplay %></td>
+              <td style="padding:12px;">
+                <%= renewalText %>
+              </td>
+              <td style="padding:12px;"><%= registered %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    
+    <script>
+      document.getElementById('exportCsv').addEventListener('click', function() {
+        // Get table data
+        const table = document.querySelector('table');
+        const rows = Array.from(table.querySelectorAll('tr'));
+        
+        // Convert to CSV
+        let csv = '';
+        rows.forEach((row, index) => {
+          const cells = Array.from(row.querySelectorAll('th, td'));
+          const rowData = cells.map(cell => {
+            let text = cell.textContent.trim();
+            // Handle line breaks and quotes in CSV
+            text = text.replace(/"/g, '""');
+            if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+              text = `"${text}"`;
+            }
+            return text;
+          });
+          csv += rowData.join(',') + '\n';
+        });
+        
+        // Download CSV file
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'admin-data.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
   </div>
   <%- include('partials/footer') %>
 </body>

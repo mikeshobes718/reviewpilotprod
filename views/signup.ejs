@@ -32,7 +32,7 @@
                 </div>
                 <div class="form-field">
                   <label for="phone">Phone Number</label>
-                  <input id="phone" class="input" type="tel" name="phone" placeholder="(555) 123-4567" required>
+                  <input id="phone" class="input" type="tel" name="phone" placeholder="(555) 123-4567" inputmode="numeric" autocomplete="tel" required>
                 </div>
                 <div class="form-field">
                   <label for="password">Password</label>
@@ -50,5 +50,30 @@
       </div>
     </div>
      <%- include('partials/footer') %>
+     <script>
+       // Dynamic US phone mask: (555) 123-4567
+       (function(){
+         var el = document.getElementById('phone');
+         if (!el) return;
+         function formatPhone(value){
+           var digits = (value || '').replace(/\D/g, '').slice(0, 10);
+           var p1 = digits.slice(0,3);
+           var p2 = digits.slice(3,6);
+           var p3 = digits.slice(6,10);
+           if (digits.length <= 3) return p1 ? '(' + p1 : '';
+           if (digits.length <= 6) return '(' + p1 + ') ' + p2;
+           return '(' + p1 + ') ' + p2 + '-' + p3;
+         }
+         function onInput(){
+           var start = el.selectionStart || 0;
+           var before = el.value;
+           el.value = formatPhone(before);
+           try { el.setSelectionRange(el.value.length, el.value.length); } catch(_) {}
+         }
+         ['input','change','blur','keyup','paste'].forEach(function(evt){ el.addEventListener(evt, onInput); });
+         // Initialize on load if prefilled by browser
+         onInput();
+       })();
+     </script>
 </body>
 </html>

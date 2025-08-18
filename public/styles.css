@@ -473,7 +473,7 @@ main > section, body > section{margin-bottom:48px}
 .dark-card{background:#fff}
 
 /* Auth 2-column photo + form layout */
-.auth-left.auth-photo{background:url('/images/hero-customer.jpg') center/cover no-repeat}
+.auth-left.auth-photo{background:url('/images/hero-customer_jpg.JPG') center/cover no-repeat}
 .auth-right{background:#FFFFFF}
 .auth-card .form-grid{display:grid;grid-template-columns:140px 1fr;gap:10px 12px;align-items:center}
 .auth-card .form-grid label{text-align:right;margin:0;font-weight:600;color:var(--muted)}
