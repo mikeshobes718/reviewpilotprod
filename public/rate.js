@@ -82,6 +82,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Submit to the standardized backend endpoint (Step 2)
         try {
+            console.log(`[CLEANROOM-GATING] Preparing to submit review...`);
+            console.log(`[CLEANROOM-GATING] Request data:`, {
+                targetBusinessId,
+                rating: currentRating,
+                comment
+            });
+            
             const response = await fetch('/api/reviews/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -89,7 +96,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ targetBusinessId, rating: currentRating, comment })
             });
 
+            console.log(`[CLEANROOM-GATING] Response received:`, {
+                status: response.status,
+                statusText: response.statusText,
+                ok: response.ok
+            });
+
             if (response.ok) {
+                const responseData = await response.json();
+                console.log(`[CLEANROOM-GATING] Response data:`, responseData);
                 console.log("[CLEANROOM-GATING] Submission success.");
                 // Post-submission action
                 if (currentRating === 5) {
@@ -102,10 +117,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     thankYouSection.classList.remove('hidden');
                 }
             } else {
-                throw new Error(`API responded with status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                console.error(`[CLEANROOM-GATING] API Error Response:`, errorData);
+                throw new Error(`API responded with status: ${response.status}. Details: ${errorData.error || errorData.details || 'Unknown error'}`);
             }
         } catch (error) {
             console.error("[CLEANROOM-GATING] Submission error:", error);
+            console.error("[CLEANROOM-GATING] Error details:", {
+                message: error.message,
+                name: error.name,
+                stack: error.stack
+            });
             alert("There was an error saving your feedback. Please try again.");
         } finally {
             isSubmitting = false;
@@ -137,6 +159,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // Action button event listener
     if (actionButton) {
         actionButton.addEventListener('click', handleSubmit);
+    }
+
+    // Test backend connection
+    const testBackendBtn = document.getElementById('test-backend');
+    const debugOutput = document.getElementById('debug-output');
+    
+    if (testBackendBtn && debugOutput) {
+        testBackendBtn.addEventListener('click', async () => {
+            debugOutput.textContent = 'Testing backend connection...';
+            
+            try {
+                // Test 1: Check if endpoint exists
+                const response = await fetch('/api/reviews/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        targetBusinessId: targetBusinessId, 
+                        rating: 3, 
+                        comment: 'Test review from debug button' 
+                    })
+                });
+                
+                const responseData = await response.json();
+                
+                debugOutput.innerHTML = `
+                    <strong>Backend Test Results:</strong><br>
+                    Status: ${response.status} ${response.statusText}<br>
+                    Response: ${JSON.stringify(responseData, null, 2)}<br>
+                    Business ID: ${targetBusinessId}<br>
+                    Place ID: ${googlePlaceId}
+                `;
+                
+                if (response.ok) {
+                    debugOutput.style.color = '#28a745';
+                } else {
+                    debugOutput.style.color = '#dc3545';
+                }
+                
+            } catch (error) {
+                debugOutput.innerHTML = `
+                    <strong>Backend Test Failed:</strong><br>
+                    Error: ${error.message}<br>
+                    Business ID: ${targetBusinessId}<br>
+                    Place ID: ${googlePlaceId}
+                `;
+                debugOutput.style.color = '#dc3545';
+            }
+        });
     }
 
     console.log('[CLEANROOM-GATING] Star rating system initialized');
