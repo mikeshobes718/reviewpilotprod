@@ -775,6 +775,12 @@
             }
         });
 
+        // Test endpoint to verify API is working
+        app.get('/api/automation/test', (req, res) => {
+            console.log('[TEST-AUTOMATION] Test endpoint hit');
+            res.json({ message: 'Automation API is working', timestamp: new Date().toISOString() });
+        });
+
         // New simple automation API endpoints
         app.get('/api/automation/get-settings', async (req, res) => {
             try {

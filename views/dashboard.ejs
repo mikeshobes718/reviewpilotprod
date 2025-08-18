@@ -517,6 +517,16 @@
                   async function loadCurrentSettings() {
                     try {
                       console.log('[AUTOMATION-REBUILT] Loading current settings...');
+                      console.log('[AUTOMATION-REBUILT] Making request to /api/automation/get-settings');
+                      
+                      // First test if the API is reachable
+                      try {
+                        const testResponse = await fetch('/api/automation/test');
+                        console.log('[AUTOMATION-REBUILT] Test endpoint response:', testResponse.status);
+                      } catch (testError) {
+                        console.error('[AUTOMATION-REBUILT] Test endpoint failed:', testError);
+                      }
+                      
                       const response = await fetch('/api/automation/get-settings');
                       
                       if (response.ok) {
