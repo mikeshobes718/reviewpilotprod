@@ -2562,7 +2562,7 @@
 
 
     // Clean Room Implementation: The Write Path (Review Submission Endpoint)
-    app.post('/api/reviews/submit', async (req, res) => {
+    app.post('/api/reviews/submit', feedbackLimiter, csrfProtection, async (req, res) => {
         // 'targetBusinessId' must be the canonical Auth UID passed from the frontend.
         const { rating, comment, targetBusinessId } = req.body;
 
@@ -2576,6 +2576,8 @@
         }
 
         try {
+            console.log(`[CLEANROOM-WRITE] Attempting to write review to Firestore...`);
+            
             const newReview = {
                 // CRITICAL: Attribution Key (must match owner's Auth UID)
                 userId: targetBusinessId,
@@ -2585,6 +2587,8 @@
                 createdAt: FieldValue.serverTimestamp(),
                 source: 'cleanroom-v1'
             };
+
+            console.log(`[CLEANROOM-WRITE] Review object prepared:`, JSON.stringify(newReview, null, 2));
 
             const docRef = await db.collection('reviews').add(newReview);
             console.log(`[CLEANROOM-WRITE] SUCCESS: Written doc ${docRef.id} for UID: ${targetBusinessId}`);
@@ -2729,9 +2733,14 @@
         res.setHeader('Cache-Control', 'no-store');
 
         try {
+            console.log(`[CLEANROOM-READ] Starting data fetch for UID: ${loggedInUserId}`);
+            
             // 1. Fetch Insights (Aggregated Stats)
             const businessDocRef = db.collection('businesses').doc(loggedInUserId);
+            console.log(`[CLEANROOM-READ] Fetching business doc from: businesses/${loggedInUserId}`);
+            
             const businessDoc = await businessDocRef.get();
+            console.log(`[CLEANROOM-READ] Business doc exists: ${businessDoc.exists}`);
 
             if (!businessDoc.exists) {
                 console.error(`[CLEANROOM-READ] ERROR: Business document not found for UID: ${loggedInUserId}`);
@@ -2742,15 +2751,22 @@
             const stats = businessDoc.data().stats || {
                  totalFeedback: 0, averageRating: 0.00, fiveStarConversions: 0, histogram: {}
             };
+            
+            console.log(`[CLEANROOM-READ] Stats from business doc:`, JSON.stringify(stats, null, 2));
 
             // 2. Fetch Customer Feedback (Recent Reviews)
             // This query REQUIRES the composite index (userId ASC, createdAt DESC).
+            console.log(`[CLEANROOM-READ] Querying reviews collection for userId: ${loggedInUserId}`);
+            
             const query = db.collection('reviews')
                 .where('userId', '==', loggedInUserId)
                 .orderBy('createdAt', 'desc')
                 .limit(25); // Fetching the most recent 25 reviews
 
+            console.log(`[CLEANROOM-READ] Query prepared, executing...`);
             const snapshot = await query.get();
+            console.log(`[CLEANROOM-READ] Query executed, found ${snapshot.docs.length} reviews`);
+            
             const reviews = snapshot.docs.map(doc => {
                 const data = doc.data();
                 // Normalize Firestore timestamp for frontend compatibility (ISO String)
