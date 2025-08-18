@@ -2437,7 +2437,8 @@
                 trialDaysLeft,
                 selectedRange,
                 pageError: req.query && req.query.e ? decodeURIComponent(req.query.e) : null,
-                pageSuccess: req.query && req.query.success ? req.query.success : null
+                pageSuccess: req.query && req.query.success ? req.query.success : null,
+                currentPage: 'dashboard'
             });
         } catch (error) {
             console.error("❌ Error fetching dashboard data (temporary fallback shown):", error);
@@ -2458,7 +2459,8 @@
                     squareSettings: { autoSend: false, delayMinutes: 0, channel: 'email' },
                     recentEvents: [],
                     pageError: null,
-                    pageSuccess: null
+                    pageSuccess: null,
+                    currentPage: 'dashboard'
                 });
             } catch (_) {
                 return res.redirect('/login');
