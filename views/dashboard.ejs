@@ -101,6 +101,36 @@
         .help-chip:hover{ border-color: var(--accent); color: var(--accent); background: rgba(16,185,129,.06); box-shadow: 0 0 0 3px rgba(16,185,129,.15); transform: translateY(-1px) }
         .help-chip:focus-visible{ outline:none; box-shadow: 0 0 0 3px rgba(16,185,129,.25) }
         .help-chip .g-icon{ width:14px; height:14px; display:inline-block }
+        
+        /* Table Sorting Styles */
+        .sortable {
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+        
+        .sortable:hover {
+            background-color: var(--bg-secondary) !important;
+        }
+        
+        .sort-icon {
+            margin-left: 6px;
+            font-size: 12px;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+        
+        .sortable:hover .sort-icon {
+            opacity: 1;
+        }
+        
+        .sortable[data-sort="rating"] .sort-icon,
+        .sortable[data-sort="date"] .sort-icon,
+        .sortable[data-sort="name"] .sort-icon,
+        .sortable[data-sort="email"] .sort-icon,
+        .sortable[data-sort="phone"] .sort-icon,
+        .sortable[data-sort="comment"] .sort-icon {
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -160,12 +190,24 @@
                 <table style="min-width: 1200px">
                     <thead>
                         <tr>
-                            <th>Rating</th>
-                            <th>Date</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Comment</th>
+                            <th class="sortable" data-sort="rating" style="cursor: pointer; user-select: none;">
+                                Rating <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="date" style="cursor: pointer; user-select: none;">
+                                Date <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="name" style="cursor: pointer; user-select: none;">
+                                Name <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="email" style="cursor: pointer; user-select: none;">
+                                Email <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="phone" style="cursor: pointer; user-select: none;">
+                                Phone <span class="sort-icon">↕</span>
+                            </th>
+                            <th class="sortable" data-sort="comment" style="cursor: pointer; user-select: none;">
+                                Comment <span class="sort-icon">↕</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -198,6 +240,140 @@
                 <% } %>
               </tbody>
             </table>
+            
+            <!-- Table Sorting JavaScript -->
+            <script>
+                (function() {
+                    console.log('[TABLE-SORT] Initializing table sorting...');
+                    
+                    const table = document.querySelector('.table-wrap table');
+                    const tbody = table.querySelector('tbody');
+                    const headers = table.querySelectorAll('th.sortable');
+                    
+                    if (!table || !tbody || headers.length === 0) {
+                        console.error('[TABLE-SORT] Required elements not found');
+                        return;
+                    }
+                    
+                    let currentSort = { column: null, direction: 'asc' };
+                    
+                    // Add click event listeners to headers
+                    headers.forEach(header => {
+                        header.addEventListener('click', function() {
+                            const column = this.dataset.sort;
+                            console.log('[TABLE-SORT] Header clicked:', column);
+                            
+                            // Toggle sort direction if same column
+                            if (currentSort.column === column) {
+                                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+                            } else {
+                                currentSort.column = column;
+                                currentSort.direction = 'asc';
+                            }
+                            
+                            // Update sort icons
+                            updateSortIcons();
+                            
+                            // Sort the table
+                            sortTable(column, currentSort.direction);
+                        });
+                        
+                        // Add hover effect
+                        header.addEventListener('mouseenter', function() {
+                            this.style.backgroundColor = 'var(--bg-secondary)';
+                        });
+                        
+                        header.addEventListener('mouseleave', function() {
+                            this.style.backgroundColor = '';
+                        });
+                    });
+                    
+                    function updateSortIcons() {
+                        headers.forEach(header => {
+                            const icon = header.querySelector('.sort-icon');
+                            const column = header.dataset.sort;
+                            
+                            if (currentSort.column === column) {
+                                icon.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+                                icon.style.color = 'var(--accent)';
+                                icon.style.fontWeight = 'bold';
+                            } else {
+                                icon.textContent = '↕';
+                                icon.style.color = '';
+                                icon.style.fontWeight = 'normal';
+                            }
+                        });
+                    }
+                    
+                    function sortTable(column, direction) {
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+                        
+                        if (rows.length === 0) return;
+                        
+                        // Sort rows
+                        rows.sort((a, b) => {
+                            const aValue = getCellValue(a, column);
+                            const bValue = getCellValue(b, column);
+                            
+                            let comparison = 0;
+                            
+                            if (column === 'rating') {
+                                // Sort by numeric rating
+                                comparison = (parseInt(aValue) || 0) - (parseInt(bValue) || 0);
+                            } else if (column === 'date') {
+                                // Sort by date
+                                comparison = new Date(aValue) - new Date(bValue);
+                            } else {
+                                // Sort by text (case-insensitive)
+                                comparison = String(aValue).toLowerCase().localeCompare(String(bValue).toLowerCase());
+                            }
+                            
+                            return direction === 'asc' ? comparison : -comparison;
+                        });
+                        
+                        // Reorder rows in DOM
+                        rows.forEach(row => tbody.appendChild(row));
+                        
+                        console.log(`[TABLE-SORT] Table sorted by ${column} (${direction})`);
+                    }
+                    
+                    function getCellValue(row, column) {
+                        const columnIndex = getColumnIndex(column);
+                        if (columnIndex === -1) return '';
+                        
+                        const cell = row.cells[columnIndex];
+                        if (!cell) return '';
+                        
+                        // Extract text content, handling special cases
+                        let text = cell.textContent || cell.innerText || '';
+                        
+                        if (column === 'rating') {
+                            // Extract just the number from "5 ★"
+                            const match = text.match(/(\d+)/);
+                            return match ? match[1] : text;
+                        } else if (column === 'date') {
+                            // Return the date text as-is for sorting
+                            return text;
+                        }
+                        
+                        return text.trim();
+                    }
+                    
+                    function getColumnIndex(column) {
+                        const columnMap = {
+                            'rating': 0,
+                            'date': 1,
+                            'name': 2,
+                            'email': 3,
+                            'phone': 4,
+                            'comment': 5
+                        };
+                        return columnMap[column] || -1;
+                    }
+                    
+                    console.log('[TABLE-SORT] Table sorting initialized successfully');
+                })();
+            </script>
           </div>
         </div>
 
@@ -325,6 +501,7 @@
                     "
                     onmouseover="this.style.background='var(--accent-hover)'"
                     onmouseout="this.style.background='var(--accent)'"
+                    onclick="console.log('[BUTTON] Save button clicked!')"
                   >
                     Save Automation
                   </button>
@@ -413,9 +590,8 @@
                   
                   console.log('[AUTOMATION-SIMPLE] All elements found');
                   
-                  // Form submission
+                  // Form validation only (no preventDefault)
                   form.addEventListener('submit', function(e) {
-                    e.preventDefault();
                     console.log('[AUTOMATION-SIMPLE] Form submitted');
                     
                     // Get form values
@@ -427,12 +603,13 @@
                     
                     // Validate
                     if (delayMinutes < 0 || delayMinutes > 10080) {
+                      e.preventDefault();
                       alert('Please enter a valid delay (0-10080 minutes)');
-                      return;
+                      return false;
                     }
                     
-                    // Submit form
-                    form.submit();
+                    // Let the form submit naturally
+                    console.log('[AUTOMATION-SIMPLE] Form validation passed, submitting...');
                   });
                   
                   // Backfill functionality

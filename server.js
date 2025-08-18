@@ -1332,11 +1332,24 @@
                             if (decoded.iat && sessionInvalidationTime > 0 && decoded.iat * 1000 < sessionInvalidationTime) {
                                 console.log(`[MIDDLEWARE] Rejected JWT issued before logout: iat=${decoded.iat * 1000}, invalidation=${sessionInvalidationTime}`);
                             } else {
-                                req.session.user = {
-                                    uid: decoded.sub,
-                                    email: decoded.email || decoded.username || null,
-                                    displayName: decoded.name || null
-                                };
+                                // SECURITY: Verify the user actually exists in database before creating session
+                                try {
+                                    const userDoc = await db.collection('businesses').doc(decoded.sub).get();
+                                    if (userDoc.exists) {
+                                        req.session.user = {
+                                            uid: decoded.sub,
+                                            email: decoded.email || decoded.username || null,
+                                            displayName: decoded.name || null
+                                        };
+                                        console.log(`[MIDDLEWARE] Valid session created for UID: ${decoded.sub}`);
+                                    } else {
+                                        console.log(`[MIDDLEWARE] JWT token references non-existent user: ${decoded.sub}`);
+                                        // Don't create session for non-existent users
+                                    }
+                                } catch (dbError) {
+                                    console.log(`[MIDDLEWARE] Database error verifying user: ${dbError.message}`);
+                                    // Don't create session if we can't verify the user
+                                }
                             }
                         }
                     } catch(_) {}
