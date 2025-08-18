@@ -213,7 +213,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errorData = await response.json().catch(() => ({}));
                 console.error(`[CLEANROOM-GATING] API Error Response:`, errorData);
                 
-
+                // Handle trial limit reached specifically
+                if (response.status === 429 && errorData.error === 'trial_limit_reached') {
+                    console.log('[CLEANROOM-GATING] Trial limit reached, showing upgrade message');
+                    
+                    // Hide form sections
+                    ratingSection.style.display = 'none';
+                    contactSection.style.display = 'none';
+                    feedbackSection.style.display = 'none';
+                    submitSection.style.display = 'none';
+                    
+                    // Show trial limit message
+                    const trialLimitMessage = document.createElement('div');
+                    trialLimitMessage.innerHTML = `
+                        <div style="text-align: center; padding: 40px 20px; max-width: 500px; margin: 0 auto;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">🚫</div>
+                            <h2 style="color: #DC2626; margin-bottom: 16px;">Review Limit Reached</h2>
+                            <p style="color: #6B7280; margin-bottom: 24px; line-height: 1.6;">
+                                This business has reached their trial limit of 25 reviews. 
+                                Please contact the business owner to upgrade their account for unlimited reviews.
+                            </p>
+                            <div style="background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 8px; padding: 16px; margin-top: 20px;">
+                                <p style="margin: 0; color: #92400E; font-size: 14px;">
+                                    <strong>Note:</strong> This is a business account limitation, not an issue with your review.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Insert the message into the app container
+                    appContainer.appendChild(trialLimitMessage);
+                    return;
+                }
                 
                 throw new Error(`API responded with status: ${response.status}. Details: ${errorData.error || errorData.details || 'Unknown error'}`);
             }

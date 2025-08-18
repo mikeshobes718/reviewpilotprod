@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Limit Reached - Reviews & Marketing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 48px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            color: #DC2626;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .business-name {
+            color: #1F2937;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .message {
+            color: #6B7280;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        
+        .note {
+            background: #FEF3C7;
+            border: 1px solid #FDE68A;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .note-text {
+            color: #92400E;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #10B981;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #6B7280;
+            border: 1px solid #D1D5DB;
+        }
+        
+        .btn-secondary:hover {
+            background: #F9FAFB;
+            border-color: #9CA3AF;
+        }
+        
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚫</div>
+        <h1>Review Limit Reached</h1>
+        <div class="business-name"><%= businessName %></div>
+        <p class="message"><%= message %></p>
+        
+        <div class="note">
+            <p class="note-text">
+                <strong>Note:</strong> This is a business account limitation, not an issue with your review. 
+                The business owner needs to upgrade their account to accept more reviews.
+            </p>
+        </div>
+        
+        <div class="actions">
+            <button onclick="window.close()" class="btn btn-primary">Close Window</button>
+        </div>
+        
+        <div class="footer">
+            Reviews & Marketing - Helping businesses collect customer feedback
+        </div>
+    </div>
+</body>
+</html>

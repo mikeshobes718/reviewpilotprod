@@ -358,6 +358,29 @@
             return null;
         }
 
+        // Resolve the canonical business document reference for the current user.
+        // Mirrors the fallback logic used by the /dashboard route so writes hit
+        // the same document that renders the settings.
+        async function resolveBusinessRef(req) {
+            const uid = getUserIdFromRequest(req);
+            if (!uid) return { ref: null, id: null };
+            try {
+                let snap = await db.collection('businesses').doc(uid).get();
+                if (snap && snap.exists) {
+                    return { ref: db.collection('businesses').doc(uid), id: uid };
+                }
+                const email = (req.session && req.session.user && req.session.user.email) || null;
+                if (email) {
+                    const q = await db.collection('businesses').where('email','==', email).limit(1).get();
+                    if (!q.empty) {
+                        const id = q.docs[0].id;
+                        return { ref: db.collection('businesses').doc(id), id };
+                    }
+                }
+            } catch (_) {}
+            return { ref: null, id: null };
+        }
+
         // --- Auth guards (define before routes use them) ---
         const requireLogin = (req, res, next) => {
             const uid = getUserIdFromRequest(req);
@@ -664,7 +687,7 @@
             }
         });
 
-        // Save Square automation settings
+        // Save Square automation settings (legacy form endpoint - keeping for compatibility)
         app.post('/integrations/square/settings', requireLogin, csrfProtection, async (req, res) => {
             try {
                 console.log(`[SQUARE-SETTINGS] Form submitted successfully, body:`, req.body);
@@ -675,10 +698,45 @@
                     channel: channel === 'sms' ? 'sms' : 'email'
                 };
                 console.log(`[SQUARE-SETTINGS] Settings to save:`, settings);
-                await db.collection('businesses').doc(req.session.user.uid).set({ squareSettings: settings }, { merge: true });
+                const { ref } = await resolveBusinessRef(req);
+                if (!ref) { console.error('[SQUARE-SETTINGS] Could not resolve business ref'); return res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
+                await ref.set({ squareSettings: settings }, { merge: true });
                 console.log(`[SQUARE-SETTINGS] Settings saved successfully`);
                 res.redirect('/dashboard');
             } catch (e) { console.error('save square settings', e); res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
+        });
+
+        // New AJAX endpoint for automation settings (no CSRF, no redirects)
+        app.post('/api/automation/save', async (req, res) => {
+            try {
+                // Get user ID from JWT token in cookie (same as getUserIdFromRequest)
+                const uid = getUserIdFromRequest(req);
+                if (!uid) {
+                    console.log('[AUTOMATION-SAVE] No valid user ID found');
+                    return res.status(401).json({ error: 'unauthorized' });
+                }
+
+                console.log(`[AUTOMATION-SAVE] Saving settings for UID: ${uid}`);
+                const { autoSend, delayMinutes, channel } = req.body || {};
+                
+                const settings = {
+                    autoSend: !!autoSend,
+                    delayMinutes: Math.max(0, Math.min(10080, parseInt(delayMinutes || '0', 10))),
+                    channel: channel === 'sms' ? 'sms' : 'email'
+                };
+                
+                console.log(`[AUTOMATION-SAVE] Settings to save:`, settings);
+                const { ref, id } = await resolveBusinessRef(req);
+                if (!ref) return res.status(400).json({ error: 'business_not_found' });
+                console.log(`[AUTOMATION-SAVE] Saving to business document: ${id}`);
+                await ref.set({ squareSettings: settings }, { merge: true });
+                console.log(`[AUTOMATION-SAVE] Settings saved successfully for UID: ${uid} to document: ${id}`);
+                
+                res.json({ success: true, message: 'Settings saved successfully' });
+            } catch (e) { 
+                console.error('[AUTOMATION-SAVE] Error saving settings:', e); 
+                res.status(500).json({ error: 'Failed to save settings' }); 
+            }
         });
 
         // Simple alert notifier (Slack webhook if configured)
@@ -737,6 +795,29 @@
                     const shortLink = `${shortDomain}/${slug}`;
                     // Compute delay
                     const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
+                    
+                    // Check trial limit before sending review request
+                    if (biz.subscriptionStatus === 'trial') {
+                        // Get current review count
+                        let currentReviewCount = 0;
+                        if (biz.stats && typeof biz.stats.totalFeedback === 'number') {
+                            currentReviewCount = biz.stats.totalFeedback;
+                        } else {
+                            // Fallback: count reviews manually
+                            const reviewsSnap = await db.collection('reviews').where('userId', '==', biz.uid || biz.id || req.session.user.uid).get();
+                            currentReviewCount = reviewsSnap.size;
+                        }
+                        
+                        if (currentReviewCount >= 25) {
+                            console.log(`[TRIAL-LIMIT] Square webhook blocked: UID=${biz.uid || biz.id || req.session.user.uid}, Count=${currentReviewCount}/25`);
+                            // Log the blocked attempt
+                            try { await db.collection('businesses').doc(biz.uid || biz.id || req.session.user.uid).collection('events').add({ type: 'send_blocked', ts: new Date().toISOString(), payload: { reason: 'trial_limit_reached', currentCount: currentReviewCount } }); } catch(_) {}
+                            return res.status(200).send('ok'); // Don't send, but don't fail the webhook
+                        }
+                        
+                        console.log(`[TRIAL-LIMIT] Square webhook allowed: UID=${biz.uid || biz.id || req.session.user.uid}, Count=${currentReviewCount + 1}/25`);
+                    }
+                    
                     if (reviewQueue) {
                         await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantUid: (biz.uid || biz.id || req.session.user.uid), shortLink }, { delay: delayMs, attempts: 1 });
                     } else {
@@ -802,6 +883,28 @@
 
                 // Enqueue send if enabled
                 if (settings.autoSend) {
+                    // Check trial limit before sending review request
+                    if (businessData.subscriptionStatus === 'trial') {
+                        // Get current review count
+                        let currentReviewCount = 0;
+                        if (businessData.stats && typeof businessData.stats.totalFeedback === 'number') {
+                            currentReviewCount = businessData.stats.totalFeedback;
+                        } else {
+                            // Fallback: count reviews manually
+                            const reviewsSnap = await businessRef.collection('reviews').get();
+                            currentReviewCount = reviewsSnap.size;
+                        }
+                        
+                        if (currentReviewCount >= 25) {
+                            console.log(`[TRIAL-LIMIT] Square automation blocked: UID=${businessData.uid}, Count=${currentReviewCount}/25`);
+                            // Log the blocked attempt
+                            try { await businessRef.collection('events').add({ type: 'send_blocked', ts: new Date().toISOString(), payload: { reason: 'trial_limit_reached', paymentId, currentCount: currentReviewCount } }); } catch(_) {}
+                            return true; // Don't send, but don't fail the payment processing
+                        }
+                        
+                        console.log(`[TRIAL-LIMIT] Square automation allowed: UID=${businessData.uid}, Count=${currentReviewCount + 1}/25`);
+                    }
+                    
                     const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
                     if (reviewQueue) {
                         await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantUid: (businessData.uid || businessRef.id), shortLink }, { delay: delayMs, attempts: 1 });
@@ -1483,10 +1586,10 @@
         return 'https://becb9v5qw8.execute-api.us-east-1.amazonaws.com/prod';
     }
     
-    app.post('/auth/signup', csrfProtection, async (req, res) => {
+            app.post('/auth/signup', csrfProtection, async (req, res) => {
         try {
-            const { businessName, email, password, confirmPassword } = req.body || {};
-            if (!businessName || !email || !password || !confirmPassword) {
+            const { businessName, email, phone, password, confirmPassword } = req.body || {};
+            if (!businessName || !email || !phone || !password || !confirmPassword) {
             const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
                 return res.status(400).render('signup', { csrfToken: token, error: 'All fields are required.', user: req.session.user || null });
             }
@@ -1599,6 +1702,7 @@
                                 await ref.set({
                                     businessName: businessName,
                                     email: (email || '').toLowerCase(),
+                                    phone: phone || '',
                                     googlePlaceId: null,
                                     stripeCustomerId: null,
                                     subscriptionStatus: 'none',
@@ -1793,6 +1897,7 @@
             
             // Force fresh read from Firestore - no caching
             let businessDoc = await db.collection('businesses').doc(uid).get();
+            console.log(`[DASHBOARD READ] Reading from document: ${uid}, exists: ${businessDoc.exists}`);
             
             // Fallback: some accounts may have business docs keyed differently. Try email lookup.
             if (!businessDoc.exists) {
@@ -1806,6 +1911,8 @@
                     }
                 }
             }
+            
+            console.log(`[DASHBOARD FINAL] Using business document: ${businessDoc.id}`);
             if (!businessDoc.exists) throw new Error('No business data found.');
             const businessRef = db.collection('businesses').doc(businessDoc.id);
             knownPlaceId = (businessDoc.data() || {}).googlePlaceId || null;
@@ -2592,6 +2699,29 @@
                 return res.status(404).send("This business is not currently available.");
             }
             const businessData = { ...doc.data(), uid: doc.id };
+            
+            // Check trial limit before allowing access to review form
+            if (businessData.subscriptionStatus === 'trial') {
+                // Get current review count
+                let currentReviewCount = 0;
+                if (businessData.stats && typeof businessData.stats.totalFeedback === 'number') {
+                    currentReviewCount = businessData.stats.totalFeedback;
+                } else {
+                    // Fallback: count reviews manually
+                    const reviewsSnap = await db.collection('reviews').where('userId', '==', businessId).get();
+                    currentReviewCount = reviewsSnap.size;
+                }
+                
+                if (currentReviewCount >= 25) {
+                    console.log(`[TRIAL-LIMIT] Review form blocked: UID=${businessId}, Count=${currentReviewCount}/25`);
+                    return res.status(429).render('trial-limit-reached', {
+                        businessName: businessData.businessName || 'This business',
+                        message: 'This business has reached their trial limit of 25 reviews. Please contact the business owner to upgrade their account for unlimited reviews.'
+                    });
+                }
+                
+                console.log(`[TRIAL-LIMIT] Review form allowed: UID=${businessId}, Count=${currentReviewCount}/25`);
+            }
 
             // Enrich with Google Places official name
             let placeDisplayName = businessData.businessName || null; // Start with Firestore name as fallback
@@ -2931,10 +3061,29 @@
             if (businessSnap.exists) {
                 const businessData = businessSnap.data() || {};
                 
-                // Note: Trial limits are enforced on the business side when SENDING review requests,
-                // not when customers SUBMIT reviews. Customers should always be able to submit reviews.
-                // The trial limit only affects the business owner's ability to send automated requests.
-                console.log(`[CLEANROOM-WRITE] TRIAL CHECK: UID=${targetBusinessId}, Status=${businessData.subscriptionStatus}`);
+                // Enforce trial limit on review submissions
+                if (businessData.subscriptionStatus === 'trial') {
+                    // Get current review count
+                    let currentReviewCount = 0;
+                    if (businessData.stats && typeof businessData.stats.totalFeedback === 'number') {
+                        currentReviewCount = businessData.stats.totalFeedback;
+                    } else {
+                        // Fallback: count reviews manually
+                        const reviewsSnap = await db.collection('reviews').where('userId', '==', targetBusinessId).get();
+                        currentReviewCount = reviewsSnap.size;
+                    }
+                    
+                    if (currentReviewCount >= 25) {
+                        console.log(`[CLEANROOM-WRITE] TRIAL LIMIT REACHED: UID=${targetBusinessId}, Count=${currentReviewCount}`);
+                        return res.status(429).json({ 
+                            error: "trial_limit_reached", 
+                            message: "This business has reached their trial limit of 25 reviews. Please contact the business owner to upgrade their account.",
+                            upgradeUrl: "/pricing"
+                        });
+                    }
+                    
+                    console.log(`[CLEANROOM-WRITE] TRIAL CHECK PASSED: UID=${targetBusinessId}, Count=${currentReviewCount + 1}/25`);
+                }
             }
         } catch (trialCheckError) {
             console.error(`[CLEANROOM-WRITE] Trial check failed for UID: ${targetBusinessId}`, trialCheckError);

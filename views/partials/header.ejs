@@ -15,10 +15,7 @@
         <a href="/dashboard" class="btn">Dashboard</a>
       <% } %>
       <span class="btn" style="cursor:default;opacity:.85;">Signed in: <%= user.email %></span>
-      <form action="/auth/logout" method="POST" style="display:inline">
-        <input type="hidden" name="_csrf" value="<%= (typeof csrfToken !== 'undefined' ? csrfToken : '') %>">
-        <button type="submit" class="btn" style="background:none;border:0;padding:0;cursor:pointer">Log out</button>
-      </form>
+      <a href="/logout" class="btn">Log out</a>
     <% } else { %>
       <a href="/login" class="btn">Log In</a>
       <a href="/signup" class="btn primary">Get started</a>

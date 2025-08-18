@@ -153,55 +153,55 @@
           </div>
           </div>
           <% } %>
-        <div class="grid" id="settings-link">
-          <div class="column">
-            <div class="card base-card">
-                <h2>Customer Feedback <span id="feedbackCount" style="color:var(--muted); font-weight:600; font-size:14px">(<%= (Array.isArray(feedback) ? feedback.length : 0) %>)</span></h2>
-                    <div class="table-wrap" style="max-width:100%">
-                    <table style="min-width: 1200px">
-                        <thead>
+        <!-- Customer Feedback - Full Width -->
+        <div class="card base-card" style="margin-bottom: 16px;">
+            <h2>Customer Feedback <span id="feedbackCount" style="color:var(--muted); font-weight:600; font-size:14px">(<%= (Array.isArray(feedback) ? feedback.length : 0) %>)</span></h2>
+            <div class="table-wrap" style="max-width:100%">
+                <table style="min-width: 1200px">
+                    <thead>
+                        <tr>
+                            <th>Rating</th>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                <% if (feedback.length > 0) { %>
+                        <% feedback.forEach(item => { %>
                             <tr>
-                                <th>Rating</th>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Comment</th>
+                                <td><span class="rating-star"><%= item.rating %> ★</span></td>
+                                <td><%= new Date(item.createdAt).toLocaleDateString() %></td>
+                                <td><%= item.customerName || 'N/A' %></td>
+                                <td><%= item.customerEmail || 'N/A' %></td>
+                                <td><%= item.customerPhone || 'N/A' %></td>
+                                <td><%= item.comment || 'N/A' %></td>
                             </tr>
-                        </thead>
-                        <tbody>
-                    <% if (feedback.length > 0) { %>
-                            <% feedback.forEach(item => { %>
-                                <tr>
-                                    <td><span class="rating-star"><%= item.rating %> ★</span></td>
-                                    <td><%= new Date(item.createdAt).toLocaleDateString() %></td>
-                                    <td><%= item.customerName || 'N/A' %></td>
-                                    <td><%= item.customerEmail || 'N/A' %></td>
-                                    <td><%= item.customerPhone || 'N/A' %></td>
-                                    <td><%= item.comment || 'N/A' %></td>
-                                </tr>
-                            <% }); %>
-                    <% } else { %>
-                      <tr>
-                        <td colspan="6" style="text-align:center; padding:32px 16px;">
-                          <div style="display:flex; flex-direction:column; align-items:center; gap:14px; color: var(--muted)">
-                            <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                              <rect x="7" y="18" width="74" height="50" rx="8" stroke="#E5E7EB" stroke-width="2"/>
-                              <rect x="16" y="28" width="56" height="6" rx="3" fill="#E5E7EB"/>
-                              <rect x="16" y="40" width="42" height="6" rx="3" fill="#E5E7EB"/>
-                              <circle cx="70" cy="43" r="3" fill="#E5E7EB"/>
-                            </svg>
-                            <div>Your customer feedback will appear here.</div>
-                            <button id="btnFirstRequest" type="button" class="btn-primary">Send Your First Request</button>
-                          </div>
-                        </td>
-                      </tr>
-                    <% } %>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                        <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="6" style="text-align:center; padding:32px 16px;">
+                      <div style="display:flex; flex-direction:column; align-items:center; gap:14px; color: var(--muted)">
+                        <svg width="88" height="88" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <rect x="7" y="18" width="74" height="50" rx="8" stroke="#E5E7EB" stroke-width="2"/>
+                          <rect x="16" y="28" width="56" height="6" rx="3" fill="#E5E7EB"/>
+                          <rect x="16" y="40" width="42" height="6" rx="3" fill="#E5E7EB"/>
+                          <circle cx="70" cy="43" r="3" fill="#E5E7EB"/>
+                        </svg>
+                        <div>Your customer feedback will appear here.</div>
+                        <button id="btnFirstRequest" type="button" class="btn-primary">Send Your First Request</button>
+                      </div>
+                    </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
           </div>
+        </div>
+
+        <div class="grid" id="settings-link">
 
           <div class="column">
             <div class="card base-card" id="settingsCard">
@@ -246,26 +246,26 @@
 
             <div class="card base-card">
               <h2>Automated Sending</h2>
-              <form id="automationForm" action="/integrations/square/settings" method="POST">
-                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+              <div id="automationForm">
                 <label style="display:flex; align-items:center; gap:8px">
-                  <input type="checkbox" name="autoSend" value="1" <%= (squareSettings && squareSettings.autoSend) ? 'checked' : '' %> /> Enable auto‑send after payments
+                  <input type="checkbox" id="autoSend" <%= (squareSettings && squareSettings.autoSend) ? 'checked' : '' %> /> Enable auto‑send after payments
                 </label>
                 <div class="sub-row">
                   <div style="flex:1">
                     <label for="delayMinutes">Delay (minutes)</label>
-                    <input type="text" id="delayMinutes" name="delayMinutes" value="<%= (squareSettings && squareSettings.delayMinutes != null) ? squareSettings.delayMinutes : 0 %>">
+                    <input type="text" id="delayMinutes" value="<%= (squareSettings && squareSettings.delayMinutes != null) ? squareSettings.delayMinutes : 0 %>">
                   </div>
                   <div>
                     <label for="channel">Preferred channel</label>
-                    <select id="channel" name="channel" class="btn btn-secondary" style="padding:8px 10px">
+                    <select id="channel" class="btn btn-secondary" style="padding:8px 10px">
                       <option value="email" <%= (squareSettings && squareSettings.channel === 'email') ? 'selected' : '' %>>Email</option>
                       <option value="sms" <%= (squareSettings && squareSettings.channel === 'sms') ? 'selected' : '' %>>SMS</option>
                     </select>
                   </div>
                 </div>
-                <button type="submit" class="btn btn-secondary" style="margin-top:8px">Save Automation</button>
-              </form>
+                <button type="button" id="saveAutomation" class="btn btn-secondary" style="margin-top:8px">Save Automation</button>
+                <div id="automationStatus" style="margin-top:8px; display:none;"></div>
+              </div>
               <div style="border-top:1px solid var(--border); margin:12px 0 0; padding-top:12px">
                 <div style="font-weight:600; color: var(--muted); margin-bottom:6px">Sync tools</div>
                 <div class="sub-row">
@@ -422,6 +422,79 @@
                       <button id="btn-trial-tour" class="btn btn-secondary" style="background: #FEF3C7; border: 1px solid #FDE68A; color: #92400E; font-size: 12px; padding: 6px 12px;">
                         🎯 Take Tour
                       </button>
+                      <script>
+                        // Simple inline tour functionality
+                        document.getElementById('btn-trial-tour').addEventListener('click', function() {
+                          console.log('[TOUR-INLINE] Button clicked!');
+                          
+                          // Create modal dynamically
+                          const modal = document.createElement('div');
+                          modal.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0, 0, 0, 0.8);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 9999;
+                          `;
+                          
+                          modal.innerHTML = `
+                            <div style="
+                              background: white;
+                              border-radius: 16px;
+                              padding: 32px;
+                              max-width: 800px;
+                              width: 90%;
+                              max-height: 90vh;
+                              overflow-y: auto;
+                              position: relative;
+                            ">
+                              <div style="text-align: center; margin-bottom: 24px;">
+                                <h3 style="margin: 0 0 8px; color: #92400E; font-size: 24px;">🎯 Dashboard Tour</h3>
+                                <p style="margin: 0; color: #6B7280; font-size: 16px;">Watch this video to learn how to use your dashboard effectively</p>
+                              </div>
+                              
+                              <div style="position: relative; width: 100%; padding-bottom: 56.25%; margin-bottom: 24px;">
+                                <iframe 
+                                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px;"
+                                  src="https://www.youtube.com/embed/-ZESfSZCY-0?rel=0&modestbranding=1"
+                                  title="Dashboard Tour Video"
+                                  frameborder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowfullscreen>
+                                </iframe>
+                              </div>
+                              
+                              <div style="text-align: center;">
+                                <button onclick="this.closest('[style*=\\'position: fixed\\']').remove()" style="
+                                  background: #6B7280;
+                                  color: white;
+                                  border: none;
+                                  padding: 12px 24px;
+                                  border-radius: 8px;
+                                  font-weight: 600;
+                                  cursor: pointer;
+                                  font-size: 16px;
+                                ">Close Tour</button>
+                              </div>
+                            </div>
+                          `;
+                          
+                          // Close on outside click
+                          modal.addEventListener('click', function(e) {
+                            if (e.target === modal) {
+                              modal.remove();
+                            }
+                          });
+                          
+                          document.body.appendChild(modal);
+                          console.log('[TOUR-INLINE] Modal created and displayed');
+                        });
+                      </script>
                     </div>
                     
                     <!-- Trial Usage Analytics -->
@@ -538,7 +611,7 @@
                       <li><span class="check">✓</span>Priority support</li>
                     </ul>
                     <div class="plan-actions">
-                      <button id="btn-upgrade-pro" class="btn-primary">Upgrade to Pro</button>
+                                              <button id="btn-upgrade-pro-secondary" class="btn-primary">Upgrade to Pro</button>
                     </div>
                   </div>
                 </div>
@@ -549,76 +622,7 @@
       </div>
     </main>
     <div class="toast" id="toast">Link copied</div>
-    <!-- Trial Tour Modal -->
-    <div class="modal-overlay" id="trialTourModal">
-      <div class="modal" style="max-width: 600px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <h3 style="margin: 0 0 8px; color: #92400E;">🎯 Welcome to Your Trial!</h3>
-          <p style="margin: 0; color: #6B7280;">Let's explore what you can do with Reviews & Marketing</p>
-        </div>
-        
-        <div id="tourSteps" style="margin-bottom: 24px;">
-          <!-- Step 1 -->
-          <div class="tour-step" data-step="1" style="display: block;">
-            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-              <h4 style="margin: 0 0 8px; color: #92400E;">📊 Step 1: Set Up Your Business</h4>
-              <p style="margin: 0; color: #92400E; font-size: 14px;">
-                Add your Google Place ID in Settings to unlock your Review Collection Kit with QR codes and printable materials.
-              </p>
-            </div>
-            <div style="text-align: center;">
-              <button class="btn btn-secondary tour-next" data-next="2">Next →</button>
-            </div>
-          </div>
-          
-          <!-- Step 2 -->
-          <div class="tour-step" data-step="2" style="display: none;">
-            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-              <h4 style="margin: 0 0 8px; color: #92400E;">🔗 Step 2: Get Your Review Link</h4>
-              <p style="margin: 0; color: #92400E; font-size: 14px;">
-                Use your short link on receipts, business cards, and social media to collect customer reviews.
-              </p>
-            </div>
-            <div style="text-align: center;">
-              <button class="btn btn-secondary tour-prev" data-prev="1">← Previous</button>
-              <button class="btn btn-secondary tour-next" data-next="3">Next →</button>
-            </div>
-          </div>
-          
-          <!-- Step 3 -->
-          <div class="tour-step" data-step="3" style="display: none;">
-            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-              <h4 style="margin: 0 0 8px; color: #92400E;">📱 Step 3: Connect Square (Optional)</h4>
-              <p style="margin: 0; color: #92400E; font-size: 14px;">
-                Automatically send review requests to customers after successful transactions.
-              </p>
-            </div>
-            <div style="text-align: center;">
-              <button class="btn btn-secondary tour-prev" data-prev="2">← Previous</button>
-              <button class="btn btn-secondary tour-next" data-next="4">Next →</button>
-            </div>
-          </div>
-          
-          <!-- Step 4 -->
-          <div class="tour-step" data-step="4" style="display: none;">
-            <div style="background: #FEF3C7; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-              <h4 style="margin: 0 0 8px; color: #92400E;">🚀 Step 4: Upgrade When Ready</h4>
-              <p style="margin: 0; color: #92400E; font-size: 14px;">
-                Your trial includes 25 review requests. Upgrade to Pro for unlimited requests and advanced features!
-              </p>
-            </div>
-            <div style="text-align: center;">
-              <button class="btn btn-secondary tour-prev" data-prev="3">← Previous</button>
-              <button class="btn-primary" onclick="window.location.href='/pricing'">Upgrade to Pro</button>
-            </div>
-          </div>
-        </div>
-        
-        <div style="text-align: center;">
-          <button class="btn-ghost" id="tourClose">Skip Tour</button>
-        </div>
-      </div>
-    </div>
+
 
     <div class="modal-overlay" id="cancelModal">
       <div class="modal">
@@ -754,18 +758,30 @@
           }
         }
 
-        // Initialize trial tour functionality
+        // Initialize trial tour functionality - Video Modal
         function initializeTrialTour() {
           const tourBtn = document.getElementById('btn-trial-tour');
           const tourModal = document.getElementById('trialTourModal');
           const tourClose = document.getElementById('tourClose');
           
+          console.log('[TOUR] Tour button found:', tourBtn);
+          console.log('[TOUR] Tour modal found:', tourModal);
+          console.log('[TOUR] Tour close button found:', tourClose);
+          
           if (tourBtn && tourModal) {
             tourBtn.addEventListener('click', function() {
+              console.log('[TOUR] Tour button clicked!');
+              console.log('[TOUR] Modal element before change:', tourModal);
+              console.log('[TOUR] Modal computed style before:', window.getComputedStyle(tourModal).display);
+              
               tourModal.style.display = 'flex';
-              // Reset to first step
-              showTourStep(1);
+              console.log('[TOUR] Modal display set to flex');
+              console.log('[TOUR] Modal current display:', tourModal.style.display);
+              console.log('[TOUR] Modal computed style after:', window.getComputedStyle(tourModal).display);
+              console.log('[TOUR] Modal visible:', tourModal.offsetParent !== null);
             });
+          } else {
+            console.error('[TOUR] Missing required elements:', { tourBtn: !!tourBtn, tourModal: !!tourModal });
           }
           
           if (tourClose) {
@@ -786,16 +802,7 @@
           });
         }
         
-        // Show specific tour step
-        function showTourStep(step) {
-          const steps = document.querySelectorAll('.tour-step');
-          steps.forEach(s => s.style.display = 'none');
-          
-          const currentStep = document.querySelector(`[data-step="${step}"]`);
-          if (currentStep) {
-            currentStep.style.display = 'block';
-          }
-        }
+
         
         // Update trial progress indicators
         function updateTrialProgress(reviewCount) {
@@ -900,13 +907,17 @@
         // Initialize trial features
         if ('<%= business && business.subscriptionStatus === "trial" %>' === 'true') {
           console.log('[TRIAL-INIT] Initializing trial features...');
+          console.log('[TRIAL-INIT] Business subscription status:', '<%= business && business.subscriptionStatus %>');
           fetchTrialAnalytics();
           initializeTrialUpgrade();
+          console.log('[TRIAL-INIT] About to initialize tour...');
           initializeTrialTour();
+          console.log('[TRIAL-INIT] Tour initialized');
           initializeTrialExtend();
           console.log('[TRIAL-INIT] Trial features initialized');
         } else {
           console.log('[TRIAL-INIT] Not a trial user, skipping trial features');
+          console.log('[TRIAL-INIT] Business subscription status:', '<%= business && business.subscriptionStatus %>');
         }
         
         // Enable editing Place ID if already set
@@ -1052,7 +1063,7 @@
     </script>
     <script>
       (function(){
-        var upgradeBtn = document.getElementById('btn-upgrade-pro');
+        var upgradeBtn = document.getElementById('btn-upgrade-pro') || document.getElementById('btn-upgrade-pro-secondary');
         var downgradeBtn = document.getElementById('btn-downgrade');
         var modal = document.getElementById('cancelModal');
         var modalClose = document.getElementById('cancelClose');
@@ -1610,20 +1621,90 @@
                 }
             });
             
-            // Simple automation form validation (no form replacement)
-            const automationForm = document.getElementById('automationForm');
-            if (automationForm) {
-                console.log('[AUTOMATION-FORM] Form found and ready for submission');
-                
-                // Add basic validation if needed
-                automationForm.addEventListener('submit', function(e) {
-                    const delayInput = this.querySelector('input[name="delayMinutes"]');
-                    if (delayInput && (isNaN(delayInput.value) || delayInput.value < 0)) {
-                        e.preventDefault();
-                        alert('Please enter a valid delay (0 or positive number)');
-                        return false;
+            // New automation form handling with AJAX
+            console.log('[AUTOMATION-DEBUG] DOM loaded, looking for elements...');
+            console.log('[AUTOMATION-DEBUG] Page loaded at:', new Date().toISOString());
+            const saveAutomationBtn = document.getElementById('saveAutomation');
+            const automationStatus = document.getElementById('automationStatus');
+            
+            console.log('[AUTOMATION-DEBUG] saveAutomationBtn found:', !!saveAutomationBtn);
+            console.log('[AUTOMATION-DEBUG] automationStatus found:', !!automationStatus);
+            
+            if (saveAutomationBtn) {
+                console.log('[AUTOMATION-DEBUG] Adding click listener to save button');
+                saveAutomationBtn.addEventListener('click', async function() {
+                    console.log('[AUTOMATION-DEBUG] Save button clicked!');
+                    try {
+                        // Get form values
+                        const autoSendElement = document.getElementById('autoSend');
+                        const delayMinutesElement = document.getElementById('delayMinutes');
+                        const channelElement = document.getElementById('channel');
+                        
+                        console.log('[AUTOMATION-DEBUG] Form elements found:', {
+                            autoSend: !!autoSendElement,
+                            delayMinutes: !!delayMinutesElement,
+                            channel: !!channelElement
+                        });
+                        
+                        const autoSend = autoSendElement ? autoSendElement.checked : false;
+                        const delayMinutes = delayMinutesElement ? parseInt(delayMinutesElement.value) || 0 : 0;
+                        const channel = channelElement ? channelElement.value : 'email';
+                        
+                        console.log('[AUTOMATION-DEBUG] Form values:', { autoSend, delayMinutes, channel });
+                        console.log('[AUTOMATION-DEBUG] Raw form values:', {
+                            autoSendRaw: autoSendElement ? autoSendElement.checked : 'ELEMENT_NOT_FOUND',
+                            delayMinutesRaw: delayMinutesElement ? delayMinutesElement.value : 'ELEMENT_NOT_FOUND',
+                            channelRaw: channelElement ? channelElement.value : 'ELEMENT_NOT_FOUND'
+                        });
+                        
+                        // Validate
+                        if (delayMinutes < 0) {
+                            alert('Please enter a valid delay (0 or positive number)');
+                            return;
+                        }
+                        
+                        // Show loading state
+                        saveAutomationBtn.disabled = true;
+                        saveAutomationBtn.textContent = 'Saving...';
+                        automationStatus.style.display = 'block';
+                        automationStatus.innerHTML = '<span style="color: #059669;">Saving automation settings...</span>';
+                        
+                        // Send AJAX request
+                        console.log('[AUTOMATION-DEBUG] Sending fetch request to /api/automation/save');
+                        const response = await fetch('/api/automation/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                autoSend,
+                                delayMinutes,
+                                channel
+                            }),
+                            credentials: 'same-origin'
+                        });
+                        
+                        console.log('[AUTOMATION-DEBUG] Response received:', response.status, response.statusText);
+                        
+                        if (response.ok) {
+                            automationStatus.innerHTML = '<span style="color: #059669;">✅ Automation settings saved successfully!</span>';
+                            setTimeout(() => {
+                                automationStatus.style.display = 'none';
+                            }, 3000);
+                        } else {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.error || 'Failed to save settings');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Save automation error:', error);
+                        automationStatus.innerHTML = `<span style="color: #DC2626;">❌ Error: ${error.message}</span>`;
+                    } finally {
+                        // Reset button state
+                        saveAutomationBtn.disabled = false;
+                        saveAutomationBtn.textContent = 'Save Automation';
                     }
-                    console.log('[AUTOMATION-FORM] Form submitted successfully');
                 });
             }
         });
