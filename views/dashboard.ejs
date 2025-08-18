@@ -233,7 +233,7 @@
                           <circle cx="70" cy="43" r="3" fill="#E5E7EB"/>
                         </svg>
                         <div>Your customer feedback will appear here.</div>
-                        <button id="btnFirstRequest" type="button" class="btn-primary">Send Your First Request</button>
+                        <button id="btnFirstRequestStatic" type="button" class="btn-primary">Send Your First Request</button>
                       </div>
                     </td>
                   </tr>
@@ -1656,28 +1656,38 @@
             window.location.href = '/auth/pos/square/connect';
           });
         }
-        // Handle both first request buttons (there are two with the same ID, which is invalid HTML)
+        // Handle both first request buttons (now with unique IDs)
         // Wrap in DOMContentLoaded to ensure buttons are rendered first
         document.addEventListener('DOMContentLoaded', function() {
           console.log('[FIRST-REQUEST] DOM loaded, looking for buttons...');
-          var firstReqButtons = document.querySelectorAll('#btnFirstRequest');
-          console.log('[FIRST-REQUEST] Found', firstReqButtons.length, 'buttons with ID btnFirstRequest');
           
-          if (firstReqButtons.length > 0) {
-            firstReqButtons.forEach(function(button, index) {
-              console.log('[FIRST-REQUEST] Adding click handler to button', index + 1);
+          // Look for both button types
+          var staticButton = document.getElementById('btnFirstRequestStatic');
+          var dynamicButton = document.getElementById('btnFirstRequestDynamic');
+          
+          console.log('[FIRST-REQUEST] Static button found:', !!staticButton);
+          console.log('[FIRST-REQUEST] Dynamic button found:', !!dynamicButton);
+          
+          // Function to add click handler
+          function addClickHandler(button, buttonType) {
+            if (button) {
+              console.log('[FIRST-REQUEST] Adding click handler to', buttonType, 'button');
               button.addEventListener('click', function(){
-                console.log('[FIRST-REQUEST] Button', index + 1, 'clicked!');
+                console.log('[FIRST-REQUEST]', buttonType, 'button clicked!');
                 alert('Button clicked! This will scroll to Review Collection Kit.');
+                
                 var reviewKitCard = document.getElementById('reviewKitCard');
                 console.log('[FIRST-REQUEST] Review Kit card element:', reviewKitCard);
+                
                 if (!reviewKitCard) {
                   console.log('[FIRST-REQUEST] Review Kit card not found!');
                   alert('Review Collection Kit section not found!');
                   return;
                 }
+                
                 console.log('[FIRST-REQUEST] Scrolling to Review Collection Kit...');
                 reviewKitCard.scrollIntoView({ behavior:'smooth', block:'center' });
+                
                 // After a short delay, apply highlight animation
                 setTimeout(function(){
                   console.log('[FIRST-REQUEST] Adding highlight class');
@@ -1688,10 +1698,18 @@
                   }, 2500);
                 }, 450);
               });
-            });
-          } else {
+            }
+          }
+          
+          // Add handlers to both buttons
+          addClickHandler(staticButton, 'Static');
+          addClickHandler(dynamicButton, 'Dynamic');
+          
+          if (!staticButton && !dynamicButton) {
             console.log('[FIRST-REQUEST] No buttons found!');
             alert('First request buttons not found!');
+          } else {
+            console.log('[FIRST-REQUEST] Button handlers set up successfully');
           }
         });
 
@@ -1958,7 +1976,7 @@
                                     <circle cx="70" cy="43" r="3" fill="#E5E7EB"/>
                                 </svg>
                                 <div>Your customer feedback will appear here.</div>
-                                <button id="btnFirstRequest" type="button" class="btn-primary">Send Your First Request</button>
+                                <button id="btnFirstRequestDynamic" type="button" class="btn-primary">Send Your First Request</button>
                             </div>
                         </td>
                     </tr>
