@@ -1409,7 +1409,7 @@
         saveUninitialized: false,
         proxy: true,
         cookie: {
-            secure: process.env.NODE_ENV === 'production', // Only require HTTPS in production
+            secure: false, // Allow HTTP cookies for now to fix login redirect loop
             httpOnly: true,
             sameSite: 'lax',
             domain: COOKIE_DOMAIN,
@@ -1951,13 +1951,20 @@
                 }
                 
                 console.log('[LOGIN] Valid user ID:', validUserId);
+                console.log('[LOGIN] Session before:', req.session);
                 
                 if (validUserId) {
                     // Only create session for valid authenticated users
                     req.session.user = { uid: validUserId, email: email.toLowerCase(), displayName: '' };
                     console.log('[LOGIN] Session created for UID:', validUserId);
+                    console.log('[LOGIN] Session after:', req.session);
+                    
                     return req.session.save((err) => { 
-                        if (err) console.warn('session save error:', err); 
+                        if (err) {
+                            console.warn('[LOGIN] Session save error:', err); 
+                            return res.redirect('/login?error=session_error');
+                        }
+                        console.log('[LOGIN] Session saved successfully, redirecting to dashboard');
                         res.setHeader('Cache-Control','no-store'); 
                         return res.redirect('/dashboard'); 
                     });
