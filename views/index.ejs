@@ -22,6 +22,11 @@
             <!-- DEBUG INFO -->
             <div style="font-size: 12px; color: #666; margin-top: 8px;">
               Debug: User session detected (UID: <%= user.uid %>)
+              <br><a href="/logout" style="color: #ff4444; text-decoration: underline;">Force Logout</a>
+              <br><a href="/debug-session" style="color: #4444ff; text-decoration: underline;">Debug Session</a>
+              <% if (typeof isMobile !== 'undefined' && isMobile) { %>
+                <br><span style="color: #ff8800;">📱 Mobile Request Detected</span>
+              <% } %>
             </div>
           <% } else { %>
             <a class="btn primary" href="/signup">Start free</a>

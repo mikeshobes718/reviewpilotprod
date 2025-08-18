@@ -1664,11 +1664,18 @@
             
             console.log(`[HOME] Final user value for template:`, user);
             
+            // Check if this is a mobile request
+            const userAgent = req.headers['user-agent'] || '';
+            const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+            console.log(`[HOME] User-Agent: ${userAgent}`);
+            console.log(`[HOME] Is Mobile: ${isMobile}`);
+            
             return res.render('index', {
                 csrfToken: req.csrfToken(),
                 title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews',
                 user: user,
                 homepageStats: __homepageStatsCache.data,
+                isMobile: isMobile
             });
         } catch (e) {
             console.error('home stats error', e);
@@ -1699,12 +1706,38 @@
     
     // Logout route to clear invalid sessions
     app.get('/logout', (req, res) => {
+        console.log('[LOGOUT] Logout requested');
+        console.log('[LOGOUT] Session before destroy:', req.session);
+        
         req.session.destroy((err) => {
             if (err) {
                 console.log('[LOGOUT] Error destroying session:', err);
+            } else {
+                console.log('[LOGOUT] Session destroyed successfully');
             }
         });
+        
+        // Clear any cookies that might be causing issues
+        res.clearCookie('connect.sid');
+        res.clearCookie('session');
+        
+        console.log('[LOGOUT] Redirecting to home');
         res.redirect('/');
+    });
+    
+    // Debug route to check session state
+    app.get('/debug-session', (req, res) => {
+        console.log('[DEBUG-SESSION] Request received');
+        console.log('[DEBUG-SESSION] Headers:', req.headers);
+        console.log('[DEBUG-SESSION] Cookies:', req.cookies);
+        console.log('[DEBUG-SESSION] Session:', req.session);
+        
+        res.json({
+            hasSession: !!req.session,
+            sessionUser: req.session?.user || null,
+            cookies: req.cookies,
+            userAgent: req.headers['user-agent']
+        });
     });
 
     // Phase 4.2: BFF auth POST routes → API Gateway (custom auth backend)
