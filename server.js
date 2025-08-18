@@ -1813,11 +1813,18 @@
                 const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
                 return res.status(400).render('login', { csrfToken: token, error: 'Missing email or password.', user: req.session.user || null });
             }
-            const r = await fetch(getAuthApiBase() + '/login', {
+            const authUrl = getAuthApiBase() + '/login';
+            console.log('[LOGIN] Attempting login to:', authUrl);
+            console.log('[LOGIN] Request payload:', { email, password: '***' });
+            
+            const r = await fetch(authUrl, {
                 method: 'POST', headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
                 body: JSON.stringify({ email, password }),
                 redirect: 'manual'
             });
+            
+            console.log('[LOGIN] Response status:', r.status);
+            console.log('[LOGIN] Response headers:', Object.fromEntries(r.headers.entries()));
             const rawSetCookie = r.headers.get('set-cookie');
             if (rawSetCookie) {
                 try {
