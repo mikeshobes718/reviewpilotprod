@@ -338,6 +338,15 @@
             } catch (_) { return null; }
         }
         function getUserIdFromRequest(req) {
+            // PRIORITY 1: Check Express session first (what login sets)
+            try { 
+                if (req.session && req.session.user && req.session.user.uid) {
+                    console.log(`[AUTH] Found user ID in Express session: ${req.session.user.uid}`);
+                    return req.session.user.uid; 
+                }
+            } catch(_) {}
+            
+            // PRIORITY 2: Fallback to JWT cookie if session not available
             try {
                 const raw = req.cookies && req.cookies.session;
                 if (raw && raw !== 'INVALIDATED' && raw !== 'expired') {
@@ -360,8 +369,8 @@
                     return d.sub;
                 }
             } catch(_) {}
-            // Fallback to session if present, but do not require it
-            try { if (req.session && req.session.user && req.session.user.uid) return req.session.user.uid; } catch(_) {}
+            
+            console.log(`[AUTH] No valid user ID found in session or JWT cookie`);
             return null;
         }
 
