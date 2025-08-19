@@ -1462,6 +1462,26 @@
         var modal = document.getElementById('cancelModal');
         var modalClose = document.getElementById('cancelClose');
         var modalConfirm = document.getElementById('cancelConfirm');
+        
+        // Handle upgrade to Pro button
+        if (upgradeBtn) {
+          upgradeBtn.addEventListener('click', async function() {
+            console.log('[UPGRADE-PRO] Upgrade button clicked!');
+            upgradeBtn.disabled = true;
+            upgradeBtn.textContent = 'Redirecting...';
+            
+            try {
+              // Redirect to pricing page
+              window.location.href = '/pricing';
+            } catch (error) {
+              console.error('[UPGRADE-PRO] Error:', error);
+              upgradeBtn.disabled = false;
+              upgradeBtn.textContent = 'Upgrade to Pro';
+              alert('Error redirecting to pricing page. Please try again.');
+            }
+          });
+        }
+        
         if (downgradeBtn && modal) {
           downgradeBtn.addEventListener('click', function(){ modal.style.display = 'flex'; });
           if (modalClose) modalClose.addEventListener('click', function(){ modal.style.display = 'none'; });
