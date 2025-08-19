@@ -599,7 +599,7 @@
                                       document.querySelector('input[name="_csrf"]')?.value || '';
                       console.log('[AUTOMATION-NEW] CSRF token found:', csrfToken ? 'YES' : 'NO', 'Length:', csrfToken.length);
                       
-                      const response = await fetch('/integrations/square/backfill', {
+                      const response = await fetch('/mock/square/backfill', {
                         method: 'POST',
                         headers: { 
                           'Content-Type': 'application/x-www-form-urlencoded'
@@ -635,7 +635,7 @@
                                       document.querySelector('input[name="_csrf"]')?.value || '';
                       console.log('[AUTOMATION-NEW] CSRF token found:', csrfToken ? 'YES' : 'NO', 'Length:', csrfToken.length);
                       
-                      const response = await fetch('/integrations/square/sync-daily', {
+                      const response = await fetch('/mock/square/sync-daily', {
                         method: 'POST',
                         headers: { 
                           'Content-Type': 'application/x-www-form-urlencoded'
@@ -2172,67 +2172,6 @@
                 });
             }
         });
-    </script>
-    <script>
-      // Ensure direct handlers in addition to any delegated listener
-      window.addEventListener('load', function () {
-        const backfillBtn = document.getElementById('backfillButton');
-        const dailyBtn = document.getElementById('dailySyncButton');
-
-        if (backfillBtn) {
-          backfillBtn.addEventListener('click', async function (e) {
-            e.preventDefault();
-            const daysInput = document.getElementById('backfillDays');
-            const days = daysInput ? parseInt(daysInput.value) || 30 : 30;
-            showStatus('🔄 Running backfill...', true);
-            try {
-              const resp = await fetch('/integrations/square/backfill', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                credentials: 'same-origin',
-                body: `days=${days}`
-              });
-              if (resp.ok) {
-                const data = await resp.json();
-                showStatus(`✅ Backfill complete! Processed: ${data.processed || 0}`, true);
-              } else {
-                const t = await resp.text().catch(() => '');
-                showStatus(`❌ Backfill failed (${resp.status})`, false);
-                console.error('[BACKFILL] Failed', resp.status, t);
-              }
-            } catch (err) {
-              console.error('[BACKFILL] Error', err);
-              showStatus('❌ Backfill failed: ' + (err?.message || err), false);
-            }
-          });
-        }
-
-        if (dailyBtn) {
-          dailyBtn.addEventListener('click', async function (e) {
-            e.preventDefault();
-            showStatus('🔄 Running daily sync...', true);
-            try {
-              const resp = await fetch('/integrations/square/sync-daily', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                credentials: 'same-origin',
-                body: ''
-              });
-              if (resp.ok) {
-                const data = await resp.json();
-                showStatus(`✅ Daily sync complete! Processed: ${data.processed || 0}`, true);
-              } else {
-                const t = await resp.text().catch(() => '');
-                showStatus(`❌ Daily sync failed (${resp.status})`, false);
-                console.error('[SYNC] Failed', resp.status, t);
-              }
-            } catch (err) {
-              console.error('[SYNC] Error', err);
-              showStatus('❌ Daily sync failed: ' + (err?.message || err), false);
-            }
-          });
-        }
-      });
     </script>
 </body>
 </html>

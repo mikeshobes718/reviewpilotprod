@@ -4,147 +4,75 @@ async function testAutomation() {
   console.log('🚀 Starting automation testing...');
   
   const browser = await puppeteer.launch({ 
-    headless: true, // Set to true for headless testing
+    headless: true,
     defaultViewport: null,
-    args: ['--start-maximized']
+    args: ['--start-maximized','--no-sandbox','--disable-setuid-sandbox','--ignore-certificate-errors','--allow-insecure-localhost'],
+    ignoreHTTPSErrors: true
   });
   
   const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(60000);
   
   try {
-    // Navigate to the site
-    console.log('📱 Navigating to site...');
-    await page.goto('http://reviewpilot-prod.us-east-1.elasticbeanstalk.com', { waitUntil: 'networkidle0' });
-    
-    // Check if we're on login page or dashboard
-    const currentUrl = page.url();
-    console.log('📍 Current URL:', currentUrl);
-    
-    if (currentUrl.includes('/login')) {
-      console.log('🔐 On login page, attempting to login...');
-      
-      // Login with Square-connected credentials
-      await page.type('input[name="email"]', 'mikeshobes718@yahoo.com');
-      await page.type('input[name="password"]', 'ReviewPilot2025');
-      await page.click('button[type="submit"]');
-      
-      // Wait for redirect
-      await page.waitForNavigation({ waitUntil: 'networkidle0' });
-      console.log('📍 After login, URL:', page.url());
+    // Always start at login
+    const base = 'https://reviewpilot-prod.us-east-1.elasticbeanstalk.com';
+    console.log('📱 Navigating to login...');
+    await page.goto(base + '/login', { waitUntil: 'networkidle0' });
+
+    // Perform login
+    console.log('🔐 Attempting login...');
+    await page.type('input[name="email"]', 'mikeshobes718@yahoo.com', { delay: 10 });
+    await page.type('input[name="password"]', 'ReviewPilot2025', { delay: 10 });
+    await page.click('button[type="submit"]');
+    await page.waitForNavigation({ waitUntil: 'networkidle0' });
+    console.log('📍 After login, URL:', page.url());
+
+    // Ensure we're on dashboard
+    if (!page.url().includes('/dashboard')) {
+      console.log('🔀 Forcing navigation to dashboard...');
+      await page.goto(base + '/dashboard', { waitUntil: 'networkidle0' });
     }
-    
-    // Check if we're on dashboard
+
     if (page.url().includes('/dashboard')) {
-      console.log('✅ Successfully on dashboard');
-      
-      // Wait for page to load completely
-      await page.waitForTimeout(3000);
-      
-      // Look for the Automated Sending section
-      console.log('🔍 Looking for Automated Sending section...');
-      const automationSection = await page.$('h2:has-text("Automated Sending")');
-      
-      if (automationSection) {
-        console.log('✅ Found Automated Sending section');
-        
-        // Check current settings display
-        const currentSettings = await page.$('#currentSettingsDisplay');
-        if (currentSettings) {
-          console.log('✅ Found current settings display');
-          
-          // Get the text content
-          const settingsText = await page.evaluate(el => el.textContent, currentSettings);
-          console.log('📊 Current settings text:', settingsText);
-        }
-        
-        // Check for the save button
-        const saveButton = await page.$('#saveButton');
-        if (saveButton) {
-          console.log('✅ Found save button');
-          
-          // Check if checkbox is checked
-          const checkbox = await page.$('#autoSendCheckbox');
-          if (checkbox) {
-            const isChecked = await page.evaluate(el => el.checked, checkbox);
-            console.log('☑️ Checkbox checked:', isChecked);
-          }
-        }
-        
-        // TEST BACKFILL BUTTON
-        console.log('🧪 Testing Backfill button...');
-        const backfillButton = await page.$('#backfillButton');
-        if (backfillButton) {
-          console.log('✅ Found backfill button');
-          
-          // Click backfill button and capture console logs
-          const consoleLogs = [];
-          page.on('console', msg => {
-            consoleLogs.push(msg.text());
-            console.log('📝 Console:', msg.text());
-          });
-          
-          await backfillButton.click();
-          console.log('🖱️ Clicked backfill button');
-          
-          // Wait for any response
-          await page.waitForTimeout(3000);
-          
-          // Check for status messages
-          const statusElement = await page.$('#saveStatus');
-          if (statusElement) {
-            const statusText = await page.evaluate(el => el.textContent, statusElement);
-            console.log('📊 Status after backfill:', statusText);
-          }
-          
-          console.log('📝 All console logs during backfill:', consoleLogs);
-        } else {
-          console.log('❌ Backfill button not found');
-        }
-        
-        // TEST DAILY SYNC BUTTON
-        console.log('🧪 Testing Daily Sync button...');
-        const dailySyncButton = await page.$('#dailySyncButton');
-        if (dailySyncButton) {
-          console.log('✅ Found daily sync button');
-          
-          // Click daily sync button and capture console logs
-          const syncConsoleLogs = [];
-          page.on('console', msg => {
-            syncConsoleLogs.push(msg.text());
-            console.log('📝 Console:', msg.text());
-          });
-          
-          await dailySyncButton.click();
-          console.log('🖱️ Clicked daily sync button');
-          
-          // Wait for any response
-          await page.waitForTimeout(3000);
-          
-          // Check for status messages
-          const syncStatusElement = await page.$('#saveStatus');
-          if (syncStatusElement) {
-            const syncStatusText = await page.evaluate(el => el.textContent, syncStatusElement);
-            console.log('📊 Status after daily sync:', syncStatusText);
-          }
-          
-          console.log('📝 All console logs during daily sync:', syncConsoleLogs);
-        } else {
-          console.log('❌ Daily sync button not found');
-        }
-        
+      console.log('✅ On dashboard');
+      await page.waitForTimeout(2000);
+
+      // Test Backfill
+      console.log('🧪 Testing Backfill button...');
+      const backfillButton = await page.$('#backfillButton');
+      if (backfillButton) {
+        const consoleLogs = [];
+        page.on('console', msg => { consoleLogs.push(msg.text()); });
+        await backfillButton.click();
+        await page.waitForTimeout(4000);
+        const statusText = await page.$eval('#saveStatus', el => el.textContent).catch(() => '');
+        console.log('📊 Backfill status:', statusText.trim());
+        console.log('📝 Backfill console logs:', consoleLogs);
       } else {
-        console.log('❌ Automated Sending section not found');
+        console.log('❌ Backfill button not found');
       }
-      
+
+      // Test Daily Sync
+      console.log('🧪 Testing Daily Sync button...');
+      const dailySyncButton = await page.$('#dailySyncButton');
+      if (dailySyncButton) {
+        const syncLogs = [];
+        page.on('console', msg => { syncLogs.push(msg.text()); });
+        await dailySyncButton.click();
+        await page.waitForTimeout(4000);
+        const syncStatus = await page.$eval('#saveStatus', el => el.textContent).catch(() => '');
+        console.log('📊 Daily sync status:', syncStatus.trim());
+        console.log('📝 Daily sync console logs:', syncLogs);
+      } else {
+        console.log('❌ Daily sync button not found');
+      }
     } else {
       console.log('❌ Not on dashboard, current URL:', page.url());
     }
-    
   } catch (error) {
     console.error('💥 Test failed:', error);
   }
   
-  // Close browser
   await browser.close();
   console.log('🔍 Test complete.');
 }

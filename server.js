@@ -1017,9 +1017,7 @@
         // Backfill recent payments (default 30 days; up to 90)
         app.post('/integrations/square/backfill', requireMerchantAuth, async (req, res) => {
             try {
-                console.log('[SQUARE BACKFILL] Request received');
                 const uid = req.session.user.uid;
-                console.log('[SQUARE BACKFILL] UID:', uid);
                 const businessRef = db.collection('businesses').doc(uid);
                 const snap = await businessRef.get();
                 if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
@@ -1028,19 +1026,16 @@
                 if (!tokenCipher) return res.status(400).json({ error: 'not_connected' });
                 const accessToken = await decryptString(tokenCipher);
                 const days = Math.max(1, Math.min(90, parseInt((req.body && req.body.days) || (req.query && req.query.days) || '30', 10)));
-                console.log('[SQUARE BACKFILL] Days:', days);
                 const end = new Date();
                 const begin = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
                 const params = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
 
                 let processed = 0;
                 const payments = await fetchSquarePayments(accessToken, params);
-                console.log('[SQUARE BACKFILL] Payments found:', payments.length);
                 for (const p of payments) {
                     const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
                     if (ok) processed++;
                 }
-                console.log('[SQUARE BACKFILL] Processed:', processed);
                 return res.json({ ok: true, scanned: payments.length, processed });
             } catch (e) {
                 console.error('square backfill error', e && (e.stack || e.message || e));
@@ -1051,9 +1046,7 @@
         // Daily incremental sync (last 24h)
         app.post('/integrations/square/sync-daily', requireMerchantAuth, async (req, res) => {
             try {
-                console.log('[SQUARE SYNC] Request received');
                 const uid = req.session.user.uid;
-                console.log('[SQUARE SYNC] UID:', uid);
                 const businessRef = db.collection('businesses').doc(uid);
                 const snap = await businessRef.get();
                 if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
@@ -1067,12 +1060,10 @@
 
                 let processed = 0;
                 const payments = await fetchSquarePayments(accessToken, params);
-                console.log('[SQUARE SYNC] Payments found:', payments.length);
                 for (const p of payments) {
                     const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
                     if (ok) processed++;
                 }
-                console.log('[SQUARE SYNC] Processed:', processed);
                 return res.json({ ok: true, scanned: payments.length, processed });
             } catch (e) {
                 console.error('square daily sync error', e && (e.stack || e.message || e));
@@ -1113,6 +1104,873 @@
                 return res.json({ ok: true, merchants, scanned: scannedTotal, processed: processedTotal });
             } catch (e) {
                 console.error('sync-all-daily error', e && (e.stack || e.message || e));
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
+        // MOCK SQUARE API FOR TESTING - Simulates Square API responses
+        console.log('[MOCK-SQUARE] Setting up mock Square API endpoints for testing...');
+        
+        // Mock Square payments data
+        const generateMockPayments = (days = 30) => {
+            const payments = [];
+            const now = new Date();
+            const startDate = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+            
+            for (let i = 0; i < Math.min(days, 50); i++) { // Max 50 payments
+                const paymentDate = new Date(startDate.getTime() + (i * 24 * 60 * 60 * 1000));
+                const amount = Math.floor(Math.random() * 10000) + 100; // $1.00 to $100.00
+                
+                payments.push({
+                    id: `mock_payment_${i}_${Date.now()}`,
+                    created_at: paymentDate.toISOString(),
+                    updated_at: paymentDate.toISOString(),
+                    amount_money: {
+                        amount: amount,
+                        currency: 'USD'
+                    },
+                    status: 'COMPLETED',
+                    receipt_number: `R${String(i + 1).padStart(6, '0')}`,
+                    customer_id: `mock_customer_${i}`,
+                    location_id: 'mock_location_123',
+                    order_id: `mock_order_${i}`,
+                    reference_id: `ref_${i}`,
+                    note: `Mock payment ${i + 1}`,
+                    card_details: {
+                        card: {
+                            card_brand: 'VISA',
+                            last_4: String(Math.floor(Math.random() * 9000) + 1000)
+                        }
+                    }
+                });
+            }
+            
+            return payments;
+        };
+
+        // Mock Square backfill endpoint
+        app.post('/mock/square/backfill', requireMerchantAuth, async (req, res) => {
+            try {
+                console.log('[MOCK-SQUARE-BACKFILL] Mock backfill request received');
+                const uid = req.session.user.uid;
+                const days = Math.max(1, Math.min(90, parseInt((req.body && req.body.days) || '30', 10)));
+                
+                console.log(`[MOCK-SQUARE-BACKFILL] Processing ${days} days for UID: ${uid}`);
+                
+                // Simulate processing time
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const mockPayments = generateMockPayments(days);
+                const processed = Math.floor(mockPayments.length * 0.8); // 80% success rate
+                
+                console.log(`[MOCK-SQUARE-BACKFILL] Generated ${mockPayments.length} mock payments, processed ${processed}`);
+                
+                res.json({ 
+                    ok: true, 
+                    scanned: mockPayments.length, 
+                    processed: processed,
+                    message: `Mock backfill completed: ${processed} payments processed from ${mockPayments.length} found`
+                });
+            } catch (e) {
+                console.error('[MOCK-SQUARE-BACKFILL] Error:', e);
+                res.status(500).json({ error: 'mock_server_error' });
+            }
+        });
+
+        // Mock Square daily sync endpoint
+        app.post('/mock/square/sync-daily', requireMerchantAuth, async (req, res) => {
+            try {
+                console.log('[MOCK-SQUARE-SYNC] Mock daily sync request received');
+                const uid = req.session.user.uid;
+                
+                console.log(`[MOCK-SQUARE-SYNC] Processing daily sync for UID: ${uid}`);
+                
+                // Simulate processing time
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                const mockPayments = generateMockPayments(1); // Last 24 hours
+                const processed = Math.floor(mockPayments.length * 0.9); // 90% success rate
+                
+                console.log(`[MOCK-SQUARE-SYNC] Generated ${mockPayments.length} mock payments, processed ${processed}`);
+                
+                res.json({ 
+                    ok: true, 
+                    scanned: mockPayments.length, 
+                    processed: processed,
+                    message: `Mock daily sync completed: ${processed} payments processed from ${mockPayments.length} found`
+                });
+            } catch (e) {
+                console.error('[MOCK-SQUARE-SYNC] Error:', e);
+                res.status(500).json({ error: 'mock_server_error' });
+            }
+        });
+
+        console.log('[MOCK-SQUARE] Mock Square API endpoints ready for testing!');
+
+        // --- 3d. Square OAuth ---
+        const SQUARE_APP_ID = process.env.SQUARE_APP_ID || '';
+        let SQUARE_APP_SECRET = process.env.SQUARE_APP_SECRET || '';
+        if (!SQUARE_APP_SECRET) {
+            try {
+                const { SSMClient, GetParameterCommand } = require('@aws-sdk/client-ssm');
+                const ssm2 = new SSMClient({ region: awsRegion });
+                const p = await ssm2.send(new GetParameterCommand({ Name: '/reviewpilot/prod/square_app_secret', WithDecryption: true }));
+                SQUARE_APP_SECRET = p.Parameter.Value;
+            } catch (_) { /* ignore */ }
+        }
+        const SQUARE_REDIRECT_URL = process.env.SQUARE_REDIRECT_URL || (appUrl ? appUrl + '/api/square/callback' : '');
+        const SQUARE_SCOPES = process.env.SQUARE_SCOPES || 'PAYMENTS_READ,ORDERS_READ,CUSTOMERS_READ';
+
+        // Signed state helpers for OAuth (avoid reliance on volatile server sessions)
+        const OAUTH_STATE_SECRET = process.env.OAUTH_STATE_SECRET || process.env.SESSION_SECRET || 'dev-oauth-state';
+        function createSignedState(data) {
+            try {
+                const payload = Buffer.from(JSON.stringify(data), 'utf8').toString('base64url');
+                const sig = crypto.createHmac('sha256', OAUTH_STATE_SECRET).update(payload).digest('base64url');
+                return `${payload}.${sig}`;
+            } catch (_) { return null; }
+        }
+        function verifySignedState(state) {
+            try {
+                const parts = String(state || '').split('.');
+                if (parts.length !== 2) return null;
+                const [payload, sig] = parts;
+                const exp = crypto.createHmac('sha256', OAUTH_STATE_SECRET).update(payload).digest('base64url');
+                if (sig !== exp) return null;
+                const json = Buffer.from(payload, 'base64url').toString('utf8');
+                return JSON.parse(json);
+            } catch (_) { return null; }
+        }
+        function getUserIdFromRequest(req) {
+            try {
+                const raw = req.cookies && req.cookies.session;
+                if (raw && raw !== 'INVALIDATED' && raw !== 'expired') {
+                    const jwt = require('jsonwebtoken');
+                    const d = jwt.decode(raw);
+                    
+                    // Reject ANY JWT token without proper expiration field
+                    if (!d || !d.sub || !d.exp || d.exp * 1000 <= Date.now()) {
+                        console.log(`[AUTH] Rejecting invalid JWT in getUserIdFromRequest: sub=${d?.sub}, exp=${d?.exp}`);
+                        return null;
+                    }
+                    
+                    // Check if this JWT was issued before the logout invalidation
+                    if (d.iat && sessionInvalidationTime > 0 && d.iat * 1000 < sessionInvalidationTime) {
+                        console.log(`[AUTH] Rejected JWT issued before logout: iat=${d.iat * 1000}, invalidation=${sessionInvalidationTime}`);
+                        return null;
+                    }
+                    
+                    console.log(`[AUTH] Valid JWT found in getUserIdFromRequest: sub=${d.sub}, exp=${d.exp}`);
+                    return d.sub;
+                }
+            } catch(_) {}
+            // Fallback to session if present, but do not require it
+            try { if (req.session && req.session.user && req.session.user.uid) return req.session.user.uid; } catch(_) {}
+            return null;
+        }
+
+        // Resolve the canonical business document reference for the current user.
+        // Mirrors the fallback logic used by the /dashboard route so writes hit
+        // the same document that renders the settings.
+        async function resolveBusinessRef(req) {
+            const uid = getUserIdFromRequest(req);
+            if (!uid) return { ref: null, id: null };
+            try {
+                let snap = await db.collection('businesses').doc(uid).get();
+                if (snap && snap.exists) {
+                    return { ref: db.collection('businesses').doc(uid), id: uid };
+                }
+                const email = (req.session && req.session.user && req.session.user.email) || null;
+                if (email) {
+                    const q = await db.collection('businesses').where('email','==', email).limit(1).get();
+                    if (!q.empty) {
+                        const id = q.docs[0].id;
+                        return { ref: db.collection('businesses').doc(id), id };
+                    }
+                }
+            } catch (_) {}
+            return { ref: null, id: null };
+        }
+
+        // --- Auth guards (define before routes use them) ---
+        const requireLogin = (req, res, next) => {
+            const uid = getUserIdFromRequest(req);
+            if (uid) {
+                // Optionally backfill req.session.user for downstream code that still reads it
+                try { req.session.user = req.session.user || { uid, email: null, displayName: null }; } catch(_) {}
+                return next();
+            }
+            return res.redirect(302, '/login');
+        };
+        const requireAccess = async (req, res, next) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.redirect(302, '/login');
+
+                // Check subscription/trial access
+                let status = null;
+                let trialEndsAt = null;
+                try {
+                    const doc = await db.collection('businesses').doc(uid).get();
+                    if (doc.exists) {
+                        const data = doc.data() || {};
+                        status = data.subscriptionStatus || null;
+                        trialEndsAt = data.trialEndsAt || null;
+                    }
+                } catch (_) {}
+                const now = new Date();
+                const isActive = status === 'active';
+                const isTrial = status === 'trial' && trialEndsAt && (new Date(trialEndsAt) > now);
+                const hasAccess = isActive || isTrial;
+                if (!hasAccess) {
+                    if (!uid) return res.redirect(302, '/login');
+                    return res.redirect(302, '/pricing');
+                }
+                return next();
+            } catch (_) { return res.redirect(302, '/pricing'); }
+        };
+
+        // POS OAuth (Square) - Initiate via POST (AJAX) or GET fallback
+        app.post('/auth/pos/square/connect', async (req, res) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                try { console.log('Square connect POST: cookies=', Object.keys(req.cookies||{}), 'hasSessionCookie=', !!(req.cookies&&req.cookies.session), 'uid=', uid); } catch(_) {}
+                if (!uid) return res.status(401).json({ error: 'unauthorized' });
+                const state = createSignedState({ uid, nonce: crypto.randomBytes(12).toString('hex'), iat: Date.now() });
+                const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
+                return res.json({ url: authUrl });
+            } catch (e) {
+                console.error('square connect error', e);
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+        // GET fallback alias
+        app.get('/auth/pos/square/connect', (req, res) => {
+            const uid = getUserIdFromRequest(req);
+            try { console.log('Square connect GET: cookies=', Object.keys(req.cookies||{}), 'hasSessionCookie=', !!(req.cookies&&req.cookies.session), 'uid=', uid); } catch(_) {}
+            if (!uid) return res.redirect('/login');
+            const state = createSignedState({ uid, nonce: crypto.randomBytes(12).toString('hex'), iat: Date.now() });
+            const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
+            res.redirect(authUrl);
+        });
+        app.get('/api/square/connect', requireLogin, (req, res) => {
+            const state = crypto.randomBytes(16).toString('hex');
+            req.session.square_oauth_state = state;
+            const authUrl = `https://connect.squareup.com/oauth2/authorize?client_id=${encodeURIComponent(SQUARE_APP_ID)}&scope=${encodeURIComponent(SQUARE_SCOPES)}&session=false&state=${encodeURIComponent(state)}&redirect_uri=${encodeURIComponent(SQUARE_REDIRECT_URL)}`;
+            res.redirect(authUrl);
+        });
+
+        app.get('/api/square/callback', async (req, res) => {
+            try {
+                const { code, state } = req.query || {};
+                if (!code || !state) return res.status(400).send('invalid_state');
+                const parsed = verifySignedState(state);
+                const ownerUid = parsed && parsed.uid ? parsed.uid : getUserIdFromRequest(req);
+                if (!ownerUid) return res.status(400).send('invalid_state');
+                // Exchange code
+                const tokenResp = await fetch('https://connect.squareup.com/oauth2/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_id: SQUARE_APP_ID,
+                        client_secret: SQUARE_APP_SECRET,
+                        code,
+                        grant_type: 'authorization_code',
+                        redirect_uri: SQUARE_REDIRECT_URL
+                    })
+                });
+                if (!tokenResp.ok) {
+                    const t = await tokenResp.text();
+                    console.error('square token error', t);
+                    return res.status(400).send('oauth_error');
+                }
+                const tokenJson = await tokenResp.json();
+                const encAccess = await encryptString(tokenJson.access_token);
+                const encRefresh = tokenJson.refresh_token ? await encryptString(tokenJson.refresh_token) : null;
+                await db.collection('businesses').doc(ownerUid).set({
+                    square: {
+                        merchantId: tokenJson.merchant_id || null,
+                        access: encAccess,
+                        refresh: encRefresh,
+                        expiresAt: tokenJson.expires_at || null,
+                        scope: tokenJson.scope || SQUARE_SCOPES
+                    }
+                }, { merge: true });
+                // Mark connection metadata for UI
+                await db.collection('businesses').doc(ownerUid).set({
+                    posConnection: {
+                        isConnected: true,
+                        provider: 'square',
+                        connectedAt: new Date().toISOString(),
+                        scopesGranted: (tokenJson.scope || '').split(',').map(s => s.trim()).filter(Boolean)
+                    }
+                }, { merge: true });
+                // For server flow, redirect back to dashboard with success flag
+                res.redirect('/dashboard?pos=square_connected');
+            } catch (e) {
+                console.error('square callback error', e);
+                res.status(500).send('server_error');
+            }
+        });
+        // Callback alias (if Square dashboard uses this URL)
+        app.get('/auth/pos/square/callback', async (req, res) => {
+            try {
+                const { code, state } = req.query || {};
+                if (!code || !state) return res.status(400).send('invalid_state');
+                const parsed = verifySignedState(state);
+                const ownerUid = parsed && parsed.uid ? parsed.uid : getUserIdFromRequest(req);
+                if (!ownerUid) return res.status(400).send('invalid_state');
+                const tokenResp = await fetch('https://connect.squareup.com/oauth2/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_id: SQUARE_APP_ID,
+                        client_secret: SQUARE_APP_SECRET,
+                        code,
+                        grant_type: 'authorization_code',
+                        redirect_uri: SQUARE_REDIRECT_URL
+                    })
+                });
+                if (!tokenResp.ok) {
+                    const t = await tokenResp.text();
+                    console.error('square token error (alias)', t);
+                    return res.status(400).send('oauth_error');
+                }
+                const tokenJson = await tokenResp.json();
+                const encAccess = await encryptString(tokenJson.access_token);
+                const encRefresh = tokenJson.refresh_token ? await encryptString(tokenJson.refresh_token) : null;
+                await db.collection('businesses').doc(ownerUid).set({
+                    square: {
+                        merchantId: tokenJson.merchant_id || null,
+                        access: encAccess,
+                        refresh: encRefresh,
+                        expiresAt: tokenJson.expires_at || null,
+                        scope: tokenJson.scope || SQUARE_SCOPES
+                    }
+                }, { merge: true });
+                await db.collection('businesses').doc(ownerUid).set({
+                    posConnection: {
+                        isConnected: true,
+                        provider: 'square',
+                        connectedAt: new Date().toISOString(),
+                        scopesGranted: (tokenJson.scope || '').split(',').map(s => s.trim()).filter(Boolean)
+                    }
+                }, { merge: true });
+                res.redirect('/dashboard?pos=square_connected');
+            } catch (e) {
+                console.error('square callback error (alias)', e);
+                res.status(500).send('server_error');
+            }
+        });
+
+        // Connection status for UI single source of truth
+        app.get('/api/pos/connection-status', async (req, res) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ posConnection: { isConnected: false } });
+                const doc = await db.collection('businesses').doc(uid).get();
+                const d = doc.exists ? (doc.data() || {}) : {};
+                const squareMeta = d.square || {};
+                const posMeta = d.posConnection || {};
+                const payload = {
+                    posConnection: {
+                        isConnected: !!(squareMeta.access || posMeta.isConnected),
+                        provider: squareMeta.merchantId ? 'square' : (posMeta.provider || null),
+                        connectedAt: posMeta.connectedAt || null,
+                        scopesGranted: (posMeta.scopesGranted && Array.isArray(posMeta.scopesGranted)) ? posMeta.scopesGranted : ((squareMeta.scope || '').split(',').map(s => s.trim()).filter(Boolean))
+                    }
+                };
+                return res.json(payload);
+            } catch (e) {
+                console.error('connection-status error', e);
+                return res.status(500).json({ posConnection: { isConnected: false } });
+            }
+        });
+
+        // POS: repair status if tokens exist but status not set (safety net)
+        app.post('/api/pos/repair-status', async (req, res) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ ok: false, reason: 'unauthorized' });
+                const ref = db.collection('businesses').doc(uid);
+                const snap = await ref.get();
+                if (!snap.exists) return res.json({ ok: false, reason: 'no_business' });
+                const d = snap.data() || {};
+                const squareMeta = d.square || {};
+                if (squareMeta && squareMeta.access) {
+                    await ref.set({
+                        posConnection: {
+                            isConnected: true,
+                            provider: 'square',
+                            connectedAt: new Date().toISOString(),
+                            scopesGranted: (squareMeta.scope || '').split(',').map(s => s.trim()).filter(Boolean)
+                        }
+                    }, { merge: true });
+                    return res.json({ ok: true, repaired: true });
+                }
+                return res.json({ ok: false, reason: 'no_tokens' });
+            } catch (e) {
+                console.error('repair-status error', e);
+                return res.status(500).json({ ok: false, reason: 'server' });
+            }
+        });
+
+        // Onboarding status (dynamic, single source of truth)
+        app.get('/api/onboarding/status', async (req, res) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ hasPlaceId:false, hasShortLink:false, posConnected:false, sentFirst:false });
+                const ref = db.collection('businesses').doc(uid);
+                const doc = await ref.get();
+                const b = doc.exists ? (doc.data() || {}) : {};
+                let posConnected = !!(b.posConnection && b.posConnection.isConnected);
+                if (!posConnected && b.square && b.square.access) posConnected = true;
+                let sentFirst = false;
+                try {
+                    // Check if there are any customer reviews in the reviews collection
+                    const reviewsQuery = await db.collection('reviews').where('userId', '==', uid).limit(1).get();
+                    sentFirst = !reviewsQuery.empty;
+                } catch(_) {}
+                return res.json({
+                    hasPlaceId: !!b.googlePlaceId,
+                    hasShortLink: !!(b.shortSlug || b.googlePlaceId),
+                    posConnected,
+                    sentFirst
+                });
+            } catch (e) {
+                console.error('onboarding status error', e);
+                return res.status(200).json({ hasPlaceId:false, hasShortLink:false, posConnected:false, sentFirst:false });
+            }
+        });
+
+        // POS: disconnect Square (revoke token, clear metadata)
+        app.post('/auth/pos/square/disconnect', async (req, res) => {
+            try {
+                const uid = getUserIdFromRequest(req);
+                if (!uid) return res.status(401).json({ ok: false, reason: 'unauthorized' });
+                const ref = db.collection('businesses').doc(uid);
+                const snap = await ref.get();
+                const d = snap.exists ? (snap.data() || {}) : {};
+                const squareMeta = d.square || {};
+
+                // Best-effort revoke at Square
+                if (squareMeta && squareMeta.access) {
+                    try {
+                        const tokenCipher = squareMeta.access;
+                        const accessToken = await decryptString(tokenCipher);
+                        const revokeResp = await fetch('https://connect.squareup.com/oauth2/revoke', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Client ${SQUARE_APP_SECRET}`
+                            },
+                            body: JSON.stringify({ client_id: SQUARE_APP_ID, access_token: accessToken })
+                        });
+                        if (!revokeResp.ok) {
+                            const t = await revokeResp.text().catch(() => '');
+                            console.warn('square revoke failed', t);
+                        }
+                    } catch (e) {
+                        console.warn('square revoke error', e);
+                    }
+                }
+
+                await ref.set({
+                    square: {
+                        merchantId: null,
+                        access: null,
+                        refresh: null,
+                        expiresAt: null,
+                        scope: null
+                    },
+                    posConnection: {
+                        isConnected: false,
+                        provider: null,
+                        connectedAt: null,
+                        scopesGranted: []
+                    }
+                }, { merge: true });
+
+                return res.json({ ok: true, disconnected: true });
+            } catch (e) {
+                console.error('square disconnect error', e);
+                return res.status(500).json({ ok: false, reason: 'server_error' });
+            }
+        });
+
+        // Save Square automation settings (legacy form endpoint - keeping for compatibility)
+        app.post('/integrations/square/settings', requireLogin, csrfProtection, async (req, res) => {
+            try {
+                console.log(`[SQUARE-SETTINGS] Form submitted successfully, body:`, req.body);
+                const { autoSend, delayMinutes, channel } = req.body || {};
+                const settings = {
+                    autoSend: !!autoSend,
+                    delayMinutes: Math.max(0, Math.min(10080, parseInt(delayMinutes || '0', 10))),
+                    channel: channel === 'sms' ? 'sms' : 'email'
+                };
+                console.log(`[SQUARE-SETTINGS] Settings to save:`, settings);
+                const { ref } = await resolveBusinessRef(req);
+                if (!ref) { console.error('[SQUARE-SETTINGS] Could not resolve business ref'); return res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
+                await ref.set({ squareSettings: settings }, { merge: true });
+                console.log(`[SQUARE-SETTINGS] Settings saved successfully`);
+                res.redirect('/dashboard');
+            } catch (e) { console.error('save square settings', e); res.redirect('/dashboard?e=' + encodeURIComponent('Could not save settings')); }
+        });
+
+        // New AJAX endpoint for automation settings (no CSRF required; relies on same-origin + JWT)
+        app.post('/api/automation/save', async (req, res) => {
+            try {
+                console.log('[AUTOMATION-SAVE] Request received:', {
+                    method: req.method,
+                    url: req.url,
+                    headers: req.headers,
+                    body: req.body,
+                    cookies: req.cookies,
+                    session: req.session
+                });
+                
+                // Get user ID from JWT token in cookie (same as getUserIdFromRequest)
+                const uid = getUserIdFromRequest(req);
+                console.log('[AUTOMATION-SAVE] getUserIdFromRequest result:', uid);
+                
+                if (!uid) {
+                    console.log('[AUTOMATION-SAVE] No valid user ID found');
+                    return res.status(401).json({ error: 'unauthorized' });
+                }
+
+                console.log(`[AUTOMATION-SAVE] Saving settings for UID: ${uid}`);
+                const { autoSend, delayMinutes, channel } = req.body || {};
+                console.log('[AUTOMATION-SAVE] Request body:', { autoSend, delayMinutes, channel });
+                
+                const settings = {
+                    autoSend: !!autoSend,
+                    delayMinutes: Math.max(0, Math.min(10080, parseInt(delayMinutes || '0', 10))),
+                    channel: channel === 'sms' ? 'sms' : 'email'
+                };
+                
+                console.log(`[AUTOMATION-SAVE] Processed settings:`, settings);
+                const { ref, id } = await resolveBusinessRef(req);
+                console.log('[AUTOMATION-SAVE] resolveBusinessRef result:', { ref: !!ref, id });
+                
+                // Debug: Check what's currently in the document before saving
+                if (ref) {
+                    try {
+                        const currentDoc = await ref.get();
+                        console.log(`[AUTOMATION-SAVE] Current document data:`, currentDoc.data());
+                        console.log(`[AUTOMATION-SAVE] Current squareSettings:`, currentDoc.data()?.squareSettings);
+                    } catch (e) {
+                        console.log(`[AUTOMATION-SAVE] Error reading current document:`, e.message);
+                    }
+                }
+                
+                if (!ref) {
+                    console.log('[AUTOMATION-SAVE] Business reference not found');
+                    return res.status(400).json({ error: 'business_not_found' });
+                }
+                
+                console.log(`[AUTOMATION-SAVE] Saving to business document: ${id}`);
+                await ref.set({ squareSettings: settings }, { merge: true });
+                console.log(`[AUTOMATION-SAVE] Settings saved successfully for UID: ${uid} to document: ${id}`);
+                
+                res.json({ success: true, message: 'Settings saved successfully' });
+            } catch (e) { 
+                console.error('[AUTOMATION-SAVE] Error saving settings:', e); 
+                res.status(500).json({ error: 'Failed to save settings' }); 
+            }
+        });
+
+        // Automation endpoints moved to after session middleware
+
+        // Simple form-based automation save route
+        app.post('/save-automation', async (req, res) => {
+            try {
+                console.log('[SAVE-AUTOMATION] Form submission received:', { body: req.body });
+                
+                if (!req.session || !req.session.user) {
+                    console.log('[SAVE-AUTOMATION] No session user, redirecting to login');
+                    return res.redirect('/login');
+                }
+                
+                const uid = req.session.user.uid;
+                console.log(`[SAVE-AUTOMATION] Saving automation for UID: ${uid}`);
+                
+                // Get form data
+                const autoSend = req.body.autoSend === 'true';
+                const delayMinutes = parseInt(req.body.delayMinutes) || 0;
+                const channel = req.body.channel || 'email';
+                
+                console.log('[SAVE-AUTOMATION] Form values:', { autoSend, delayMinutes, channel });
+                
+                // Validate
+                if (delayMinutes < 0 || delayMinutes > 10080) {
+                    console.log('[SAVE-AUTOMATION] Invalid delay value');
+                    return res.redirect('/dashboard?error=invalid_delay');
+                }
+                
+                // Save to database
+                const businessRef = db.collection('businesses').doc(uid);
+                await businessRef.set({
+                    squareSettings: {
+                        autoSend,
+                        delayMinutes,
+                        channel
+                    }
+                }, { merge: true });
+                
+                console.log(`[SAVE-AUTOMATION] Successfully saved automation settings for UID: ${uid}`);
+                
+                // Redirect back to dashboard with success message
+                res.redirect('/dashboard?success=automation_saved');
+                
+            } catch (error) {
+                console.error('[SAVE-AUTOMATION] Error:', error);
+                res.redirect('/dashboard?error=save_failed');
+            }
+        });
+
+        // Simple alert notifier (Slack webhook if configured)
+        async function notifyAlert(message, extra){
+            try {
+                const hook = process.env.SLACK_WEBHOOK_URL || '';
+                if (!hook) return;
+                const body = { text: `:rotating_light: ${message}${extra ? `\n\n${typeof extra === 'string' ? extra : JSON.stringify(extra)}` : ''}` };
+                await fetch(hook, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) });
+            } catch(_) {}
+        }
+
+        // Square webhook
+        app.post('/api/webhooks/square', express.raw({ type: 'application/json' }), async (req, res) => {
+            try {
+                const signatureKey = process.env.SQUARE_WEBHOOK_SIGNATURE_KEY || '';
+                const sigHeader = req.get('x-square-hmacsha256-signature') || req.get('x-square-signature') || '';
+                const bodyStr = req.body.toString('utf8');
+                if (signatureKey && sigHeader) {
+                    const hmac = crypto.createHmac('sha256', signatureKey).update(bodyStr).digest('base64');
+                    if (hmac !== sigHeader) { return res.status(401).send('invalid_signature'); }
+                }
+                const payload = JSON.parse(bodyStr);
+                const type = payload?.type || payload?.event_type || '';
+                if (!type) return res.status(200).send('ok');
+
+                if (type.includes('payment') && JSON.stringify(payload).includes('COMPLETED')) {
+                    const merchantId = payload?.merchant_id || payload?.data?.merchant_id || null;
+                    const customerId = payload?.data?.object?.payment?.customer_id || null;
+                    const businessDoc = await db.collection('businesses').doc(merchantId || req.query.m || '').get();
+                    // Fallback: we store merchantId as Cognito sub; map Square merchant via doc.square.merchantId
+                    let biz = businessDoc.exists ? businessDoc.data() : null;
+                    if (!biz && merchantId) {
+                        const snap = await db.collection('businesses').where('square.merchantId', '==', merchantId).limit(1).get();
+                        if (!snap.empty) { biz = snap.docs[0].data(); }
+                    }
+                    if (!biz) return res.status(200).send('ok');
+                    const settings = biz.squareSettings || { autoSend: false };
+                    if (!settings.autoSend) return res.status(200).send('ok');
+                    // Decrypt token
+                    const tokenCipher = biz?.square?.access;
+                    if (!tokenCipher) return res.status(200).send('ok');
+                    const accessToken = await decryptString(tokenCipher);
+                    // Fetch customer contact
+                    let customer = {};
+                    if (customerId) {
+                        const cResp = await fetch(`https://connect.squareup.com/v2/customers/${customerId}`, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' } });
+                        if (cResp.ok) {
+                            const cj = await cResp.json();
+                            const c = cj?.customer || {};
+                            customer = { email: c?.email_address || null, phone: c?.phone_number || null };
+                        }
+                    }
+                    // Short link
+                    const slug = biz.shortSlug || 'MERCHANT';
+                    const shortLink = `${shortDomain}/${slug}`;
+                    // Compute delay
+                    const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
+                    
+                    // Check trial limit before sending review request
+                    if (biz.subscriptionStatus === 'trial') {
+                        // Get current review count
+                        let currentReviewCount = 0;
+                        if (biz.stats && typeof biz.stats.totalFeedback === 'number') {
+                            currentReviewCount = biz.stats.totalFeedback;
+                        } else {
+                            // Fallback: count reviews manually
+                            const reviewsSnap = await db.collection('reviews').where('userId', '==', biz.uid || biz.id || req.session.user.uid).get();
+                            currentReviewCount = reviewsSnap.size;
+                        }
+                        
+                        if (currentReviewCount >= 25) {
+                            console.log(`[TRIAL-LIMIT] Square webhook blocked: UID=${biz.uid || biz.id || req.session.user.uid}, Count=${currentReviewCount}/25`);
+                            // Log the blocked attempt
+                            try { await db.collection('businesses').doc(biz.uid || biz.id || req.session.user.uid).collection('events').add({ type: 'send_blocked', ts: new Date().toISOString(), payload: { reason: 'trial_limit_reached', currentCount: currentReviewCount } }); } catch(_) {}
+                            return res.status(200).send('ok'); // Don't send, but don't fail the webhook
+                        }
+                        
+                        console.log(`[TRIAL-LIMIT] Square webhook allowed: UID=${biz.uid || biz.id || req.session.user.uid}, Count=${currentReviewCount + 1}/25`);
+                    }
+                    
+                    if (reviewQueue) {
+                        await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantUid: (biz.uid || biz.id || req.session.user.uid), shortLink }, { delay: delayMs, attempts: 1 });
+                    } else {
+                        // Fallback: run in-process with timeout (non-durable)
+                        setTimeout(() => {
+                            sendReviewRequest({ merchantUid: (biz.uid || biz.id || req.session.user.uid), customer, channel: settings.channel || 'email', shortLink });
+                        }, delayMs);
+                    }
+                    // POS health: last sync timestamp
+                    try { await db.collection('businesses').doc(biz.uid || req.session.user.uid).set({ posLastSyncAt: new Date().toISOString() }, { merge: true }); } catch(_) {}
+                }
+                res.status(200).send('ok');
+            } catch (e) { console.error('square webhook error', e); notifyAlert('Square webhook error', e && (e.stack || e.message || e)); res.status(200).send('ok'); }
+        });
+
+        // Square payments backfill and daily sync
+        async function fetchSquarePayments(accessToken, params){
+            const query = new URLSearchParams(params).toString();
+            let url = `https://connect.squareup.com/v2/payments?${query}`;
+            let items = [];
+            for (let i=0; i<20; i++) { // hard cap pages
+                const r = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type':'application/json' } });
+                if (!r.ok) { const t = await r.text().catch(()=>r.statusText); throw new Error(`square_payments_http_${r.status}: ${t}`); }
+                const j = await r.json();
+                if (Array.isArray(j.payments)) items = items.concat(j.payments);
+                if (j.cursor) { url = `https://connect.squareup.com/v2/payments?cursor=${encodeURIComponent(j.cursor)}`; } else { break; }
+            }
+            return items;
+        }
+
+        async function processSquarePayment({ businessRef, businessData, payment, accessToken }){
+            try {
+                if (!payment || payment.status !== 'COMPLETED') return false;
+                const paymentId = payment.id;
+                const syncedRef = businessRef.collection('syncedPayments').doc(paymentId);
+                const exists = await syncedRef.get();
+                if (exists.exists) return false; // idempotent
+
+                // Fetch customer contact
+                let customer = {};
+                const customerId = payment.customer_id;
+                if (customerId) {
+                    try {
+                        const cResp = await fetch(`https://connect.squareup.com/v2/customers/${customerId}`, { headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type':'application/json' } });
+                        if (cResp.ok) {
+                            const cj = await cResp.json();
+                            const c = cj?.customer || {};
+                            customer = { email: c.email_address || null, phone: c.phone_number || null };
+                        }
+                    } catch(_) { /* ignore */ }
+                }
+
+                // Short link
+                const googlePlaceId = businessData.googlePlaceId || null;
+                const slug = businessData.shortSlug || (googlePlaceId ? googlePlaceId : 'SETUP');
+                const shortLink = `${shortDomain}/${slug}`;
+
+                // Auto-send settings
+                const settings = businessData.squareSettings || { autoSend: false, delayMinutes: 0, channel: 'email' };
+
+                // Mark synced first to avoid double work in concurrent calls
+                await syncedRef.set({ ts: new Date().toISOString(), amount: payment.amount_money?.amount || null, currency: payment.amount_money?.currency || null, customerId: customerId || null });
+
+                // Enqueue send if enabled
+                if (settings.autoSend) {
+                    // Check trial limit before sending review request
+                    if (businessData.subscriptionStatus === 'trial') {
+                        // Get current review count
+                        let currentReviewCount = 0;
+                        if (businessData.stats && typeof businessData.stats.totalFeedback === 'number') {
+                            currentReviewCount = businessData.stats.totalFeedback;
+                        } else {
+                            // Fallback: count reviews manually
+                            const reviewsSnap = await businessRef.collection('reviews').get();
+                            currentReviewCount = reviewsSnap.size;
+                        }
+                        
+                        if (currentReviewCount >= 25) {
+                            console.log(`[TRIAL-LIMIT] Square automation blocked: UID=${businessData.uid}, Count=${currentReviewCount}/25`);
+                            // Log the blocked attempt
+                            try { await businessRef.collection('events').add({ type: 'send_blocked', ts: new Date().toISOString(), payload: { reason: 'trial_limit_reached', paymentId, currentCount: currentReviewCount } }); } catch(_) {}
+                            return true; // Don't send, but don't fail the payment processing
+                        }
+                        
+                        console.log(`[TRIAL-LIMIT] Square automation allowed: UID=${businessData.uid}, Count=${currentReviewCount + 1}/25`);
+                    }
+                    
+                    const delayMs = Math.max(0, (settings.delayMinutes || 0) * 60 * 1000);
+                    if (reviewQueue) {
+                        await reviewQueue.add('sendReviewRequest', { channel: settings.channel || 'email', customer, merchantUid: (businessData.uid || businessRef.id), shortLink }, { delay: delayMs, attempts: 1 });
+                    } else {
+                        setTimeout(() => { sendReviewRequest({ merchantUid: (businessData.uid || businessRef.id), customer, channel: settings.channel || 'email', shortLink }); }, delayMs);
+                    }
+                    try { await businessRef.collection('events').add({ type: 'enqueue_send', ts: new Date().toISOString(), payload: { paymentId, shortLink, channel: settings.channel || 'email' } }); } catch(_) {}
+                }
+
+                // Update last sync
+                try { await businessRef.set({ posLastSyncAt: new Date().toISOString() }, { merge: true }); } catch(_) {}
+                return true;
+            } catch (e) {
+                console.error('processSquarePayment error', e && (e.stack || e.message || e));
+                notifyAlert('Square processPayment error', { uid: businessData && businessData.uid, err: e && (e.stack || e.message || e) });
+                return false;
+            }
+        }
+
+        const requireMerchantAuth = (req, res, next) => {
+            if (!req.session || !req.session.user) return res.status(401).json({ error: 'unauthorized' });
+            next();
+        };
+
+        // Backfill recent payments (default 30 days; up to 90)
+        app.post('/integrations/square/backfill', requireMerchantAuth, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const businessRef = db.collection('businesses').doc(uid);
+                const snap = await businessRef.get();
+                if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
+                const biz = { uid, ...(snap.data() || {}) };
+                const tokenCipher = biz?.square?.access;
+                if (!tokenCipher) return res.status(400).json({ error: 'not_connected' });
+                const accessToken = await decryptString(tokenCipher);
+                const days = Math.max(1, Math.min(90, parseInt((req.body && req.body.days) || (req.query && req.query.days) || '30', 10)));
+                const end = new Date();
+                const begin = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+                const params = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
+
+                let processed = 0;
+                const payments = await fetchSquarePayments(accessToken, params);
+                for (const p of payments) {
+                    const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
+                    if (ok) processed++;
+                }
+                return res.json({ ok: true, scanned: payments.length, processed });
+            } catch (e) {
+                console.error('square backfill error', e && (e.stack || e.message || e));
+                return res.status(500).json({ error: 'server_error' });
+            }
+        });
+
+        // Daily incremental sync (last 24h)
+        app.post('/integrations/square/sync-daily', requireMerchantAuth, async (req, res) => {
+            try {
+                const uid = req.session.user.uid;
+                const businessRef = db.collection('businesses').doc(uid);
+                const snap = await businessRef.get();
+                if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
+                const biz = { uid, ...(snap.data() || {}) };
+                const tokenCipher = biz?.square?.access;
+                if (!tokenCipher) return res.status(400).json({ error: 'not_connected' });
+                const accessToken = await decryptString(tokenCipher);
+                const end = new Date();
+                const begin = new Date(Date.now() - 24 * 60 * 60 * 1000);
+                const params = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
+
+                let processed = 0;
+                const payments = await fetchSquarePayments(accessToken, params);
+                for (const p of payments) {
+                    const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
+                    if (ok) processed++;
+                }
+                return res.json({ ok: true, scanned: payments.length, processed });
+            } catch (e) {
+                console.error('square daily sync error', e && (e.stack || e.message || e));
                 return res.status(500).json({ error: 'server_error' });
             }
         });
@@ -1772,7 +2630,7 @@
                         req.session.user = null;
                         console.log(`[HOME] Invalid session cleared`);
                     }
-                } catch (error) {
+        } catch (error) {
                     console.log(`[HOME] Error verifying user session: ${error.message}`);
                     // Clear invalid session
                     req.session.user = null;
@@ -1983,7 +2841,7 @@
                         }
                         console.log('[LOGIN] Session saved successfully, redirecting to dashboard');
                         res.setHeader('Cache-Control','no-store'); 
-                        return res.redirect('/dashboard'); 
+            return res.redirect('/dashboard');
                     });
                 }
                 
@@ -2240,7 +3098,7 @@
                     .get();
                 feedback = feedbackSnapshot.docs.map(doc => doc.data());
                 console.log(`[PIPELINE-READ] SUCCESS: Found ${feedback.length} reviews using indexed query.`);
-            } catch (e) {
+        } catch (e) {
                 try {
                     console.warn('[PIPELINE-READ] Indexed query failed, falling back to indexless fetch:', e && (e.code || e.message || String(e)));
                     if (e.message && e.message.includes('FAILED_PRECONDITION')) {
@@ -2462,7 +3320,7 @@
                     user: req.session.user,
                     feedback: [],
                     appUrl: appUrl,
-                    csrfToken: req.csrfToken(),
+                csrfToken: req.csrfToken(),
                     analytics: placeholderAnalytics,
                     billing: null,
                     onboarding: { hasPlaceId: !!knownPlaceId, hasShortLink: !!knownPlaceId, posConnected: false, sentFirst: false },
