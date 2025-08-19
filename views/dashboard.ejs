@@ -1457,7 +1457,13 @@
     </script>
     <script>
       (function(){
+        console.log('[DEBUG] Upgrade button script starting...');
         var upgradeBtn = document.getElementById('btn-upgrade-pro') || document.getElementById('btn-upgrade-pro-secondary');
+        console.log('[DEBUG] Looking for upgrade button...');
+        console.log('[DEBUG] btn-upgrade-pro found:', !!document.getElementById('btn-upgrade-pro'));
+        console.log('[DEBUG] btn-upgrade-pro-secondary found:', !!document.getElementById('btn-upgrade-pro-secondary'));
+        console.log('[DEBUG] upgradeBtn variable:', upgradeBtn);
+        
         var downgradeBtn = document.getElementById('btn-downgrade');
         var modal = document.getElementById('cancelModal');
         var modalClose = document.getElementById('cancelClose');
@@ -1465,12 +1471,14 @@
         
         // Handle upgrade to Pro button
         if (upgradeBtn) {
+          console.log('[DEBUG] Upgrade button found, adding event listener...');
           upgradeBtn.addEventListener('click', async function() {
             console.log('[UPGRADE-PRO] Upgrade button clicked!');
             upgradeBtn.disabled = true;
             upgradeBtn.textContent = 'Redirecting...';
             
             try {
+              console.log('[DEBUG] Attempting redirect to /pricing...');
               // Redirect to pricing page
               window.location.href = '/pricing';
             } catch (error) {
@@ -1480,6 +1488,12 @@
               alert('Error redirecting to pricing page. Please try again.');
             }
           });
+          console.log('[DEBUG] Event listener added successfully');
+        } else {
+          console.log('[DEBUG] ❌ Upgrade button NOT found!');
+          console.log('[DEBUG] All elements with "upgrade" in ID:');
+          const allElements = document.querySelectorAll('*[id*="upgrade"]');
+          allElements.forEach(el => console.log('[DEBUG] -', el.tagName, '#', el.id));
         }
         
         if (downgradeBtn && modal) {
