@@ -4320,7 +4320,11 @@
                 // Add missing template variables
                 feedback: [],
                 pageError: null,
-                pageSuccess: null
+                pageSuccess: null,
+                recentEvents: [],
+                stats: { totalFeedback: 0, totalRequests: 0 },
+                hasAutomation: false,
+                automationSettings: null
             });
         } catch (e) {
             console.error('Test dashboard error:', e);
