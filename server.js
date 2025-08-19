@@ -4291,6 +4291,39 @@
         console.log(`✅ Server is running and listening on port ${PORT}`);
     });
     
+    // TEMPORARY TEST ROUTE - bypasses authentication for testing button functionality
+    app.get('/test-dashboard', async (req, res) => {
+        try {
+            // Create a mock session for testing
+            req.session.user = { 
+                uid: 'test-user-123', 
+                email: 'test@example.com', 
+                displayName: 'Test User' 
+            };
+            
+            // Render the dashboard template with test data
+            const testBusiness = {
+                subscriptionStatus: 'trial',
+                trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+                email: 'test@example.com',
+                businessName: 'Test Business',
+                hasGooglePlaceId: true
+            };
+            
+            res.render('dashboard', { 
+                user: req.session.user,
+                business: testBusiness,
+                billing: null,
+                trialDaysLeft: 30,
+                hasGooglePlaceId: true,
+                csrfToken: 'test-token'
+            });
+        } catch (e) {
+            console.error('Test dashboard error:', e);
+            res.status(500).send('Test dashboard error');
+        }
+    });
+
     // --- 6. SHORT LINK RESOLVER (last so it doesn't shadow other routes) ---
     // Handles URLs like https://reviewsandmarketing.com/{slug}
     // Looks up a business by shortSlug or googlePlaceId and redirects to /rate/:businessId
