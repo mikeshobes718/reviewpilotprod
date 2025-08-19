@@ -1720,14 +1720,12 @@
               console.log('[FIRST-REQUEST] Adding click handler to', buttonType, 'button');
               button.addEventListener('click', function(){
                 console.log('[FIRST-REQUEST]', buttonType, 'button clicked!');
-                alert('Button clicked! This will scroll to Review Collection Kit.');
                 
                 var reviewKitCard = document.getElementById('reviewKitCard');
                 console.log('[FIRST-REQUEST] Review Kit card element:', reviewKitCard);
                 
                 if (!reviewKitCard) {
                   console.log('[FIRST-REQUEST] Review Kit card not found!');
-                  alert('Review Collection Kit section not found!');
                   return;
                 }
                 
