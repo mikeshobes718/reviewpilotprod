@@ -4040,6 +4040,147 @@
         }
     });
 
+    // Assets serving endpoint - serve generated PDFs, QR codes, etc.
+    app.get('/assets/:merchantId/:filename', async (req, res) => {
+        try {
+            const { merchantId, filename } = req.params;
+            
+            // Validate filename to prevent directory traversal
+            if (!filename.match(/^[a-zA-Z0-9._-]+$/)) {
+                return res.status(400).json({ error: 'invalid_filename' });
+            }
+            
+            // Check if user has access to this merchant's assets
+            if (!req.session || !req.session.user || req.session.user.uid !== merchantId) {
+                return res.status(403).json({ error: 'unauthorized' });
+            }
+            
+            const outDir = path.join(__dirname, 'temp', merchantId);
+            const filePath = path.join(outDir, filename);
+            
+            // Check if file exists
+            if (!fs.existsSync(filePath)) {
+                // Return a nice HTML error page instead of JSON
+                res.status(404);
+                res.setHeader('Content-Type', 'text/html');
+                return res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Not Found - ReviewPilot</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-container {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 20px;
+        }
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+        .error-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .error-message {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        .error-details {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 32px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #374151;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #5a67d8;
+        }
+        .footer {
+            margin-top: 32px;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">📄</div>
+        <h1 class="error-title">Asset Not Found</h1>
+        <p class="error-message">
+            The requested asset could not be found. This might be because:
+        </p>
+        <ul style="text-align: left; color: #6b7280; margin-bottom: 24px;">
+            <li>The file has expired or been removed</li>
+            <li>You don't have permission to access this resource</li>
+            <li>The asset hasn't been generated yet</li>
+        </ul>
+        <div class="error-details">
+            File: ${filename}<br>
+            Merchant: ${merchantId}
+        </div>
+        <a href="/dashboard" class="btn">Go to Dashboard</a>
+        <div class="footer">
+            ReviewPilot - Customer Review Management
+        </div>
+    </div>
+</body>
+</html>
+                `);
+            }
+            
+            // Set appropriate headers based on file type
+            if (filename.endsWith('.pdf')) {
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+            } else if (filename.endsWith('.png')) {
+                res.setHeader('Content-Type', 'image/png');
+            } else if (filename.endsWith('.svg')) {
+                res.setHeader('Content-Type', 'image/svg+xml');
+            }
+            
+            // Stream the file
+            const fileStream = fs.createReadStream(filePath);
+            fileStream.pipe(res);
+            
+        } catch (e) {
+            console.error('assets serving error', e);
+            return res.status(500).json({ error: 'server_error' });
+        }
+    });
+
     // Trial usage analytics endpoint
     app.get('/api/merchants/:merchantId/trial-usage', requireMerchant, async (req, res) => {
         try {
