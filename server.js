@@ -1017,7 +1017,9 @@
         // Backfill recent payments (default 30 days; up to 90)
         app.post('/integrations/square/backfill', requireMerchantAuth, async (req, res) => {
             try {
+                console.log('[SQUARE BACKFILL] Request received');
                 const uid = req.session.user.uid;
+                console.log('[SQUARE BACKFILL] UID:', uid);
                 const businessRef = db.collection('businesses').doc(uid);
                 const snap = await businessRef.get();
                 if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
@@ -1026,16 +1028,19 @@
                 if (!tokenCipher) return res.status(400).json({ error: 'not_connected' });
                 const accessToken = await decryptString(tokenCipher);
                 const days = Math.max(1, Math.min(90, parseInt((req.body && req.body.days) || (req.query && req.query.days) || '30', 10)));
+                console.log('[SQUARE BACKFILL] Days:', days);
                 const end = new Date();
                 const begin = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
                 const params = { begin_time: begin.toISOString(), end_time: end.toISOString(), sort_order: 'ASC' };
 
                 let processed = 0;
                 const payments = await fetchSquarePayments(accessToken, params);
+                console.log('[SQUARE BACKFILL] Payments found:', payments.length);
                 for (const p of payments) {
                     const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
                     if (ok) processed++;
                 }
+                console.log('[SQUARE BACKFILL] Processed:', processed);
                 return res.json({ ok: true, scanned: payments.length, processed });
             } catch (e) {
                 console.error('square backfill error', e && (e.stack || e.message || e));
@@ -1046,7 +1051,9 @@
         // Daily incremental sync (last 24h)
         app.post('/integrations/square/sync-daily', requireMerchantAuth, async (req, res) => {
             try {
+                console.log('[SQUARE SYNC] Request received');
                 const uid = req.session.user.uid;
+                console.log('[SQUARE SYNC] UID:', uid);
                 const businessRef = db.collection('businesses').doc(uid);
                 const snap = await businessRef.get();
                 if (!snap.exists) return res.status(404).json({ error: 'merchant_not_found' });
@@ -1060,10 +1067,12 @@
 
                 let processed = 0;
                 const payments = await fetchSquarePayments(accessToken, params);
+                console.log('[SQUARE SYNC] Payments found:', payments.length);
                 for (const p of payments) {
                     const ok = await processSquarePayment({ businessRef, businessData: biz, payment: p, accessToken });
                     if (ok) processed++;
                 }
+                console.log('[SQUARE SYNC] Processed:', processed);
                 return res.json({ ok: true, scanned: payments.length, processed });
             } catch (e) {
                 console.error('square daily sync error', e && (e.stack || e.message || e));

@@ -23,9 +23,9 @@ async function testAutomation() {
     if (currentUrl.includes('/login')) {
       console.log('🔐 On login page, attempting to login...');
       
-      // Login with test credentials
-      await page.type('input[name="email"]', 'mikeshobes718@gmail.com');
-      await page.type('input[name="password"]', 'T@st1234');
+      // Login with Square-connected credentials
+      await page.type('input[name="email"]', 'mikeshobes718@yahoo.com');
+      await page.type('input[name="password"]', 'ReviewPilot2025');
       await page.click('button[type="submit"]');
       
       // Wait for redirect
