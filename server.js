@@ -4316,7 +4316,11 @@
                 billing: null,
                 trialDaysLeft: 30,
                 hasGooglePlaceId: true,
-                csrfToken: 'test-token'
+                csrfToken: 'test-token',
+                // Add missing template variables
+                feedback: [],
+                pageError: null,
+                pageSuccess: null
             });
         } catch (e) {
             console.error('Test dashboard error:', e);
