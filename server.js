@@ -1207,6 +1207,7 @@
 
         console.log('[MOCK-SQUARE] Mock Square API endpoints ready for testing!');
 
+        // DUPLICATE SECTION - REMOVE THIS ENTIRE BLOCK
         // --- 3d. Square OAuth ---
         const SQUARE_APP_ID = process.env.SQUARE_APP_ID || '';
         let SQUARE_APP_SECRET = process.env.SQUARE_APP_SECRET || '';
