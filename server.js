@@ -3457,7 +3457,20 @@
                     billing
                 };
             }));
-            res.render('admin', { items, user: req.session.user || null });
+            let subscriptionStatus = null;
+            let trialEndsAt = null;
+            if (req.session.user) {
+                try {
+                    subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                    trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+                } catch (_) { /* ignore */ }
+            }
+            res.render('admin', { 
+                items, 
+                user: req.session.user || null,
+                subscriptionStatus,
+                trialEndsAt
+            });
         } catch (e) {
             console.error('Admin error', e);
             res.status(500).render('error', {
@@ -3715,7 +3728,21 @@
             const ref = db.collection('businesses').doc(req.session.user.uid);
             const snap = await ref.get();
             const testData = snap.exists ? ((snap.data() || {}).testData || null) : null;
-            return res.render('debug-save-test', { csrfToken: req.csrfToken(), user: req.session.user || null, testData });
+            let subscriptionStatus = null;
+            let trialEndsAt = null;
+            if (req.session.user) {
+                try {
+                    subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                    trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+                } catch (_) { /* ignore */ }
+            }
+            return res.render('debug-save-test', { 
+                csrfToken: req.csrfToken(), 
+                user: req.session.user || null, 
+                testData,
+                subscriptionStatus,
+                trialEndsAt
+            });
         } catch (e) {
             console.error('debug save-test read error', e && (e.stack || e.message || e));
             return res.status(500).send('debug page error');
