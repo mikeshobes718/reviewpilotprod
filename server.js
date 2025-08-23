@@ -4835,3 +4835,4 @@
         console.error('❌ Fatal startup error', err);
         process.exit(1);
     });
+// Force restart Fri Aug 22 22:50:29 -05 2025
