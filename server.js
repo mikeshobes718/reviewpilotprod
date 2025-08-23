@@ -88,8 +88,31 @@
         const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID || 'us-east-1_RG8iuFsPD';
         const COGNITO_CLIENT_ID = process.env.COGNITO_CLIENT_ID || '7jriml8d35718cdauoi149ousn';
 
-        // --- 3b. Queue for automated sends ---
-        let reviewQueue = null;
+            // --- 3b. Helper functions for subscription status ---
+    async function getSubscriptionStatus(uid) {
+        try {
+            const doc = await db.collection('businesses').doc(uid).get();
+            if (doc.exists) {
+                const data = doc.data() || {};
+                return data.subscriptionStatus || null;
+            }
+        } catch (_) { /* ignore */ }
+        return null;
+    }
+    
+    async function getTrialEndsAt(uid) {
+        try {
+            const doc = await db.collection('businesses').doc(uid).get();
+            if (doc.exists) {
+                const data = doc.data() || {};
+                return data.trialEndsAt || null;
+            }
+        } catch (_) { /* ignore */ }
+        return null;
+    }
+    
+    // --- 3c. Queue for automated sends ---
+    let reviewQueue = null;
         if (process.env.REDIS_URL) {
             try {
                 const { Queue, Worker } = require('bullmq');
@@ -2480,14 +2503,39 @@
                 title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews',
                 user: user,
                 homepageStats: __homepageStatsCache.data,
-                isMobile: isMobile
+                isMobile: isMobile,
+                subscriptionStatus: user ? await getSubscriptionStatus(user.uid) : null,
+                trialEndsAt: user ? await getTrialEndsAt(user.uid) : null
             });
         } catch (e) {
             console.error('home stats error', e);
-            return res.render('index', { csrfToken: req.csrfToken(), title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews', user: req.session.user || null, homepageStats: { avg: '4.8', convPercent: '62' } });
+            return res.render('index', { 
+                csrfToken: req.csrfToken(), 
+                title: 'Reviews & Marketing • Turn happy customers into 5‑star reviews', 
+                user: req.session.user || null, 
+                homepageStats: { avg: '4.8', convPercent: '62' },
+                subscriptionStatus: null,
+                trialEndsAt: null
+            });
         }
     });
-    app.get('/features', csrfProtection, (req, res) => res.render('features', { csrfToken: req.csrfToken(), title: 'Features • Reviews & Marketing', user: req.session.user || null }));
+    app.get('/features', csrfProtection, async (req, res) => {
+        let subscriptionStatus = null;
+        let trialEndsAt = null;
+        if (req.session.user) {
+            try {
+                subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+            } catch (_) { /* ignore */ }
+        }
+        res.render('features', { 
+            csrfToken: req.csrfToken(), 
+            title: 'Features • Reviews & Marketing', 
+            user: req.session.user || null,
+            subscriptionStatus,
+            trialEndsAt
+        });
+    });
     app.get('/pricing', csrfProtection, async (req, res) => {
         let subscriptionStatus = null;
         let trialEndsAt = null;
@@ -2507,7 +2555,23 @@
         } catch (_) { /* ignore */ }
         res.render('pricing', { csrfToken: req.csrfToken(), title: 'Pricing • Reviews & Marketing', user: req.session.user || null, subscriptionStatus, isActive, validTrial, trialEndsAt });
     });
-    app.get('/privacy', csrfProtection, (req, res) => res.render('privacy', { csrfToken: req.csrfToken(), title: 'Privacy Policy • Reviews & Marketing', user: req.session.user || null }));
+    app.get('/privacy', csrfProtection, async (req, res) => {
+        let subscriptionStatus = null;
+        let trialEndsAt = null;
+        if (req.session.user) {
+            try {
+                subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+            } catch (_) { /* ignore */ }
+        }
+        res.render('privacy', { 
+            csrfToken: req.csrfToken(), 
+            title: 'Privacy Policy • Reviews & Marketing', 
+            user: req.session.user || null,
+            subscriptionStatus,
+            trialEndsAt
+        });
+    });
     
     // Logout route to clear invalid sessions
     app.get('/logout', (req, res) => {
@@ -2850,14 +2914,28 @@
     });
     
     // Phase 4.1: Auth view routes (GET)
-    app.get('/signup', csrfProtection, (req, res) => {
+    app.get('/signup', csrfProtection, async (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('signup', { csrfToken: token, error: null, user: req.session.user || null });
+        let subscriptionStatus = null;
+        let trialEndsAt = null;
+        if (req.session.user) {
+            try {
+                subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+            } catch (_) { /* ignore */ }
+        }
+        res.render('signup', { 
+            csrfToken: token, 
+            error: null, 
+            user: req.session.user || null,
+            subscriptionStatus,
+            trialEndsAt
+        });
     });
-    app.get('/login', csrfProtection, (req, res) => {
+    app.get('/login', csrfProtection, async (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
@@ -2868,17 +2946,46 @@
         if (q.registered) hint = 'Account created! We\'ve emailed a verification link. Open it to verify your email, then log in.';
         else if (q.verified) hint = 'Your email is verified. You can now log in.';
         else if (q.reset) hint = 'Your password was updated. Please log in.';
-        res.render('login', { csrfToken: token, error: null, hint, user: req.session.user || null });
+        let subscriptionStatus = null;
+        let trialEndsAt = null;
+        if (req.session.user) {
+            try {
+                subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+            } catch (_) { /* ignore */ }
+        }
+        res.render('login', { 
+            csrfToken: token, 
+            error: null, 
+            hint, 
+            user: req.session.user || null,
+            subscriptionStatus,
+            trialEndsAt
+        });
     });
-    app.get('/forgot-password', csrfProtection, (req, res) => {
+    app.get('/forgot-password', csrfProtection, async (req, res) => {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
         const sent = !!(req.query && req.query.sent);
-        res.render('forgot-password', { csrfToken: token, sent, user: req.session.user || null });
+        let subscriptionStatus = null;
+        let trialEndsAt = null;
+        if (req.session.user) {
+            try {
+                subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+            } catch (_) { /* ignore */ }
+        }
+        res.render('forgot-password', { 
+            csrfToken: token, 
+            sent, 
+            user: req.session.user || null,
+            subscriptionStatus,
+            trialEndsAt
+        });
     });
-    app.get('/reset-password', csrfProtection, (req, res) => {
+    app.get('/reset-password', csrfProtection, async (req, res) => {
         const tokenParam = req.query && req.query.token;
         const emailParam = req.query && req.query.email;
         if (!tokenParam) return res.status(400).send('Invalid or missing reset token.');
@@ -2886,7 +2993,22 @@
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
         const token = typeof req.csrfToken === 'function' ? req.csrfToken() : '';
-        res.render('reset-password', { csrfToken: token, token: tokenParam, email: emailParam || '', user: req.session.user || null });
+        let subscriptionStatus = null;
+        let trialEndsAt = null;
+        if (req.session.user) {
+            try {
+                subscriptionStatus = await getSubscriptionStatus(req.session.user.uid);
+                trialEndsAt = await getTrialEndsAt(req.session.user.uid);
+            } catch (_) { /* ignore */ }
+        }
+        res.render('reset-password', { 
+            csrfToken: token, 
+            token: tokenParam, 
+            email: emailParam || '', 
+            user: req.session.user || null,
+            subscriptionStatus,
+            trialEndsAt
+        });
     });
     app.get('/dashboard', requireAccess, csrfProtection, async (req, res) => {
         try {
