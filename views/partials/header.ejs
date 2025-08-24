@@ -24,6 +24,207 @@
   </div>
 </nav>
 
+<!-- Subscription Required Popup Modal -->
+<% if (typeof user !== 'undefined' && user && typeof subscriptionStatus !== 'undefined' && (subscriptionStatus !== 'active' && (subscriptionStatus !== 'trial' || typeof trialEndsAt === 'undefined' || new Date(trialEndsAt) <= new Date()))) { %>
+<div id="subscription-required-popup" class="popup-overlay" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+">
+  <div class="popup-content" style="
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  ">
+    <div class="popup-icon" style="
+      font-size: 48px;
+      margin-bottom: 16px;
+    ">🔒</div>
+    
+    <h2 class="popup-title" style="
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 16px 0;
+      color: #1f2937;
+    ">Subscription Required</h2>
+    
+    <p class="popup-message" style="
+      font-size: 16px;
+      line-height: 1.6;
+      color: #6b7280;
+      margin: 0 0 24px 0;
+    ">You need an active subscription to access the dashboard. Choose a plan to get started with managing your reviews and analytics.</p>
+    
+    <div class="popup-actions" style="
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    ">
+      <button id="popup-view-plans" class="popup-btn primary" style="
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+      ">View Plans</button>
+      
+      <button id="popup-close" class="popup-btn secondary" style="
+        background: #f3f4f6;
+        color: #374151;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+      ">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup JavaScript -->
+<script>
+(function() {
+  'use strict';
+  
+  // Wait for DOM to be ready
+  function initPopup() {
+    const popup = document.getElementById('subscription-required-popup');
+    if (!popup) return;
+    
+    const viewPlansBtn = document.getElementById('popup-view-plans');
+    const closeBtn = document.getElementById('popup-close');
+    
+    // View plans button
+    if (viewPlansBtn) {
+      viewPlansBtn.addEventListener('click', () => {
+        window.location.href = '/pricing';
+      });
+    }
+    
+    // Close button
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        popup.style.display = 'none';
+      });
+    }
+    
+    // Close on overlay click
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) {
+        popup.style.display = 'none';
+      }
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popup.style.display === 'flex') {
+        popup.style.display = 'none';
+      }
+    });
+    
+    // Intercept dashboard button clicks
+    function interceptDashboardClicks() {
+      const dashboardElements = document.querySelectorAll('a[href*="dashboard"], button[onclick*="dashboard"], .dashboard-link, .dashboard-button, [href="/dashboard"]');
+      
+      dashboardElements.forEach(element => {
+        // Remove existing event listeners by cloning the element
+        const newElement = element.cloneNode(true);
+        element.parentNode.replaceChild(newElement, element);
+        
+        // Add new click handler
+        newElement.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('🔒 Dashboard access blocked - showing subscription popup');
+          popup.style.display = 'flex';
+          
+          return false;
+        });
+      });
+      
+      return dashboardElements.length;
+    }
+    
+    // Initial interception
+    const interceptedCount = interceptDashboardClicks();
+    console.log(`🔒 Intercepted ${interceptedCount} dashboard elements`);
+    
+    // Set up observer for new dashboard elements
+    const observer = new MutationObserver((mutations) => {
+      let newElementsFound = false;
+      
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // Check if the new element is a dashboard element
+              if (node.matches && (node.matches('a[href*="dashboard"]') || 
+                  node.matches('button[onclick*="dashboard"]') || 
+                  node.matches('.dashboard-link') || 
+                  node.matches('.dashboard-button') || 
+                  node.matches('[href="/dashboard"]'))) {
+                newElementsFound = true;
+              }
+              
+              // Check if the new element contains dashboard elements
+              const dashboardElements = node.querySelectorAll ? 
+                node.querySelectorAll('a[href*="dashboard"], button[onclick*="dashboard"], .dashboard-link, .dashboard-button, [href="/dashboard"]') : [];
+              
+              if (dashboardElements.length > 0) {
+                newElementsFound = true;
+              }
+            }
+          });
+        }
+      });
+      
+      // If new dashboard elements were found, intercept them
+      if (newElementsFound) {
+        setTimeout(() => {
+          const newInterceptedCount = interceptDashboardClicks();
+          if (newInterceptedCount > 0) {
+            console.log(`🔒 Intercepted ${newInterceptedCount} new dashboard elements`);
+          }
+        }, 100);
+      }
+    });
+    
+    // Start observing
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+    
+    console.log('🔒 Subscription popup system initialized');
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPopup);
+  } else {
+    initPopup();
+  }
+})();
+</script>
+<% } %>
+
 <!-- Mobile drawer -->
 <div class="drawer-overlay" id="drawerOverlay">
   <div class="drawer base-card" id="drawer">
@@ -40,10 +241,8 @@
     </div>
     <div class="drawer-footer" style="margin-top:auto;padding:16px;border-top:1px solid var(--border);display:grid;gap:10px">
       <% if (typeof user !== 'undefined' && user) { %>
-        <!-- Only show dashboard button for users with active subscriptions or valid trials -->
-        <% if (typeof subscriptionStatus !== 'undefined' && (subscriptionStatus === 'active' || (subscriptionStatus === 'trial' && typeof trialEndsAt !== 'undefined' && new Date(trialEndsAt) > new Date()))) { %>
-          <a href="/dashboard" class="btn" style="justify-content:center">Dashboard</a>
-        <% } %>
+        <!-- Show dashboard button for all logged-in users, but intercept clicks for non-subscribers -->
+        <a href="/dashboard" class="btn dashboard-btn-mobile" style="justify-content:center">Dashboard</a>
         <span class="btn" style="cursor:default;opacity:.85;justify-content:center;border:none;background:transparent;color:var(--text);font-weight:600;font-size:16px;">Signed in: <%= user.email %></span>
         <a href="/logout" class="btn" style="justify-content:center">Log out</a>
       <% } else { %>
@@ -53,4 +252,164 @@
     </div>
   </div>
 </div>
+
+<!-- Mobile Subscription Required Popup Modal -->
+<% if (typeof user !== 'undefined' && user && typeof subscriptionStatus !== 'undefined' && (subscriptionStatus !== 'active' && (subscriptionStatus !== 'trial' || typeof trialEndsAt === 'undefined' || new Date(trialEndsAt) <= new Date()))) { %>
+<div id="mobile-subscription-required-popup" class="mobile-popup-overlay" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+">
+  <div class="mobile-popup-content" style="
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 90%;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    margin: 20px;
+  ">
+    <div class="mobile-popup-icon" style="
+      font-size: 36px;
+      margin-bottom: 12px;
+    ">🔒</div>
+    
+    <h2 class="mobile-popup-title" style="
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: #1f2937;
+    ">Subscription Required</h2>
+    
+    <p class="mobile-popup-message" style="
+      font-size: 14px;
+      line-height: 1.5;
+      color: #6b7280;
+      margin: 0 0 20px 0;
+    ">You need an active subscription to access the dashboard. Choose a plan to get started.</p>
+    
+    <div class="mobile-popup-actions" style="
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    ">
+      <button id="mobile-popup-view-plans" class="mobile-popup-btn primary" style="
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        max-width: 200px;
+      ">View Plans</button>
+      
+      <button id="mobile-popup-close" class="mobile-popup-btn secondary" style="
+        background: #f3f4f6;
+        color: #374151;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        max-width: 200px;
+      ">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Popup JavaScript -->
+<script>
+(function() {
+  'use strict';
+  
+  // Wait for DOM to be ready
+  function initMobilePopup() {
+    const popup = document.getElementById('mobile-subscription-required-popup');
+    if (!popup) return;
+    
+    const viewPlansBtn = document.getElementById('mobile-popup-view-plans');
+    const closeBtn = document.getElementById('mobile-popup-close');
+    
+    // View plans button
+    if (viewPlansBtn) {
+      viewPlansBtn.addEventListener('click', () => {
+        window.location.href = '/pricing';
+      });
+    }
+    
+    // Close button
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        popup.style.display = 'none';
+      });
+    }
+    
+    // Close on overlay click
+    popup.addEventListener('click', (e) => {
+      if (e.target === popup) {
+        popup.style.display = 'none';
+      }
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popup.style.display === 'flex') {
+        popup.style.display = 'none';
+      }
+    });
+    
+    // Intercept mobile dashboard button clicks
+    function interceptMobileDashboardClicks() {
+      const mobileDashboardElements = document.querySelectorAll('.dashboard-btn-mobile, a[href="/dashboard"]');
+      
+      mobileDashboardElements.forEach(element => {
+        // Remove existing event listeners by cloning the element
+        const newElement = element.cloneNode(true);
+        element.parentNode.replaceChild(newElement, element);
+        
+        // Add new click handler
+        newElement.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          console.log('🔒 Mobile dashboard access blocked - showing subscription popup');
+          popup.style.display = 'flex';
+          
+          return false;
+        });
+      });
+      
+      return mobileDashboardElements.length;
+    }
+    
+    // Initial interception
+    const interceptedCount = interceptMobileDashboardClicks();
+    console.log(`🔒 Intercepted ${interceptedCount} mobile dashboard elements`);
+    
+    console.log('🔒 Mobile subscription popup system initialized');
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobilePopup);
+  } else {
+    initMobilePopup();
+  }
+})();
+</script>
+<% } %>
 
