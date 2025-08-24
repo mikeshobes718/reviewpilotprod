@@ -25,7 +25,6 @@
 </nav>
 
 <!-- Subscription Required Popup Modal -->
-<% if (typeof user !== 'undefined' && user && typeof subscriptionStatus !== 'undefined' && (subscriptionStatus !== 'active' && (subscriptionStatus !== 'trial' || typeof trialEndsAt === 'undefined' || new Date(trialEndsAt) <= new Date()))) { %>
 <div id="subscription-required-popup" class="popup-overlay" style="
   position: fixed;
   top: 0;
@@ -223,8 +222,6 @@
   }
 })();
 </script>
-<% } %>
-
 <!-- Mobile drawer -->
 <div class="drawer-overlay" id="drawerOverlay">
   <div class="drawer base-card" id="drawer">
@@ -254,7 +251,6 @@
 </div>
 
 <!-- Mobile Subscription Required Popup Modal -->
-<% if (typeof user !== 'undefined' && user && typeof subscriptionStatus !== 'undefined' && (subscriptionStatus !== 'active' && (subscriptionStatus !== 'trial' || typeof trialEndsAt === 'undefined' || new Date(trialEndsAt) <= new Date()))) { %>
 <div id="mobile-subscription-required-popup" class="mobile-popup-overlay" style="
   position: fixed;
   top: 0;
