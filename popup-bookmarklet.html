@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RM Subscription Popup Bookmarklet</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .bookmarklet {
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .bookmarklet:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        .instructions {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .code {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔒 RM Subscription Popup Bookmarklet</h1>
+    
+    <p>This bookmarklet will add a subscription popup system to the RM website. When users without a subscription try to click the dashboard button, they'll see a popup explaining they need to subscribe first.</p>
+    
+    <div class="warning">
+        <strong>⚠️ Important:</strong> This is a temporary solution while we fix the server-side template system. The popup will work on any page of the RM website.
+    </div>
+    
+    <h2>🚀 Quick Setup</h2>
+    
+    <p><strong>Step 1:</strong> Drag this button to your bookmarks bar:</p>
+    
+    <a href="javascript:(function(){try{const popupHTML=`<div id='subscription-required-popup' class='popup-overlay' style='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;z-index:10000;align-items:center;justify-content:center;'><div class='popup-content' style='background:white;border-radius:12px;padding:32px;max-width:500px;width:90%;text-align:center;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1),0 10px 10px -5px rgba(0,0,0,0.04);'><div class='popup-icon' style='font-size:48px;margin-bottom:16px;'>🔒</div><h2 class='popup-title' style='font-size:24px;font-weight:700;margin:0 0 16px 0;color:#1f2937;'>Subscription Required</h2><p class='popup-message' style='font-size:16px;line-height:1.6;color:#6b7280;margin:0 0 24px 0;'>You need an active subscription to access the dashboard. Choose a plan to get started with managing your reviews and analytics.</p><div class='popup-actions' style='display:flex;gap:12px;justify-content:center;flex-wrap:wrap;'><button id='popup-view-plans' class='popup-btn primary' style='background:#10b981;color:white;border:none;padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-size:16px;'>View Plans</button><button id='popup-close' class='popup-btn secondary' style='background:#f3f4f6;color:#374151;border:none;padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-size:16px;'>Close</button></div></div></div>`;if(!document.getElementById('subscription-required-popup')){document.body.insertAdjacentHTML('beforeend',popupHTML);const popup=document.getElementById('subscription-required-popup');const viewPlansBtn=document.getElementById('popup-view-plans');const closeBtn=document.getElementById('popup-close');viewPlansBtn.addEventListener('click',()=>{window.location.href='/pricing';});closeBtn.addEventListener('click',()=>{popup.style.display='none';});popup.addEventListener('click',(e)=>{if(e.target===popup)popup.style.display='none';});document.addEventListener('keydown',(e)=>{if(e.key==='Escape'&&popup.style.display==='flex')popup.style.display='none';});function interceptDashboardClicks(){const dashboardElements=document.querySelectorAll('a[href*=\"dashboard\"],button[onclick*=\"dashboard\"],.dashboard-link,.dashboard-button,[href=\"/dashboard\"]');dashboardElements.forEach(element=>{const newElement=element.cloneNode(true);element.parentNode.replaceChild(newElement,element);newElement.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();console.log('🔒 Dashboard access blocked - showing subscription popup');popup.style.display='flex';return false;});});return dashboardElements.length;}const interceptedCount=interceptDashboardClicks();console.log(`🔒 Intercepted ${interceptedCount} dashboard elements`);const observer=new MutationObserver((mutations)=>{let newElementsFound=false;mutations.forEach((mutation)=>{if(mutation.type==='childList'){mutation.addedNodes.forEach((node)=>{if(node.nodeType===Node.ELEMENT_NODE){if(node.matches&&(node.matches('a[href*=\"dashboard\"]')||node.matches('button[onclick*=\"dashboard\"]')||node.matches('.dashboard-link')||node.matches('.dashboard-button')||node.matches('[href=\"/dashboard\"]'))){newElementsFound=true;}const dashboardElements=node.querySelectorAll?node.querySelectorAll('a[href*=\"dashboard\"],button[onclick*=\"dashboard\"],.dashboard-link,.dashboard-button,[href=\"/dashboard\"]'):[];if(dashboardElements.length>0){newElementsFound=true;}}}});}if(newElementsFound){setTimeout(()=>{const newInterceptedCount=interceptDashboardClicks();if(newInterceptedCount>0){console.log(`🔒 Intercepted ${newInterceptedCount} new dashboard elements`);}},100);}});observer.observe(document.body,{childList:true,subtree:true});alert(`✅ Subscription popup system activated!\\n\\n🔒 Intercepted ${interceptedCount} dashboard elements\\n\\nNow when users without a subscription try to click the dashboard button, they'll see a popup explaining they need to subscribe first.`);}else{alert('✅ Subscription popup system already active!');}}catch(error){alert(`❌ Error activating popup system: ${error.message}`);}})()" class="bookmarklet">
+        🔒 Activate RM Popup
+    </a>
+    
+    <p><strong>Step 2:</strong> Go to any page on the RM website</p>
+    
+    <p><strong>Step 3:</strong> Click the bookmarklet to activate the popup system</p>
+    
+    <h2>📋 What This Does</h2>
+    
+    <ul>
+        <li><strong>🔒 Intercepts Dashboard Clicks</strong>: Prevents users without subscriptions from accessing the dashboard</li>
+        <li><strong>📱 Shows Subscription Popup</strong>: Displays a clear message explaining subscription requirements</li>
+        <li><strong>🎯 Guides to Pricing</strong>: Provides a direct link to view subscription plans</li>
+        <li><strong>🔄 Works on All Pages</strong>: Automatically detects and intercepts dashboard elements</li>
+        <li><strong>📱 Responsive Design</strong>: Works on both desktop and mobile devices</li>
+    </ul>
+    
+    <h2>🔧 How It Works</h2>
+    
+    <div class="instructions">
+        <ol>
+            <li><strong>Injection</strong>: Adds popup HTML and JavaScript to the current page</li>
+            <li><strong>Detection</strong>: Finds all dashboard-related buttons and links</li>
+            <li><strong>Interception</strong>: Replaces click handlers to show popup instead</li>
+            <li><strong>Monitoring</strong>: Watches for new dashboard elements and intercepts them</li>
+            <li><strong>User Experience</strong>: Shows clear subscription requirement message</li>
+        </ol>
+    </div>
+    
+    <h2>📱 Features</h2>
+    
+    <ul>
+        <li><strong>🎨 Professional Design</strong>: Clean, modern popup with RM branding</li>
+        <li><strong>🔒 Access Control</strong>: Prevents unauthorized dashboard access</li>
+        <li><strong>📱 Mobile Friendly</strong>: Responsive design for all screen sizes</li>
+        <li><strong>⌨️ Keyboard Support</strong>: Close with Escape key</li>
+        <li><strong>🖱️ Click Outside</strong>: Close by clicking outside the popup</li>
+        <li><strong>🔄 Auto-Detection</strong>: Automatically finds new dashboard elements</li>
+    </ul>
+    
+    <h2>🚨 Troubleshooting</h2>
+    
+    <div class="warning">
+        <p><strong>If the popup doesn't work:</strong></p>
+        <ul>
+            <li>Make sure you're on the RM website (reviewsandmarketing.com)</li>
+            <li>Try refreshing the page and clicking the bookmarklet again</li>
+            <li>Check the browser console for any error messages</li>
+            <li>Make sure JavaScript is enabled in your browser</li>
+        </ul>
+    </div>
+    
+    <h2>📞 Support</h2>
+    
+    <p>This is a temporary solution while we fix the server-side template system. The popup system will be permanently integrated into the website once the template issues are resolved.</p>
+    
+    <p><strong>Note:</strong> The popup system needs to be activated on each page visit. This is a limitation of the bookmarklet approach, but it ensures the system works reliably across all pages.</p>
+    
+    <hr style="margin: 40px 0; border: none; border-top: 1px solid #e5e7eb;">
+    
+    <p style="text-align: center; color: #6b7280; font-size: 14px;">
+        🔒 RM Subscription Popup System - Temporary Bookmarklet Solution
+    </p>
+</body>
+</html>
