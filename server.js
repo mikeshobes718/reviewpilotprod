@@ -4986,3 +4986,4 @@
     });
 // Force restart Fri Aug 22 22:50:29 -05 2025
 // Firestore index now enabled - restart server Sat Aug 23 18:07:29 -05 2025
+// Popup system fix - restart server Sat Aug 23 18:15:00 -05 2025
